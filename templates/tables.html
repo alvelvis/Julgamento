@@ -62,7 +62,14 @@
 <div id="errorValidarUD" class="tables col-lg-10 col-lg-offset-1">
 </div>
 {% else %}
-<h1>Corpus {{ c }} está sendo carregado</h1><hr>
-<h4><a href="/corpus">Voltar mais tarde</a></h4>
+<script>
+    setTimeout(function(){
+    window.location.reload(1);
+    }, 20000);
+</script>
+<h1>{{ c }}</h1><hr>
+<img style="width:64px; height:64px;" src="/static/loading.gif">
+<br>
+<h4>Corpus está sendo carregado, aguarde um momento ou <a href="/corpus">volte mais tarde</a>.</h4>
 {% endif %}
 {% endblock %}

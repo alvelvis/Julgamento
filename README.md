@@ -2,7 +2,7 @@
 
 Julgamento (Trial) is an enviroment for evaluating annotated corpora in the [CoNLL-U](https://universaldependencies.org/format.html) format. It is being developed and used by the research group [ComCorHd (Computational Linguistics, Corpus and Digital Humanities)](http://comcorhd.letras.puc-rio.br), from the Linguistics Department of PUC-Rio, in Brazil, for the project Linguistic resources for Portuguese Natural Language Processing.
 
-Julgamento is part of [ET: a workstation for searching, revising and evaluating annotated corpora](http://comcorhd.letras.puc-rio.br/ET).
+Julgamento is part of [ET: a workstation for querying, revising and evaluating annotated corpora](http://comcorhd.letras.puc-rio.br/ET).
 
 If you want to run your own version of Julgamento, a Linux computer and Python 3 are needed.
 
