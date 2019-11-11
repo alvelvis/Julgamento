@@ -10,13 +10,10 @@ If you want to run your own version of Julgamento, a Linux computer and Python 3
 
 1) The recommended way to download the repository is by cloning it. In a terminal, execute the following command:
 
-	$ git clone https://github.com/alvelvis/Julgamento.git
+	$ git clone https://github.com/alvelvis/Julgamento.git; cd Julgamento; git update-index --assume-unchanged config.py
 
-2) Change to the newly created directory:
 
-	$ cd Julgamento
-
-That way, whenever you want to update the repository, you can simply pull the updates inside the folder:
+2) That way, whenever you want to update the repository, you can simply pull the updates inside the folder:
 
 	$ git pull
 
