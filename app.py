@@ -307,7 +307,7 @@ def upload(alert="", success=""):
 
 		if not os.path.isfile(f"{conllu(removerAcento(request.values.get('repoCorpusName'))).findGolden()}"):
 			os.system(sh)
-			textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://interrogatorio.comcorhd.ga'>Interrogatório</a>, ou, (2) "
+			textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://comcorhd.letras.puc-rio.br/interrogatorio'>Interrogatório</a>, ou, (2) "
 			success = f"Corpus {'e ramo ' if request.values.get('criarRamo') else ''}\"{removerAcento(request.values.get('repoCorpusName'))}\" criado{'s' if request.values.get('criarRamo') else ''} com sucesso! {textInterrogatorio if COMCORHD else ''}Para prosseguir com o julgamento, treine um modelo a partir desse corpus clicando no menu lateral \"Treinar um modelo\" ou envie um arquivo sistema equivalente ao corpus."
 		else:
 			alert = f"Corpus com o nome '{removerAcento(request.values.get('repoCorpusName'))}' já existe."

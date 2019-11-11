@@ -303,27 +303,26 @@ $(document).ready(function(){
                 $('.branchDiv').html(data['html']);
                 $('.branch').selectpicker('refresh');
                 atualizar();
+            },
+        })
+    });
 
-                $('.branch').unbind('change').on('change', function(){
-                    loadingScreen();
-                    $buttonBranch = $('#branch');
-                    $buttonRepo = $('#repoName');
-                    $.ajax({
-                        url: "/api/getCommits",
-                        method: "POST",
-                        data: {
-                            repoName: $buttonRepo.val(),
-                            branch: $buttonBranch.val(),
-                        },
-                        success: function(data){
-                            $('.repoCommitDiv').html(data['html']);
-                            $('.branch').selectpicker('refresh');
-                            $('.repoCommit').selectpicker('refresh');
-                            atualizar();
-                        }
-                    });
-                });
-                
+    $('.branch').unbind('change').on('change', function(){
+        loadingScreen();
+        $buttonBranch = $('#branch');
+        $buttonRepo = $('#repoName');
+        $.ajax({
+            url: "/api/getCommits",
+            method: "POST",
+            data: {
+                repoName: $buttonRepo.val(),
+                branch: $buttonBranch.val(),
+            },
+            success: function(data){
+                $('.repoCommitDiv').html(data['html']);
+                $('.branch').selectpicker('refresh');
+                $('.repoCommit').selectpicker('refresh');
+                atualizar();
             }
         });
     });
