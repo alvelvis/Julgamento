@@ -27,6 +27,6 @@ If you want to run your own version of Julgamento, a Linux computer and Python 3
 
 And then, whenever you want to run Julgamento locally, run the command:
 
-	$ sh run_prod.sh
+	$ sh run_julgamento.sh
 
 All set, you'll be able to access Julgamento by the local page [http://127.0.0.1:5050/](http://127.0.0.1:5050/). End the server by pressing "Ctrl+C" in the terminal window.
