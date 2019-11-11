@@ -557,7 +557,8 @@ def logged_in(blueprint, token):
 	resp = google.get("/oauth2/v2/userinfo")
 	email = resp.json().get('email')
 	if not email in ALLOWED_GOOGLE_EMAILS:
-		return redirect('/logout?next_url=' + next_url or '/corpus')
+		next_link = "/corpus" if not next_url else next_url
+		return redirect('/logout?next_url=' + next_link)
 	else:
 		return redirect(next_url or '/corpus')
 
