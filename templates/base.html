@@ -137,7 +137,7 @@
           {% if c %}{% if not pagina %}<li><a href="/corpus?c={{c}}">mudar avaliação</a></li>{% endif %}
           <li><a href="/corpus">mudar corpus</a></li>{% else %}
           <li><a href="/corpus">escolher corpus</a></li>{% endif %}
-          <li><a href="/logout">sair</a></li>
+          {% if COMCORHD %}<li><a href="/logout">sair</a></li>{% endif %}
         </ul>
       </div>
     </div>

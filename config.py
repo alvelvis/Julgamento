@@ -25,6 +25,6 @@ ALLOWED_GOOGLE_EMAILS = '''
 
 UPLOAD_FOLDER = f"{os.path.abspath(os.path.dirname(__file__))}/static/uploads"
 JULGAMENTO_FOLDER = os.path.abspath(os.path.dirname(__file__))
-COMCORHD_FOLDER = f"{os.path.abspath(os.path.dirname(__file__)).rsplit('/', 1)[0]}/UD_Portuguese-Bosque/www/interrogar-ud/conllu"
+COMCORHD_FOLDER = f"{os.path.abspath(os.path.dirname(__file__)).rsplit('/', 1)[0]}/Interrogat-rio/www/interrogar-ud/conllu"
 ALLOWED_EXTENSIONS = "conllu".split("|")
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, "prod.db")

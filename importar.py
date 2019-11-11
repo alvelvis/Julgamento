@@ -13,9 +13,10 @@ def checkRepo(repositorio="", branch=""):
         os.mkdir(UPLOAD_FOLDER + "/" + 'repositories')
     
     for repo in REPOSITORIES:
-        if not os.path.isdir(UPLOAD_FOLDER + '/repositories/' + repo.rsplit("/", 1)[1].split(".git")[0]):
-            if os.system(f'cd {UPLOAD_FOLDER}/repositories; git clone {repo}'):
-                pass
+        if '/' in repo:
+            if not os.path.isdir(UPLOAD_FOLDER + '/repositories/' + repo.rsplit("/", 1)[1].split(".git")[0]):
+                if os.system(f'cd {UPLOAD_FOLDER}/repositories; git clone {repo}'):
+                    pass
 
     listRepo = []
     for item in os.listdir(UPLOAD_FOLDER + "/" + 'repositories'):
