@@ -18,7 +18,7 @@ cd $1
 python3 tratar_conllu.py $1.conllu
 python3 split_conllu.py $1_editado.conllu
 python3 generate_release.py .
-cat *train.conllu *dev.conllu > $1_train_e_dev.conllu
+cat *-train.conllu *-dev.conllu > $1_train_e_dev.conllu
 
 cd ..
 cp udpipe* $1
