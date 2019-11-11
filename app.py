@@ -11,6 +11,7 @@ import datetime
 import validar_UD, functions
 from functions import cleanEstruturaUD
 from flask_executor import Executor
+from subprocess import Popen
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -260,7 +261,7 @@ def upload(alert="", success=""):
 				sentences=0,
 				about=request.values.get('sysAbout'),
 				partitions="",
-				author=google.get('/oauth2/v2/userinfo').json()['email'],
+				author=google.get('/oauth2/v2/userinfo').json()['email'] if GOOGLE_LOGIN else "",
 				goldenAlias='Golden',
 				systemAlias='Sistema'
 			)
@@ -277,10 +278,10 @@ def upload(alert="", success=""):
 			os.system(f'cp {COMCORHD_FOLDER + "/" + conllu(request.values.get("trainFile")).golden()} {UPLOAD_FOLDER}')
 			corpusTemporario = f"; rm {UPLOAD_FOLDER}/{conllu(request.values.get('trainFile')).golden()} &"
 		if not request.values.get('crossvalidation'):
-			os.system(f"cd {UPLOAD_FOLDER}; cp {conllu(request.values.get('trainFile')).golden()} {conllu(request.values.get('trainFile')).naked + '_test'}.conllu; sh udpipe.sh {conllu(request.values.get('trainFile')).naked + '_test'} {request.values.get('partitions')} 2>&1 | tee -a {conllu(request.values.get('trainFile')).naked + '_test'}_inProgress {corpusTemporario if corpusTemporario else '&'}")
+			Popen(f"cd {UPLOAD_FOLDER}; cp {conllu(request.values.get('trainFile')).golden()} {conllu(request.values.get('trainFile')).naked + '_test'}.conllu; sh udpipe.sh {conllu(request.values.get('trainFile')).naked + '_test'} {request.values.get('partitions')} 2>&1 | tee -a {conllu(request.values.get('trainFile')).naked + '_test'}_inProgress {corpusTemporario if corpusTemporario else '&'}", shell=True)
 			nomeConllu = conllu(request.values.get('trainFile')).naked + "_test"
 		else:
-			os.system(f"cd {UPLOAD_FOLDER}; sh crossvalidation.sh {request.values.get('trainFile')} {request.values.get('partitions')} 2>&1 | tee -a {request.values.get('trainFile')}_inProgress {corpusTemporario if corpusTemporario else '&'}")
+			Popen(f"cd {UPLOAD_FOLDER}; sh crossvalidation.sh {request.values.get('trainFile')} {request.values.get('partitions')} 2>&1 | tee -a {request.values.get('trainFile')}_inProgress {corpusTemporario if corpusTemporario else '&'}", shell=True)
 			nomeConllu = conllu(request.values.get('trainFile')).naked
 		novoCorpus = models.Corpus(
 			name=nomeConllu,
@@ -288,13 +289,13 @@ def upload(alert="", success=""):
 			sentences=0,
 			about=request.values.get('about'),
 			partitions=request.values.get('partitions'),
-			author=google.get('/oauth2/v2/userinfo').json()['email'],
+			author=google.get('/oauth2/v2/userinfo').json()['email'] if GOOGLE_LOGIN else "",
 			goldenAlias='Golden',
 			systemAlias='Sistema'
 		)
 		db.session.add(novoCorpus)
 		db.session.commit()
-		success = "Um modelo está sendo treinado a partir do corpus '" + nomeConllu + "'. Acompanhe o status do treinamento na <a href='/'>página inicial do Julgamento.</a>"
+		success = "Um modelo está sendo treinado a partir do corpus \"" + nomeConllu + "\". Acompanhe o status do treinamento na <a href='/'>página inicial do Julgamento.</a>"
 
 	elif request.method == 'POST' and 'repoName' in request.values:
 		sh = f"cd {UPLOAD_FOLDER}/repositories/{request.values.get('repoName')}; \
