@@ -401,7 +401,7 @@ def sendAnnotation():
 
 @app.route("/log")
 def log(success=False):
-	if not google.authorized: and COMCORHD
+	if not google.authorized and COMCORHD:
 		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
 	if not os.path.isfile(conllu(request.args.get('c')).findInProgress()) and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(request.args.get('c')).naked}_success"):
 		inProgress = f"{UPLOAD_FOLDER}/{conllu(request.args.get('c')).naked}_success"
