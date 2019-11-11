@@ -11,6 +11,43 @@ function apagarCorpus(corpus){
 
 function atualizar(){
 
+    $('.repoName').on('change', function(){
+        loadingScreen();
+        $button = $('#repoName');
+        $.ajax({
+            url: "/api/getCommits",
+            method: "POST",
+            data: {
+                repoName: $button.val(),
+            },
+            success: function(data){
+                $('.branchDiv').html(data['html']);
+                $('.branch').selectpicker('refresh');
+                atualizar();
+            },
+        })
+    });
+
+    $('#branch').unbind('change').on('change', function(){
+        loadingScreen();
+        $buttonBranch = $('#branch');
+        $buttonRepo = $('#repoName');
+        $.ajax({
+            url: "/api/getCommits",
+            method: "POST",
+            data: {
+                repoName: $buttonRepo.val(),
+                branch: $buttonBranch.val(),
+            },
+            success: function(data){
+                $('.repoCommitDiv').html(data['html']);
+                $('.branch').selectpicker('refresh');
+                $('.repoCommit').selectpicker('refresh');
+                atualizar();
+            }
+        });
+    });
+
     $('.drag').draggable({
         zIndex: 100,
         revert: true,
@@ -288,44 +325,6 @@ $(document).ready(function(){
                 atualizar();
             }
         })
-    });
-
-    $('.repoName').on('change', function(){
-        loadingScreen();
-        $button = $('#repoName');
-        $.ajax({
-            url: "/api/getCommits",
-            method: "POST",
-            data: {
-                repoName: $button.val(),
-            },
-            success: function(data){
-                $('.branchDiv').html(data['html']);
-                $('.branch').selectpicker('refresh');
-                atualizar();
-
-                $('.branch').unbind('change').on('change', function(){
-                    loadingScreen();
-                    $buttonBranch = $('#branch');
-                    $buttonRepo = $('#repoName');
-                    $.ajax({
-                        url: "/api/getCommits",
-                        method: "POST",
-                        data: {
-                            repoName: $buttonRepo.val(),
-                            branch: $buttonBranch.val(),
-                        },
-                        success: function(data){
-                            $('.repoCommitDiv').html(data['html']);
-                            $('.branch').selectpicker('refresh');
-                            $('.repoCommit').selectpicker('refresh');
-                            atualizar();
-                        }
-                    });
-                });
-                
-            }
-        });
     });
 
     $('.trainFile').on('change', function(){
