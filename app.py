@@ -143,7 +143,6 @@ def cancelTrain():
 			os.system(f'rm {conllu(request.args.get("c")).findGolden()}')
 		os.system(f'rm {conllu(request.args.get("c")).findInProgress()}')
 		os.system(f'rm {conllu(request.args.get("c")).findSystem()}')
-		os.system(f'rm -r {UPLOAD_FOLDER}/{conllu(request.args.get("c")).naked}')
 		corpus = db.session.query(models.Corpus).get(conllu(request.args.get('c')).naked)
 		allCorpora.corpora[conllu(request.values.get("c")).golden()] = ""
 		allCorpora.corpora[conllu(request.values.get("c")).system()] = ""
