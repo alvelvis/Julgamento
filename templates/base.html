@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ url_for('static', filename='css/font-awesome.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-social.css') }}">
+
+    <link rel="shortcut icon" href="{{url_for('static', filename='favicon.ico')}}" type="image/x-icon">
+    <link rel="icon" href="{{url_for('static', filename='favicon.ico')}}" type="image/x-icon">
+
+    <title>{% block title %}{% endblock %} - Julgamento</title>
+
+    <style type="text/css">
+
+      thead th {
+        position: -webkit-sticky; /* for Safari */
+        position: sticky;
+        top: 0;
+      }
+
+      .fixedHeader {
+        position: sticky;
+        top: 0px;
+        padding-top:20px;
+        background-color: white;
+        z-index:1;
+      }
+
+      tbody th {
+        position: -webkit-sticky; /* for Safari */
+        position: sticky;
+        left: 0;
+      }
+
+      .jumbotron{
+        background-color:#707070;
+      }
+
+      body { -webkit-touch-callout: none !important; }
+      a { -webkit-user-select: none !important; }
+
+      .anchor{
+        display: block;
+        height: 115px; /*same height as header*/
+        margin-top: -115px; /*same height as header*/
+        visibility: hidden;
+      }
+      .back-to-top {
+        cursor: pointer;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display:none;
+      }
+
+      /* enable absolute positioning */
+      .inner-addon { 
+          position: relative; 
+      }
+
+      /* style icon */
+      .inner-addon .glyphicon {
+        position: absolute;
+        padding: 10px;
+        z-index: 1000;
+      }
+
+      /* align icon */
+      .left-addon .glyphicon  { left:  0px;}
+      .right-addon .glyphicon { right: 0px;}
+
+      /* add padding  */
+      .left-addon input  { padding-left:  30px; }
+      .right-addon input { padding-right: 30px; }
+
+      #loading-bg {
+          width: 100vw;
+          height: 100vh;
+          position: fixed;
+          top: 0;
+          left: 0;
+          background-color: rgba(255, 255, 255, 0.8);
+          z-index: 1010;
+          display:none;
+      }
+        
+      #loading-image {
+        position: fixed;
+        left:47vw;
+        text-align:center;
+        top:48vh;
+        z-index: 1020;
+        width: 10vh;
+        height: auto;
+        display:none;
+      }
+
+      #loading-image-nobg {
+        position: fixed;
+        text-align:center;
+        left: 47vw;
+        top:48vh;
+        z-index: 1020;
+        width: 10vh;
+        height: auto;
+        display:none;
+      }
+
+      .drop-hover {
+        background-color: red;
+        color: white;
+      }
+
+      .ui-draggable-dragging {
+        background-color: black;
+        color: white;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <a id="back-to-top" class="btn btn-primary btn-lg back-to-top" style="z-index: 1000;" title="Clique aqui para voltar ao topo" role="button" data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-chevron-up" id="back-to-top-glyph"></span></a>
+    <div id="loading-bg"></div>
+    <img id="loading-image" src="{{url_for('static', filename='loading4.gif')}}" alt="Carregando">
+    <img id="loading-image-nobg" src="{{url_for('static', filename='loading4.gif')}}" alt="Carregando">
+
+    <div class="navbar navbar-default">
+      <div class="container-fluid collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="#" style="cursor:default">{{ user['email'] }}</a></li>
+          {% if c %}{% if not pagina %}<li><a href="/corpus?c={{c}}">mudar avaliação</a></li>{% endif %}
+          <li><a href="/corpus">mudar corpus</a></li>{% else %}
+          <li><a href="/corpus">escolher corpus</a></li>{% endif %}
+          <li><a href="/logout">sair</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container" style=" width:90vw"><!--margin-top:74px;-->
+      
+      {% block content %}
+      {% endblock %}
+
+    </div>
+
+    <div class="container" style="margin-top: 50px; margin-bottom:54px;">
+     <div class="panel panel-default col-md-6 col-md-offset-3">
+      <div class="panel-body">
+        <p>Julgamento é parte da ET | <a href="https://github.com/alvelvis/Interrogat-rio" target="_blank">Github</a></p>
+        <p><a href="http://interrogatorio.comcorhd.ga" target="_blank">Interrogatório - ambiente de busca e revisão de corpora anotados</a></p>
+        <p><a href="http://comcorhd.letras.puc-rio.br/" target="_blank">ComCorHd - Linguística Computacional, Corpus e Humanidades Digitais</a></p>
+      </div>
+     </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.form.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/forms.js') }}?version=6"></script>
+    <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}" type="text/javascript"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+
+  </body>
+</html>

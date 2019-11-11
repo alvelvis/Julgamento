@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% block title %}Gerenciamento{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<h1>Gerenciamento</h1>
+<hr>
+
+<div class="container col-md-12 col-md-offset-0">
+    <div class="col-lg-3" style="position:sticky; top:100px; overflow:auto;">
+        
+        {% if alert %}
+        <div class="alert alert-warning" role="alert">
+            {{alert|safe}}
+        </div>
+        {% endif %}
+
+        {% if success %}
+        <div class="alert alert-success" role="alert">
+            {{success|safe}}
+        </div>
+        {% endif %}
+        
+        <h3>Alguns caminhos</h3>
+        <ul class="list-group">
+            {% if comcorhd %}<a href="#" name="optPullWorkbench" class="opt list-group-item">Puxar golden do Github</a>{% endif %}
+            {% if comcorhd %}<a href="#" name="optTrainSys" class="opt list-group-item">Treinar um modelo</a>{% endif %}
+            <a href="#" name="optGold" class="opt list-group-item">Enviar arquivo golden</a>
+            <a href="#" name="optSys" class="opt list-group-item">Enviar arquivo sistema</a>
+            <a href="#" name="successfulTraining" class="opt list-group-item">Relatórios de treinamento</a>
+            <a href="#" name="deleteSystem" class="opt list-group-item">Excluir corpus do Julgamento</a>
+        </ul>
+    </div>
+
+    <div class="col-lg-9 uploadOption deleteSystem" style="display:none">
+        <h3>Excluir corpus pronto para julgamento</h3>
+        <div class="well">
+            <input type=checkbox class="deleteGoldenToo"> <a style="cursor:pointer; text-decoration:none;" onclick="($('.deleteGoldenToo').click())">Deletar arquivo golden além do sistema</a>
+        </div>
+        <div class="panel panel-default panel-body">
+            <div class="col-lg-6 col-lg-offset-3">
+                <center>
+                <input class='form-control filterDeleteSystem' placeholder="Filtrar...">
+                <br>
+                <ul class="list-group deleteSystemCorpora">
+                    {{findCorpora(filtro='', tipo='delete')|safe}}
+                </ul>
+                </center>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9 uploadOption successfulTraining" style="display:none">
+        <h3>Relatórios de treinamentos concluidos</h3>
+        <div class="panel panel-default panel-body" style="text-align:center">
+            <div class="col-lg-6 col-lg-offset-3">
+                <input class='form-control filterSuccessCorpora' placeholder="Filtrar...">
+                <br>
+                <ul class="list-group successCorpora">
+                    {{findCorpora(filtro='', tipo='success')|safe}}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9 uploadOption optGold" style="display:none">
+        <h3>Selecione o arquivo "golden"</h3>
+        <ul class="well well-sm">
+            <h4>O arquivo deve ter a extensão ".conllu".</h4>
+            <h4>O arquivo será salvo {% if comcorhd %}no repositório do Interrogatório{% else %}no repositório do Julgamento{% endif %}.</h4>
+            <h4>Para realizar seu julgamento, será necessário um arquivo "sistema" correspondente.</h4>
+        </ul>
+        <div class="panel panel-default panel-body" style="text-align:center">
+            <div class="col-lg-6 col-lg-offset-3">
+                <h3>Enviar "golden"</h3>
+                <hr>
+                <h1><span style="cursor:pointer" onClick="$('#optGoldGoldenFile').click();" title="Selecione um arquivo" class="glyphOptGoldGold glyphicon glyphicon-upload"></span></h1>
+            </div>
+            <form class="formGold" enctype="multipart/form-data" style="display:none" method="POST" action="/upload">
+                <input type=file onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptGoldGold').removeClass('glyphicon-upload').addClass('glyphicon-ok'); } else { $('.glyphOptGoldGold').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optGoldGoldenFile" name="goldenFile">
+            </form>            
+        </div>
+        <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptGoldGold').hasClass('glyphicon-ok')) { $('.formGold').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> Enviar</button></center>
+    </div>
+
+    <div class="col-lg-9 uploadOption optSys" style="display:none">
+        <h3>Enviar arquivo sistema</h3>
+        <div class="well well-sm">
+            <h4>Para enviar um arquivo sistema, é necessário que já haja seu arquivo golden no repositório.</h4>
+        </div>
+        <div class="form-horizontal">
+            <form class="formSys" enctype="multipart/form-data" method="POST" action="/upload">
+                <input type=file style="display:none" onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptSysSystem').removeClass('glyphicon-upload').addClass('glyphicon-ok'); } else { $('.glyphOptSysSystem').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optSysSystemFile" name="systemFile">
+                <div class="form-group">
+                    <label for="sysGoldenFile" class="col-sm-4 control-label">Arquivo golden <span class='glyphicon glyphicon-info-sign' title='Para enviar um arquivo golden, selecione "Enviar arquivo golden" no menu lateral'></span></label>
+                    <div class="col-sm-8">
+                        <select name="sysGoldenFile" id="sysGoldenFile" class="form-control selectpicker" data-live-search="true" required>
+                            <option disabled selected value> -- escolha uma opção -- </option>
+                            {% for x in checkCorpora()['missingSystem'] %}
+                            <option>{{x}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sysAbout" class="col-sm-4 control-label">Sobre o corpus <span class='glyphicon glyphicon-info-sign' title='Informação extra para ajudar a identificar os diferentes corpora disponíveis'></span></label>
+                    <div class="col-sm-8">
+                        <input class="form-control" id="sysAbout" name="sysAbout" required>
+                    </div>
+                </div>
+                <center><h2><span style="cursor:pointer" onClick="$('#optSysSystemFile').click();" title="Selecione um arquivo SISTEMA" class="glyphOptSysSystem glyphicon glyphicon-upload"></span></h2></center>        
+            </form>            
+        </div>
+        <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptSysSystem').hasClass('glyphicon-ok') && $('[name=sysGoldenFile]').val() && $('[name=sysAbout]').val()) { $('.formSys').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> Enviar</button></center>
+    </div>
+    
+    <div class="col-lg-9 uploadOption optTrainSys" style="display:none">
+        <h3>Treinar um modelo</h3>
+        <div class="well well-sm">
+            <h4>O treinamento será realizando utilizando o UDPipe versão 1.2.0.</h4>
+            <h4>O treinamento para um corpus de 9 mil sentenças dura, em média, 6 horas.</h4>
+            <h4>Após o treinamento de um modelo, a partição teste (ou o corpus todo, no caso de crossvalidation) será anotada utilizando esse modelo, e o resultado será alinhado com o seu golden para que se possa realizar o julgamento.</h4>
+        </div>
+        <form name="trainModel" method="POST" action="/upload">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label for="trainFile" class="col-sm-4 control-label">Arquivo golden <span class='glyphicon glyphicon-info-sign' title='Para enviar um arquivo golden, selecione "Enviar arquivo golden" no menu lateral'></span></label>
+                    <div class="col-sm-8">
+                        <select name="trainFile" id="trainFile" class="form-control selectpicker trainFile" data-live-search="true" required>
+                            <option disabled selected value> -- escolha uma opção -- </option>
+                            {% for x in checkCorpora()['missingSystem'] %}
+                            <option>{{x}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            {{formDB|safe}}
+            <center><button class="btn btn-default" type="submit" id="submitTrain" class="btn btn-default" disabled><span class='glyphicon glyphicon-education'></span> Treinar</button></center>
+        </form>
+    </div>
+
+    <div class="col-lg-9 uploadOption optNewBranch" style="display:none">
+        <h3>Criar novo ramo no Github</h3>
+    </div>
+
+    <div class="col-lg-9 uploadOption optPullWorkbench" style="display:none">
+        <h3>Puxar golden do Github</h3>
+        <div class="well well-sm">
+            <h4>Os repositórios devem estar listados no arquivo de configurações do servidor.</h4>
+            <h4>Os repositórios devem conter uma pasta "documents" com arquivos no formato ".conllu".</h4>
+            <h4>O corpus será enviado para o repositório do {% if comcorhd %}Interrogatório{% else %}Julgamento{% endif %}.</h4>
+        </div>
+        <form name="pullWorkbench" method="POST" action="/upload">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label for="repoName" class="col-sm-4 control-label">Repositório</label>
+                    <div class="col-sm-8">
+                        <select name="repoName" id="repoName" class="form-control selectpicker repoName" data-live-search="true" required>
+                            <option disabled selected value> -- escolha uma opção -- </option>
+                            {% for repo in checkRepo()['repositories'] | sort %}
+                                <option>{{ repo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label for="branch" class="col-sm-4 control-label">Ramo</label>
+                    <div class="col-sm-8 branchDiv">
+                        <select name="branch" id="branch" class="form-control selectpicker branch" data-live-search="true" required>
+                            <option disabled selected value> -- escolha um repositório antes -- </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label for="repoCommit" class="col-sm-4 control-label">Commit</label>
+                    <div class="col-sm-8 repoCommitDiv">
+                        <select name="repoCommit" id="repoCommit" class="form-control selectpicker repoCommit" data-live-search="true" required>
+                            <option disabled selected value> -- escolha um ramo antes -- </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label for="repoCorpusName" class="col-sm-4 control-label">Nome do corpus</label>
+                    <div class="col-sm-8">
+                        <input name="repoCorpusName" id="repoCorpusName" class="form-control selectpicker repoCorpusName" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <center><input name="criarRamo" type="checkbox" checked> Criar ramo no Github 
+                    <span class='glyphicon glyphicon-info-sign' title='Um novo ramo será criado no Github para o commit selecionado, permitindo que o merge ocorra adequadamente entre diferentes versões'></span></center>
+                </div>
+
+            </div>
+            <center><button class="btn btn-default" type="submit" id="submitPullWorkbench" class="btn btn-default"><span class='glyphicon glyphicon-download'></span> Puxar versão</button></center>
+        </form>
+    </div>
+
+    <div class="col-lg-9 uploadOption changePartition" style="display:none">
+        <h3>Enviar arquivos de partição</h3>
+    </div>
+
+    <div class="col-lg-9 uploadOption correctErrors" style="display:none">
+    </div>
+    
+
+</div>
+
+{% endblock %}

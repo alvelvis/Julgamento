@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}{{ c }}{% endblock %}
+
+{% block content %}
+
+{% if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora[conllu(c).golden()] != "" %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<input type="hidden" id="ud1" value="{{conllu(c).findGolden()}}">
+<input type="hidden" id="ud2" value="{{conllu(c).findSystem()}}">
+<input type="hidden" id="c" value="{{c}}">
+<h1>{{c}}</h1>
+<h4><i title="Edite a descrição do corpus" class="fa fa-edit"></i> <div class="sobreCorpus" style="display:inline-block;" contenteditable>{{ sobre | safe }}</div></h4>
+<h4>Golden: {{ conllu(c).findGolden() }}</h4>
+<h4>Sistema: {{ conllu(c).findSystem() }}</h4>
+<hr>
+<div class="col-lg-4 col-lg-offset-4 panel panel-default">
+    <div class="panel-body">
+        <h3>Tabela de conteúdos</h3>
+        <ul class="list-group">
+            <a href="#metrics" name="metrics" class="tables-toggle list-group-item">Métricas do conll18_ud_eval.py</a>
+            <a href="#sentAccuracy" name="sentAccuracy" class="tables-toggle list-group-item">Acurácia das sentenças</a>
+            <a href="#POSAccuracy" name="accuracy" class="tables-toggle list-group-item">Acurácia por categoria morfossintática</a>
+            <!--a href="#DEPRELAccuracy" name="accuracy" class="tables-toggle list-group-item">Acurácia por DEPREL</a-->
+            <a href="#POSMatrix" name="POSMatrix" class="tables-toggle list-group-item">Matriz de confusão de UPOS</a>
+            <a href="#DEPRELMatrix" name="DEPRELMatrix" class="tables-toggle list-group-item">Matriz de confusão de DEPREL</a>
+            <!--a href="#changes" name="changes" class="tables-toggle list-group-item">Relatório de modificações (em breve)</a-->
+            <a href="#errorValidarUD" class="errorValidarUDToggle list-group-item">Erros de validar_UD.py</a>
+            <a href="#errorLog" class="errorLogToggle list-group-item">Erros de validate.py</a>
+            <a href="#refreshTables" class="refreshTables list-group-item" title="Refazer tabelas de acordo com novas atualizações no corpus">Atualizar corpus e tabelas</a>
+        </ul>
+    </div>
+</div>
+<div id="metrics" class="tables col-lg-6 col-lg-offset-3 panel panel-default">
+    <div class="panel-body">
+    </div>
+</div>
+<div id="sentAccuracy" class="tables col-lg-6 col-lg-offset-3 panel panel-default">
+    <div class="panel-body">
+    </div>
+</div>
+<div class="container tables" id="accuracy">
+    <div class="panel-body">
+    </div>
+</div>
+<div class="container">
+    <div id="POSMatrix" class="tables panel panel-default col-lg-10 col-lg-offset-1">
+        <div class="panel-body">
+        </div>
+    </div>
+</div>
+<div id="DEPRELMatrix" class="tables panel panel-default">
+    <div class="panel-body">
+    </div>
+</div>
+<div id="changes" class="tables panel panel-default">
+    <div class="panel-body">
+        <h3>Relatório de modificações (em breve)</h3>
+    </div>
+</div>
+<div id="errorLog" class="tables col-lg-10 col-lg-offset-1">
+</div>
+<div id="errorValidarUD" class="tables col-lg-10 col-lg-offset-1">
+</div>
+{% else %}
+<h1>Corpus {{ c }} está sendo carregado</h1><hr>
+<h4><a href="/corpus">Voltar mais tarde</a></h4>
+{% endif %}
+{% endblock %}

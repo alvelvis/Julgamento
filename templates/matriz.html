@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Confusão {{ud1}}-{{ud2}}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<input type=hidden id="cat1" value ="{{ud1}}">
+<input type=hidden id="cat2" value ="{{ud2}}">
+
+<h1>Confusões entre "{{ud1}}" (golden) e "{{ud2}}" (sistema)</h1>
+<h3>Coluna: {{ col }}</h3>
+<hr>
+<br>
+{% for sentence in sentences %}
+    <div class="panel panel-default col-lg-10 col-lg-offset-1">
+        <div class="panel-body">
+            {{ loop.index }} / {{ sentences | length }}
+        </div>
+        {% with sent_id=sentence['sent_id'], golden=sentence['golden'], system=sentence['system'], divergence=sentence['divergence'], bold=sentence['bold'], secBold=sentence['secBold'], col=sentence['col'].lower(), boldCol=sentence['boldCol'], thirdBold=sentence['thirdBold'], t=sentence['t'] %}
+            {% include 'sentence.html' %}
+        {% endwith %}
+    </div>
+{% endfor %}
+{% endblock %}

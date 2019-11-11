@@ -1,0 +1,41 @@
+.tables {
+    display: none;
+}
+
+th, td {
+padding: 4px;
+}
+
+table {
+//border-spacing: 5px;
+}
+
+table#t01 tr:hover {
+background-color: #ffffeb;
+}
+
+/* table#t01 tr,th:nth-child(even) {
+background-color: #eee;
+}
+table#t01 tr,th:nth-child(odd) {
+background-color: #fff;
+} */
+
+table#t01 th {
+    background-color:black;
+    color:white;
+}
+
+table, th, td {
+border: 1px solid #eee;
+border-collapse: collapse;
+//border-bottom: 1px solid #ddd;
+}
+
+table#t01 {
+    margin: auto;
+}
+
+tr.bold{
+    background-color: lightgrey;
+}

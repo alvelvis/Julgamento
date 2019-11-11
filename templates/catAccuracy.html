@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Quem é o pai do {{deprel}}?{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<input type=hidden id="cat1" value ="{{deprel}}">
+<input type=hidden id="cat2" value ="{{deprel}}">
+<h1>Quem é o pai do "{{deprel}}"?</h1>
+<h3>Divergências em {{c}}</h3>
+<hr>
+
+<!--div class="container"-->
+    <div class="col-lg-2" style="position:sticky; top:100px; overflow:auto; max-height: 60vh;">
+        <table id="t01">
+            <thead><tr><th>Golden</th><th>Sistema</th><th>#</th></thead></tr><!--<th>%</th>-->
+            {% for tipo in conteudo | sortLambda(lambdaattr=0, reverse=True) %}
+                <tr><td>{{tipo.split("/")[0]}}</td><td>{{tipo.split("/")[1]}}</td><td><a class="catSent" tipo="{{tipo}}" coluna="{{coluna}}" deprel="{{deprel}}" c="{{c}}" href="#">{{conteudo[tipo][0]}}</a></td></tr><!--<td>{{'%0.4f'| format((conteudo[tipo][0]/ conteudo.values() | sum(0) )*100)}}%</td>-->
+            {% endfor %}
+        <tr><td>Total</td><td>{{conteudo.values() | sum(0)}}</td></tr><!--<td>100%</td>-->
+        </table>
+    </div>
+    <div class="col-lg-10 catSentences"></div>
+    </div>
+<!--/div-->
+
+{% endblock %}
