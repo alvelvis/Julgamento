@@ -37,7 +37,7 @@ allCorpora = Corpora()
 
 @app.route("/api/changeAbout", methods="POST".split("|"))
 def changeAbout():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 	corpus = db.session.query(models.Corpus).get(request.values.get("c"))
 	corpus.about = re.sub(r'<.*?>', "", request.values.get("about"))
@@ -51,7 +51,7 @@ def changeAbout():
 
 @app.route("/api/refreshTables", methods="POST".split("|"))
 def refreshTables():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 	#allCorpora.corpora.pop(conllu(request.values.get("c")).golden(), None)
 	#allCorpora.corpora.pop(conllu(request.values.get("c")).system(), None)
@@ -62,7 +62,7 @@ def refreshTables():
 
 @app.route("/api/getCommits", methods="POST".split("|"))
 def getCommits():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 
 	if 'branch' in request.values:
@@ -80,7 +80,7 @@ def getCommits():
 
 @app.route('/api/getErrors', methods="POST".split("|"))
 def getErrors():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 		
 	html = renderErrors(c=request.values.get("c"), exc=request.values.get('exceptions').split("|") if request.values.get('exceptions') else "", fromZero=request.values.get("fromZero") if request.values.get("fromZero") else False)
@@ -92,7 +92,7 @@ def getErrors():
 
 @app.route('/api/getErrorsValidarUD', methods="POST".split("|"))
 def getErrorsValidarUD():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 	
 	html = ""
@@ -123,7 +123,7 @@ def getErrorsValidarUD():
 
 @app.route('/api/filterCorpora', methods="POST".split("|"))
 def filterCorpora():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 	return jsonify({
 		'html': findCorpora(filtro=request.values.get('filtro'), tipo=request.values.get('tipo')),
@@ -132,7 +132,7 @@ def filterCorpora():
 
 @app.route('/cancelTrain', methods="GET".split("|"))
 def cancelTrain():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 	if not request.args.get('delete'):
 		os.system('killall udpipe-1.2.0')
@@ -154,7 +154,7 @@ def cancelTrain():
 
 @app.route('/api/getTables', methods="POST".split("|"))
 def getTables():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for('google.login'))
 	table = request.values.get('table')
 
@@ -225,7 +225,7 @@ def getTables():
 
 @app.route('/upload', methods="GET|POST".split("|"))
 def upload(alert="", success=""):
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for('google.login'))
 	if request.method == "GET":
 		return render_template(
@@ -323,7 +323,7 @@ def upload(alert="", success=""):
 
 @app.route('/api/getCatSents', methods="POST".split("|"))
 def getCatSents():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 
 	html = f'<h3>{request.values.get("tipo")}</h3>'
@@ -355,7 +355,7 @@ def getCatSents():
 
 @app.route('/api/sendAnnotation', methods="POST".split("|"))
 def sendAnnotation():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for('google.login'))
 
 	globals()["change"] = False
@@ -401,7 +401,7 @@ def sendAnnotation():
 
 @app.route("/log")
 def log(success=False):
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
 	if not os.path.isfile(conllu(request.args.get('c')).findInProgress()) and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(request.args.get('c')).naked}_success"):
 		inProgress = f"{UPLOAD_FOLDER}/{conllu(request.args.get('c')).naked}_success"
@@ -423,7 +423,7 @@ def log(success=False):
 
 @app.route("/api/getAnnotation", methods="POST".split("|"))
 def getAnnotation():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for('google.login'))
 
 	html1, html2 = "", ""
@@ -470,7 +470,7 @@ def getAnnotation():
 
 @app.route("/corpus")
 def corpus():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
 
 	resp = google.get('/oauth2/v2/userinfo')
@@ -530,7 +530,7 @@ def handle_error(e):
 
 @app.route("/logout")
 def logout():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 	
 	token = blueprint.token['access_token']
@@ -565,7 +565,7 @@ def logged_in(blueprint, token):
 
 @app.route("/")
 def index():
-	if not google.authorized and COMCORHD:
+	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for('google.login'))
 	else:
 		return redirect('/corpus')
