@@ -21,11 +21,7 @@ If you want to run your own version of Julgamento, a Linux computer and Python 3
 
 	$ pip3 install -r requirements.txt
 
-4) Create the database for Julgamento:
-
-	$ python3 once.py
-
-And then, whenever you want to run Julgamento locally, run the command:
+4) And then, whenever you want to run Julgamento locally, run the command:
 
 	$ sh run_julgamento.sh
 
