@@ -12,8 +12,11 @@ If you want to run your own version of Julgamento, a Linux computer and Python 3
 
 	$ git clone https://github.com/alvelvis/Julgamento.git
 
+2) Change to the directory:
 
-2) That way, whenever you want to update the repository, you can simply pull the updates inside the folder:
+	$ cd Julgamento
+
+That way, whenever you want to update the repository, you can simply pull the updates inside the folder:
 
 	$ git pull
 
@@ -21,7 +24,7 @@ If you want to run your own version of Julgamento, a Linux computer and Python 3
 
 	$ pip3 install -r requirements.txt
 
-4) And then, whenever you want to run Julgamento locally, run the command:
+4) Then, if you intend to run Julgamento locally, run the command:
 
 	$ sh run_julgamento.sh
 
