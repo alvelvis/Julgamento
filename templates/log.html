@@ -7,7 +7,7 @@
 Concluido
 <br>
 <a href="/corpus?c={{corpus}}">Ir para o julgamento do corpus</a>
-{% elif 'terminated' in log.lower() or " is not " in log.lower() or "cannot" in log.lower() or "can't" in log.lower() or 'error' in log.lower() or 'invalid' in log.lower() or 'Área de texto ocupada' in log or terminated %}
+{% elif 'terminated' in log.lower() or " is not " in log.lower() or "cannot" in log.lower() or "can't" in log.lower() or 'error' in log.lower() or 'invalid' in log.lower() or 'Área de texto ocupada' in log or terminated or 'aborted' in log.lower() %}
 Cancelado
 <br>
 <a href="/cancelTrain?c={{corpus}}&delete=True">Apagar relatório</a>
