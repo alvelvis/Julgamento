@@ -23,7 +23,7 @@ cat *-train.conllu *-dev.conllu > $1_train_e_dev.conllu
 cd ..
 cp udpipe* $1
 cd $1
-./udpipe-1.2.0 --train --tokenizer --tagger --parser $1.udpipe $1_train_e_dev.conllu
+./udpipe-1.2.0 --train $1.udpipe $1_train_e_dev.conllu
 
 cd ..
 cd $1
