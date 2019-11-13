@@ -23,7 +23,7 @@ cat *-train.conllu *-dev.conllu > $1_train_e_dev.conllu
 cd ..
 cp udpipe* $1
 cd $1
-./udpipe-1.2.0 --train --tokenizer=none --tagger --parser $1.udpipe $1_train_e_dev.conllu
+./udpipe-1.2.0 --train --tokenizer --tagger --parser $1.udpipe $1_train_e_dev.conllu
 
 cd ..
 cd $1
@@ -39,6 +39,6 @@ cp $1_sistema.conllu ../../$1_sistema.conllu
 cp $1_golden.conllu ../../$1.conllu
 mv ../../$1_inProgress ../../$1_success
 cd ../../
-rm -r $1
+#rm -r $1
 exit
 #python3 confusao.py $1_golden.conllu $1_sistema.conllu $1 8
