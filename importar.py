@@ -4,7 +4,7 @@ import pandas as pd
 import os, estrutura_ud, estrutura_dados, confusao, re, time, datetime, validar_UD
 import models, pickle
 from app import db, app, executor, allCorpora
-
+from localtime import localtime
 
 
 
@@ -62,7 +62,7 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
                 pass
             with open(conllu(c).findErrors()) as f:
                 texto = f.read()
-        if conllu(c).golden() in allCorpora.corpora:
+        if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora.get(conllu(c).golden()):
             corpus = allCorpora.corpora.get(conllu(c).golden())
         else:
             corpus = estrutura_ud.Corpus(recursivo=True)
@@ -96,6 +96,7 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
         for problem in sorted(sent_ids):
             html += f"<div class='alert alert-warning' role='alert'>Erro: {problem}</div>"
             for i, sent_id in enumerate(sent_ids[problem]):
+                print(corpus)
                 if sent_id['id'] in corpus.sentences:
                     if sent_id['bold']['word'] and sent_id['bold']['color'] and sent_id['t']:
                         html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(sent_ids[problem]) }</div>' + \
@@ -250,7 +251,7 @@ class prettyDate:
         self.mesExtenso_3 = "".join(calendario[self.mes][:3])
         self.ano = int(data[0])		
         horabruta = date.split(" ")[1].rsplit(":", 1)[0]
-        self.hora = int(horabruta.split(":")[0]) - 3
+        self.hora = int(horabruta.split(":")[0]) - localtime
         if self.hora < 0: self.hora = 24 + self.hora
         self.tempo = str(self.hora) + ":" + horabruta.split(":")[1]
 
@@ -286,7 +287,7 @@ def getMatrixSentences(c, golden, system, coluna):
     
     for sent_id, sentence in ud1.sentences.items():
         for t, token in enumerate(sentence.tokens):
-            if token.col[coluna.lower()] == golden and ud2.sentences[sent_id].tokens[t].col[coluna.lower()] == system:
+            if token.col[coluna.lower()] == golden and ud2.sentences[sent_id].tokens[t].col[coluna.lower()] == system and token.col['dephead'] == ud2.sentences[sent_id].tokens[t].col['dephead']:
                 listaSentences.append({
                     'sent_id': sent_id, 
                     'golden': sentence, 
@@ -337,9 +338,9 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
                     UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system][1].append([sentid, t])
 
     
-    conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][-1] / dicionario[x][0]) * 100}%</td><td><a title='Ver divergências de paternidade ({((sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100)}%)' href='/corpus?c={c}&{coluna}={x}'>{100 - ((sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100)}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
+    conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td><a title='Quantidade de acertos de {coluna}, contando apenas quando o DEPHEAD também estava correto'>{(dicionario[x][-1] / dicionario[x][0]) * 100}%</td><td><a title='Ver divergências de paternidade ({((sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100)}%)' href='/corpus?c={c}&{coluna}={x}'>{100 - ((sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100)}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
 
-    tables += "<table id='t01' style='margin:auto; max-height:70vh; display:block; overflow-x: auto; overflow-y:auto;'><thead><tr style='text-align:center;'><th>{coluna}</th><th>Total</th><th>Acertos de {coluna}</th><th>Acertos de DEPHEAD</th></tr></thead>\
+    tables += "<table id='t01' style='margin:auto; max-height:70vh; display:block; overflow-x: auto; overflow-y:auto;'><thead><tr style='text-align:center;'><th>{coluna}</th><th>Total</th><th>Acertos de {coluna}+DEPHEAD</th><th>Acertos de DEPHEAD</th></tr></thead>\
         {conteudo}\
         </table>".format(
         coluna=coluna,

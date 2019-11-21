@@ -71,7 +71,7 @@ function atualizar(){
         }
     });
 
-    $('.drag').click(function(){
+    $('.notPipe').click(function(){
         document.execCommand('selectAll');
     });
 
@@ -286,7 +286,7 @@ $(document).ready(function(){
                 c: $('#c').val()
             },
             success: function(){
-                window.location.href = "/corpus";
+                window.location.href = "/corpus?c=" + $('#c').val();
             }
         });
     });

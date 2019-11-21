@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ c }}{% endblock %}
+{% block title %}{% if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora[conllu(c).golden()] != "" %}{% else %}Carregando {% endif %}{{ c }}{% endblock %}
 
 {% block content %}
 
