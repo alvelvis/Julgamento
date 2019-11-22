@@ -337,7 +337,7 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
 
     
     if coluna == "DEPREL":
-        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}>{(1 - (dicionario[x][1] / dicionario[x][0]))*100}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
+        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{(1 - (dicionario[x][1] / dicionario[x][0]))*100}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
     elif coluna == "UPOS":
         conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td></tr>" for x in sorted(dicionario, key=lambda x: x)])
 
