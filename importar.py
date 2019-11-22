@@ -299,8 +299,8 @@ def getMatrixSentences(c, golden, system, coluna):
                     'col': coluna.lower(),
                     'bold': {'word': token.word, 'color': 'black'},
                     'boldCol': f'{coluna.lower()}<coluna>{t}',
-                    'secBold': {'word': token.head_token.word, 'color': 'green'} if coluna in ["deprel"] else "",
-                    'thirdBold': {'word': ud2.sentences[sent_id].tokens[t].head_token.word, 'color': 'red'} if coluna in ["deprel"] else "",
+                    'secBold': {'word': token.head_token.word, 'color': 'green'} if coluna.lower() in ["deprel"] else "",
+                    'thirdBold': {'word': ud2.sentences[sent_id].tokens[t].head_token.word, 'color': 'red'} if coluna.lower() in ["deprel"] else "",
                     't': t
                 })
     
