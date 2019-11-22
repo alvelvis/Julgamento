@@ -324,7 +324,7 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
             dicionario[token.col[coluna.lower()]][0] += 1
             if ((coluna == "DEPREL" and system.sentences[sentid].tokens[t].col['dephead'] == token.col['dephead']) or (coluna == "UPOS")) and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
                 dicionario[token.col[coluna.lower()]][1] += 1
-            elif system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()] and token.head_token.id != "_" and system.sentences[sentid].tokens[t].head_token.id != "_":
+            elif system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
                 tok_golden = token.head_token.upos
                 tok_system = system.sentences[sentid].tokens[t].head_token.upos
                 tok_golden += "_L" if int(token.head_token.id) < int(token.id) else "_R"
