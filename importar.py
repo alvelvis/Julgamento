@@ -299,8 +299,8 @@ def getMatrixSentences(c, golden, system, coluna):
                     'col': coluna.lower(),
                     'bold': {'word': token.word, 'color': 'black'},
                     'boldCol': f'{coluna.lower()}<coluna>{t}',
-                    'secBold': {'word': token.head_token.word, 'color': 'green'},
-                    'thirdBold': {'word': ud2.sentences[sent_id].tokens[t].head_token.word, 'color': 'red'},
+                    'secBold': {'word': token.head_token.word, 'color': 'green'} if coluna in ["deprel"] else "",
+                    'thirdBold': {'word': ud2.sentences[sent_id].tokens[t].head_token.word, 'color': 'red'} if coluna in ["deprel"] else "",
                     't': t
                 })
     
@@ -319,34 +319,39 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     for sentid, sentence in golden.sentences.items():
         for t, token in enumerate(sentence.tokens):
             if not token.col[coluna.lower()] in dicionario:
-                dicionario[token.col[coluna.lower()]] = [0, 0, 0]
+                dicionario[token.col[coluna.lower()]] = [0, 0]
                 if not token.col[coluna.lower()] in UAS: UAS[token.col[coluna.lower()]] = dict()
             dicionario[token.col[coluna.lower()]][0] += 1
-            if system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
+            if ((coluna == "DEPREL" and system.sentences[sentid].tokens[t].col['dephead'] == token.col['dephead']) or (coluna == "UPOS")) and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
                 dicionario[token.col[coluna.lower()]][1] += 1
-                if system.sentences[sentid].tokens[t].dephead == token.dephead:
-                    dicionario[token.col[coluna.lower()]][2] += 1
-                elif token.head_token.id != "_" and system.sentences[sentid].tokens[t].head_token.id != "_":
-                    tok_golden = token.head_token.upos
-                    tok_system = system.sentences[sentid].tokens[t].head_token.upos
-                    tok_golden += "_L" if int(token.head_token.id) < int(token.id) else "_R"
-                    tok_system += "_L" if int(system.sentences[sentid].tokens[t].head_token.id) < int(system.sentences[sentid].tokens[t].id) else "_R"
-                    if tok_golden + "/" + tok_system in UAS[token.col[coluna.lower()]]:
-                        UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system][0] += 1
-                    else:
-                        UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system] = [1, []]
-                    UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system][1].append([sentid, t])
+            elif system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()] and token.head_token.id != "_" and system.sentences[sentid].tokens[t].head_token.id != "_":
+                tok_golden = token.head_token.upos
+                tok_system = system.sentences[sentid].tokens[t].head_token.upos
+                tok_golden += "_L" if int(token.head_token.id) < int(token.id) else "_R"
+                tok_system += "_L" if int(system.sentences[sentid].tokens[t].head_token.id) < int(system.sentences[sentid].tokens[t].id) else "_R"
+                if tok_golden + "/" + tok_system in UAS[token.col[coluna.lower()]]:
+                    UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system][0] += 1
+                else:
+                    UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system] = [1, []]
+                UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system][1].append([sentid, t])
 
     
-    conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td><a title='Quantidade de acertos de {coluna}, contando apenas quando o DEPHEAD também estava correto'>{(dicionario[x][-1] / dicionario[x][0]) * 100}%</td><td><a title='Ver divergências de paternidade ({((sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100)}%)' href='/corpus?c={c}&{coluna}={x}'>{100 - ((sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100)}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
+    if coluna == "DEPREL":
+        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}>{(1 - (dicionario[x][1] / dicionario[x][0]))*100}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
+    elif coluna == "UPOS":
+        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td></tr>" for x in sorted(dicionario, key=lambda x: x)])
 
-    tables += "<table id='t01' style='margin:auto; max-height:70vh; display:block; overflow-x: auto; overflow-y:auto;'><thead><tr style='text-align:center;'><th>{coluna}</th><th>Total</th><th>Acertos de {coluna}+DEPHEAD</th><th>Acertos de DEPHEAD</th></tr></thead>\
+    coluna1 = ""
+    coluna2 = ""
+    if coluna == "UPOS":
+        coluna1 = "Acertos de UPOS"
+    elif coluna == "DEPREL":
+        coluna1 = "LAS"
+        coluna2 = "Erros de DEPHEAD"
+
+    tables += f"<table id='t01' style='margin:auto; max-height:70vh; display:block; overflow-x: auto; overflow-y:auto;'><thead><tr style='text-align:center;'><th>{coluna}</th><th>Total</th>{'<th>' + coluna1 + '</th>' if coluna1 else ''}{'<th>' + coluna2 + '</th>' if coluna2 else ''}</tr></thead>\
         {conteudo}\
-        </table>".format(
-        coluna=coluna,
-        conteudo=conteudo,
-    )
-
+        </table>"
 
     return {'tables': tables, 'UAS': UAS}
 
