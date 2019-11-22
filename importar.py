@@ -287,7 +287,7 @@ def getMatrixSentences(c, golden, system, coluna):
     
     for sent_id, sentence in ud1.sentences.items():
         for t, token in enumerate(sentence.tokens):
-            if token.col[coluna.lower()] == golden and ud2.sentences[sent_id].tokens[t].col[coluna.lower()] == system and token.col['dephead'] == ud2.sentences[sent_id].tokens[t].col['dephead']:
+            if token.col[coluna.lower()] == golden and ud2.sentences[sent_id].tokens[t].col[coluna.lower()] == system:
                 listaSentences.append({
                     'sent_id': sent_id, 
                     'golden': sentence, 
