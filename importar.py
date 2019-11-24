@@ -322,7 +322,7 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
                 dicionario[token.col[coluna.lower()]] = [0, 0]
                 if not token.col[coluna.lower()] in UAS: UAS[token.col[coluna.lower()]] = dict()
             dicionario[token.col[coluna.lower()]][0] += 1
-            if ((coluna == "DEPREL" and system.sentences[sentid].tokens[t].col['dephead'] == token.col['dephead']) or (coluna == "UPOS")) and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
+            if len(system.sentences[sentid].tokens) > t and ((coluna == "DEPREL" and system.sentences[sentid].tokens[t].col['dephead'] == token.col['dephead']) or (coluna == "UPOS")) and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
                 dicionario[token.col[coluna.lower()]][1] += 1
             elif system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
                 tok_golden = token.head_token.upos
@@ -339,9 +339,9 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     coluna1 = ""
     coluna2 = ""    
     if coluna == "DEPREL":
-        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{sum([len(UAS[x][y][1]) for y in UAS[x]])}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
-        coluna1 = "<a title='Deprel e dephead corretos'>LAS</a>"
-        coluna2 = "<a title='Quando o deprel está correto apenas; para verificar divergências de deprel, ver matriz de confusão'>Erros de dephead</a>"
+        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{(sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
+        coluna1 = "<a href='#' style='color:white' title='Deprel e dephead corretos'>LAS</a>"
+        coluna2 = "<a href='#' style='color:white' title='Quando o deprel está correto apenas; para verificar divergências de deprel, ver matriz de confusão'>Erros de dephead</a>"
     elif coluna == "UPOS":
         conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td></tr>" for x in sorted(dicionario, key=lambda x: x)])
         coluna1 = "Acertos de upos"
