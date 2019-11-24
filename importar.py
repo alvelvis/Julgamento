@@ -337,17 +337,17 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
 
     
     if coluna == "DEPREL":
-        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{(1 - (dicionario[x][1] / dicionario[x][0]))*100}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
+        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{sum([UAS[x][y] for y in UAS[x]])}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
     elif coluna == "UPOS":
         conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td></tr>" for x in sorted(dicionario, key=lambda x: x)])
 
     coluna1 = ""
     coluna2 = ""
-    if coluna == "UPOS":
-        coluna1 = "Acertos de UPOS"
-    elif coluna == "DEPREL":
-        coluna1 = "LAS"
-        coluna2 = "Erros de DEPHEAD"
+    if coluna.lower.lower() == "upos":
+        coluna1 = "Acertos de upos"
+    elif coluna.lower() == "deprel":
+        coluna1 = "<a title='Deprel e dephead corretos'>LAS</a>"
+        coluna2 = "<a title='Quando o deprel está correto apenas; para verificar divergências de deprel, ver matriz de confusão'>Erros de dephead</a>"
 
     tables += f"<table id='t01' style='margin:auto; max-height:70vh; display:block; overflow-x: auto; overflow-y:auto;'><thead><tr style='text-align:center;'><th>{coluna}</th><th>Total</th>{'<th>' + coluna1 + '</th>' if coluna1 else ''}{'<th>' + coluna2 + '</th>' if coluna2 else ''}</tr></thead>\
         {conteudo}\
