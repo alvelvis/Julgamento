@@ -343,7 +343,7 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
 
     coluna1 = ""
     coluna2 = ""
-    if coluna.lower.lower() == "upos":
+    if coluna.lower() == "upos":
         coluna1 = "Acertos de upos"
     elif coluna.lower() == "deprel":
         coluna1 = "<a title='Deprel e dephead corretos'>LAS</a>"
