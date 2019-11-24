@@ -339,7 +339,7 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     coluna1 = ""
     coluna2 = ""    
     if coluna == "DEPREL":
-        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{sum([UAS[x][y] for y in UAS[x]])}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
+        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{sum([UAS[x][y][0] for y in UAS[x]])}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
         coluna1 = "<a title='Deprel e dephead corretos'>LAS</a>"
         coluna2 = "<a title='Quando o deprel está correto apenas; para verificar divergências de deprel, ver matriz de confusão'>Erros de dephead</a>"
     elif coluna == "UPOS":
