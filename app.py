@@ -253,10 +253,9 @@ def upload(alert="", success=""):
 		goldenFile = request.files.get('goldenFile')
 		if goldenFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
 			goldenFileName = removerAcento(conllu(request.values.get('goldenName')).golden())
-			goldenFileNameOriginal = removerAcento(conllu(request.values.get('goldenName')).original())
 			if (COMCORHD and not os.path.isfile(COMCORHD_FOLDER + '/' + goldenFileName)) or (not COMCORHD and not os.path.isfile(UPLOAD_FOLDER + '/' + goldenFileName)):
 				goldenFile.save(COMCORHD_FOLDER + '/' + goldenFileName) if COMCORHD else goldenFile.save(UPLOAD_FOLDER + '/' + goldenFileName)
-				goldenFile.save(UPLOAD_FOLDER + '/' + goldenFileNameOriginal)
+				shutil.copyfile(conllu(goldenFileName).findGolden(), conllu(goldenFileName).findOriginal())
 				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/Interrogat-rio'>Interrogatório</a>, ou, (2) "
 				success = f'"{goldenFileName}" enviado com sucesso! {textInterrogatorio if COMCORHD else ""}Para julgá-lo, treine um modelo a partir do arquivo selecionando "Treinar um modelo" no menu lateral ou envie a versão sistema equivalente ao corpus.'
 			else:
