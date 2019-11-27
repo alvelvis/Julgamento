@@ -113,6 +113,7 @@ def getErrorsValidarUD():
 						c=request.values.get("c"),
 						t=value['t'],
 						bold={'word': value['sentence'].tokens[value['t']].word, 'color': 'black'},
+						goldenAndSystem=True,
 					) + "</div>"
 			elif value['sent_id']:
 				html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(errors[error]) }: {value["sent_id"]}</div></div>'
@@ -252,12 +253,14 @@ def upload(alert="", success=""):
 		goldenFile = request.files.get('goldenFile')
 		if goldenFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
 			goldenFileName = removerAcento(conllu(request.values.get('goldenName')).golden())
+			goldenFileNameOriginal = removerAcento(conllu(request.values.get('goldenName')).original())
 			if (COMCORHD and not os.path.isfile(COMCORHD_FOLDER + '/' + goldenFileName)) or (not COMCORHD and not os.path.isfile(UPLOAD_FOLDER + '/' + goldenFileName)):
 				goldenFile.save(COMCORHD_FOLDER + '/' + goldenFileName) if COMCORHD else goldenFile.save(UPLOAD_FOLDER + '/' + goldenFileName)
+				goldenFile.save(UPLOAD_FOLDER + '/' + goldenFileNameOriginal)
 				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/Interrogat-rio'>Interrogatório</a>, ou, (2) "
 				success = f'"{goldenFileName}" enviado com sucesso! {textInterrogatorio if COMCORHD else ""}Para julgá-lo, treine um modelo a partir do arquivo selecionando "Treinar um modelo" no menu lateral ou envie a versão sistema equivalente ao corpus.'
 			else:
-				alert = "Arquivo GOLDEN já existe na pasta."
+				alert = "Arquivo golden já existe na pasta."
 		else:
 			alert = 'Extensão deve estar entre "' + ",".join(ALLOWED_EXTENSIONS) + '"'
 
@@ -267,19 +270,27 @@ def upload(alert="", success=""):
 		if systemFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
 			systemFileName = conllu(goldenFile).system()
 			systemFile.save(UPLOAD_FOLDER + '/' + systemFileName)
-			success = f'"{systemFileName}" enviado com sucesso! Julgue o corpus na <a href="/corpus">página inicial</a>.'
-			novoCorpus = models.Corpus(
-				name=conllu(goldenFile).naked,
-				date=str(datetime.datetime.now()),
-				sentences=0,
-				about=request.values.get('sysAbout'),
-				partitions="",
-				author=google.get('/oauth2/v2/userinfo').json()['email'] if GOOGLE_LOGIN else "",
-				goldenAlias='Golden',
-				systemAlias='Sistema'
-			)
-			db.session.add(novoCorpus)
-			db.session.commit()
+			corpusGolden = estrutura_ud.Corpus(recursivo=False)
+			corpusSystem = estrutura_ud.Corpus(recursivo=False)
+			corpusGolden.load(conllu(goldenFile).findGolden())
+			corpusSystem.load(conllu(goldenFile).findSystem())
+			if len(corpusGolden.sentences) != len(corpusSystem.sentences):
+				alert = "Arquivo sistema não tem o mesmo número de sentenças do arquivo golden."
+				os.remove(conllu(goldenFile).findSystem())
+			else:
+				success = f'"{systemFileName}" enviado com sucesso! Julgue o corpus na <a href="/corpus">página inicial</a>.'
+				novoCorpus = models.Corpus(
+					name=conllu(goldenFile).naked,
+					date=str(datetime.datetime.now()),
+					sentences=0,
+					about=request.values.get('sysAbout'),
+					partitions="",
+					author=google.get('/oauth2/v2/userinfo').json()['email'] if GOOGLE_LOGIN else "",
+					goldenAlias='Golden',
+					systemAlias='Sistema'
+				)
+				db.session.add(novoCorpus)
+				db.session.commit()
 			#loadCorpus.submit(goldenFile)
 
 		else:
@@ -314,7 +325,8 @@ def upload(alert="", success=""):
 		sh = f"cd {UPLOAD_FOLDER}/repositories/{request.values.get('repoName')}; \
 				git pull; \
 					git checkout {request.values.get('repoCommit').split(' | commit ')[1]}; \
-						cat documents/*.conllu > {conllu(removerAcento(request.values.get('repoCorpusName'))).findGolden()}"
+						cat documents/*.conllu > {conllu(removerAcento(request.values.get('repoCorpusName'))).findGolden()}; \
+							cat documents/*.conllu > {conllu(removerAcento(request.values.get('repoCorpusName'))).findOriginal()}"
 		if request.values.get('criarRamo'):
 			sh += f"; git checkout -b {removerAcento(request.values.get('repoCorpusName'))}; \
 						git push --set-upstream origin {removerAcento(request.values.get('repoCorpusName'))}"
@@ -372,14 +384,21 @@ def sendAnnotation():
 	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for('google.login'))
 
+	goldenAndSystem = int(request.values.get('goldenAndSystem'))
 	globals()["change"] = False
 	attention = ""
 	if any('<coluna>' in data and request.values.get(data) for data in request.values):
 		sent_id = request.values.get('sent_id')
 		arquivo = conllu(request.values.get('c')).findGolden() if request.values.get('ud') == 'ud1' else conllu(request.values.get('c')).findSystem()
+		if goldenAndSystem:
+			arquivoSystem = conllu(request.values.get('c')).findSystem()
 		
 		corpus = estrutura_ud.Corpus(recursivo=False, sent_id=request.values.get('sent_id'))
 		corpus.load(arquivo)
+		if goldenAndSystem:
+			corpusSystem = estrutura_ud.Corpus(recursivo=False, sent_id=request.values.get('sent_id'))
+			corpusSystem.load(arquivoSystem)
+
 		for data in request.values:
 			if '<coluna>' in data and request.values.get(data):
 				token = int(data.split('<coluna>')[1])
@@ -389,10 +408,14 @@ def sendAnnotation():
 					headTokenNum = request.values.get("headToken") if request.values.get("headToken") != "_" else "0"
 				headToken = f'\ncorpus.sentences["{sent_id}"].tokens[{token}].dephead = "{headTokenNum}"\n' if request.values.get('headToken') else "\n"
 				exec(f'if corpus.sentences["{sent_id}"].tokens[{token}].{coluna} != "{valor}":\n\tcorpus.sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"{headToken}globals()["change"] = True')
+				if goldenAndSystem:
+					exec(f'if corpusSystem.sentences["{sent_id}"].tokens[{token}].{coluna} != "{valor}":\n\tcorpusSystem.sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"{headToken}globals()["change"] = True')
 
 		attention = []
 		if globals()["change"]:
 			corpus.save(arquivo)
+			if goldenAndSystem:
+				corpusSystem.save(arquivoSystem)
 			errors = validar_UD.validate(corpus, errorList=JULGAMENTO_FOLDER + "/validar_UD.txt", noMissingToken=True)
 			if errors:
 				for error in errors:

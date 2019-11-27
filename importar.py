@@ -106,6 +106,7 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
                                 c=c,
                                 t=sent_id['t'],
                                 bold=sent_id['bold'],
+                                goldenAndSystem=True,
                             ) + "</div></div>"
                     else:
                         html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(sent_ids[problem]) }: {sent_id["id"]}</div>'
@@ -206,6 +207,9 @@ class conllu:
     def golden(self):
         return self.naked + ".conllu"
 
+    def original(self):
+        return self.naked + "_original.conllu"
+
     def system(self):
         return self.naked + "_sistema.conllu"
 
@@ -228,6 +232,9 @@ class conllu:
         else:
             return UPLOAD_FOLDER + "/" + self.naked + ".conllu"
             
+
+    def findOriginal(self):
+        return UPLOAD_FOLDER + "/" + self.naked + "_original.conllu"
 
     def findSystem(self):
         return UPLOAD_FOLDER + "/" + self.naked + "_sistema.conllu"
@@ -349,8 +356,8 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     coluna2 = ""    
     if coluna == "DEPREL":
         conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{(sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
-        coluna1 = "<a style='text-decoration:underline; color:white;' title='LAS é quando o deprel e o dephead estão corretos'>LAS</a>"
-        coluna2 = "<a style='text-decoration:underline; color:white;' title='Os erros de dephead são contabilizados apenas quando a etiqueta deprel está correta; para verificar divergências de deprel, verificar matriz de confusão'>Erros de dephead</a>"
+        coluna1 = "<a style='text-decoration:underline; color:white; cursor:text;' title='LAS é quando o deprel e o dephead estão corretos'>LAS</a>"
+        coluna2 = "<a style='text-decoration:underline; color:white; cursor:text;' title='Os erros de dephead são contabilizados apenas quando a etiqueta deprel está correta; para verificar divergências de deprel, verificar matriz de confusão'>Erros de dephead</a>"
     elif coluna == "UPOS":
         conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td></tr>" for x in sorted(dicionario, key=lambda x: x)])
         coluna1 = "Acertos de upos"
