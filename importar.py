@@ -128,11 +128,18 @@ def findCorpora(filtro, tipo):
         corpora = checkCorpora()['success']
     elif tipo == 'delete':
         corpora = checkCorpora()['available']
+    elif tipo == 'deleteGolden':
+        corpora = checkCorpora()['missingSystem']
     filtro = filtro.split()
     for corpus in corpora:
-        sobre = corpus['sobre'] if 'sobre' in corpus else ""
-        corpusNom = corpus['nome']
-        corpusDate = corpus['data']
+        if tipo != "deleteGolden":
+            sobre = corpus['sobre'] if 'sobre' in corpus else ""
+            corpusNom = corpus['nome']
+            corpusDate = corpus['data'] 
+        else:
+            sobre = ""
+            corpusNom = corpus
+            corpusDate = ""
         if not filtro or all(x.lower() in (corpusNom+sobre+corpusDate).lower() for x in filtro):
             if tipo == 'available':
                 lista.append(f'<a href="/corpus?c={ corpus["nome"] }" class="list-group-item"><strong>{ corpus["nome"] }</strong> <span class="badge">{ corpus["sentences"] } sentenças</span><br>{ corpus["sobre"] }<br><small>{ prettyDate(corpus["data"]).prettyDateDMAH() }</small></a>')
@@ -145,6 +152,8 @@ def findCorpora(filtro, tipo):
                 lista.append(f'<a href="/log?c={ corpus["nome"] }" class="list-group-item"><strong>{ corpus["nome"] }</strong><br>Conclusão: { prettyDate(corpus["data"]).prettyDateDMAH() }</a>')
             elif tipo == 'delete':
                 lista.append(f'<a style="cursor:pointer" onclick="apagarCorpus(\'{corpus["nome"]}\')" class="list-group-item"><strong>{ corpus["nome"] }</strong> <span class="badge">{ corpus["sentences"] } sentenças</span><br>{ corpus["sobre"] }<br><small>{ prettyDate(corpus["data"]).prettyDateDMAH() }</small></a>')
+            elif tipo == 'deleteGolden':
+                lista.append(f'<a style="cursor:pointer" onclick="apagarCorpusGolden(\'{corpus}\')" class="list-group-item"><strong>{ corpus }</strong></a>')
 
 
     return "\n".join(lista)
@@ -340,8 +349,8 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     coluna2 = ""    
     if coluna == "DEPREL":
         conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{(sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
-        coluna1 = "<a href='#' style='color:white' title='Deprel e dephead corretos'>LAS</a>"
-        coluna2 = "<a href='#' style='color:white' title='Quando o deprel está correto apenas; para verificar divergências de deprel, ver matriz de confusão'>Erros de dephead</a>"
+        coluna1 = "<a style='text-decoration:underline; color:white;' title='LAS é quando o deprel e o dephead estão corretos'>LAS</a>"
+        coluna2 = "<a style='text-decoration:underline; color:white;' title='Os erros de dephead são contabilizados apenas quando a etiqueta deprel está correta; para verificar divergências de deprel, verificar matriz de confusão'>Erros de dephead</a>"
     elif coluna == "UPOS":
         conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td></tr>" for x in sorted(dicionario, key=lambda x: x)])
         coluna1 = "Acertos de upos"

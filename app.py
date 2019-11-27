@@ -132,6 +132,18 @@ def filterCorpora():
 		'success': True,
 	})
 
+@app.route('/api/deleteGolden', methods="POST|GET".split("|"))
+def deleteGolden():
+	if not google.authorized and GOOGLE_LOGIN:
+		return redirect(url_for("google.login"))
+	os.remove(conllu(request.values.get("c")).findGolden())
+	return render_template(
+		'upload.html',
+		success="Corpus golden \"" + request.values.get("c") + "\" deletado com sucesso!",
+		user=google.get('/oauth2/v2/userinfo').json(),
+	)
+
+
 @app.route('/cancelTrain', methods="GET".split("|"))
 def cancelTrain():
 	if not google.authorized and GOOGLE_LOGIN:
@@ -239,10 +251,10 @@ def upload(alert="", success=""):
 	elif request.method == "POST" and 'goldenFile' in request.files:
 		goldenFile = request.files.get('goldenFile')
 		if goldenFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
-			goldenFileName = removerAcento(conllu(goldenFile.filename).golden())
+			goldenFileName = removerAcento(conllu(request.values.get('goldenName')).golden())
 			if (COMCORHD and not os.path.isfile(COMCORHD_FOLDER + '/' + goldenFileName)) or (not COMCORHD and not os.path.isfile(UPLOAD_FOLDER + '/' + goldenFileName)):
 				goldenFile.save(COMCORHD_FOLDER + '/' + goldenFileName) if COMCORHD else goldenFile.save(UPLOAD_FOLDER + '/' + goldenFileName)
-				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://interrogatorio.comcorhd.ga'>Interrogatório</a>, ou, (2) "
+				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/Interrogat-rio'>Interrogatório</a>, ou, (2) "
 				success = f'"{goldenFileName}" enviado com sucesso! {textInterrogatorio if COMCORHD else ""}Para julgá-lo, treine um modelo a partir do arquivo selecionando "Treinar um modelo" no menu lateral ou envie a versão sistema equivalente ao corpus.'
 			else:
 				alert = "Arquivo GOLDEN já existe na pasta."

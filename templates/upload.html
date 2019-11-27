@@ -49,6 +49,21 @@
                 </center>
             </div>
         </div>
+        <h3>Excluir corpus "golden" do Julgamento</h3>
+        <div class="well">
+            Os arquivos listados não têm uma contraparte "sistema" e, portanto, não estão prontos para Julgamento.
+        </div>
+        <div class="panel panel-default panel-body">
+            <div class="col-lg-6 col-lg-offset-3">
+                <center>
+                <input class='form-control filterDeleteGolden' placeholder="Filtrar...">
+                <br>
+                <ul class="list-group deleteGoldenCorpora">
+                    {{findCorpora(filtro='', tipo='deleteGolden')|safe}}
+                </ul>
+                </center>
+            </div>
+        </div>
     </div>
 
     <div class="col-lg-9 uploadOption successfulTraining" style="display:none">
@@ -77,9 +92,10 @@
                 <hr>
                 <h1><span style="cursor:pointer" onClick="$('#optGoldGoldenFile').click();" title="Selecione um arquivo" class="glyphOptGoldGold glyphicon glyphicon-upload"></span></h1>
             </div>
-            <form class="formGold" enctype="multipart/form-data" style="display:none" method="POST" action="/upload">
-                <input type=file onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptGoldGold').removeClass('glyphicon-upload').addClass('glyphicon-ok'); } else { $('.glyphOptGoldGold').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optGoldGoldenFile" name="goldenFile">
-            </form>            
+            <form class="formGold" enctype="multipart/form-data" method="POST" action="/upload">
+                <input style="display:none" type=file onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptGoldGold').removeClass('glyphicon-upload').addClass('glyphicon-ok'); $('#goldenName').val($(this).val().replace(/^.*[\\\/]/, '').split('.conllu')[0]); } else { $('.glyphOptGoldGold').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optGoldGoldenFile" name="goldenFile">
+                <center><input style="width:50%; text-align: center;" placeholder="Nome do corpus" class="form-control" id="goldenName" name="goldenName" required></center>
+            </form>
         </div>
         <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptGoldGold').hasClass('glyphicon-ok')) { $('.formGold').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> Enviar</button></center>
     </div>
@@ -109,7 +125,7 @@
                         <input class="form-control" id="sysAbout" name="sysAbout" required>
                     </div>
                 </div>
-                <center><h2><span style="cursor:pointer" onClick="$('#optSysSystemFile').click();" title="Selecione um arquivo SISTEMA" class="glyphOptSysSystem glyphicon glyphicon-upload"></span></h2></center>        
+                <center><h3>Selecione um arquivo "sistema"</h3><h1><span style="cursor:pointer" onClick="$('#optSysSystemFile').click();" title="Selecione um arquivo" class="glyphOptSysSystem glyphicon glyphicon-upload"></span></h1><br></center>
             </form>            
         </div>
         <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptSysSystem').hasClass('glyphicon-ok') && $('[name=sysGoldenFile]').val() && $('[name=sysAbout]').val()) { $('.formSys').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> Enviar</button></center>

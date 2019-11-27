@@ -1,3 +1,8 @@
+String.prototype.rsplit = function(sep, maxsplit) {
+    var split = this.split(sep);
+    return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
+}
+
 function scrollToAnchor(aid){
     var aTag = $(aid);
     $('html,body').animate({scrollTop: aTag.offset().top},'slow');
@@ -8,6 +13,13 @@ function apagarCorpus(corpus){
         window.location = '/cancelTrain?c=' + corpus + '&delete=True&callback=upload&golden=' + $(".deleteGoldenToo").is(":checked");
     };
 };
+
+function apagarCorpusGolden(corpus){
+    if (window.confirm('Tem certeza de que deseja apagar o corpus golden "' + corpus + '"?')) {
+        window.location = '/api/deleteGolden?c=' + corpus;
+    };
+};
+
 
 function atualizar(){
 
@@ -365,6 +377,20 @@ $(document).ready(function(){
             },
             success: function(data){
                 $('.deleteSystemCorpora').html(data['html']);
+            },
+        }); 
+    });
+
+    $('.filterDeleteGolden').keyup(function(){
+        $.ajax({
+            url:"/api/filterCorpora",
+            method:"POST",
+            data: {
+                filtro: $('.filterDeleteGolden').val(),
+                tipo: 'deleteGolden',
+            },
+            success: function(data){
+                $('.deleteGoldenCorpora').html(data['html']);
             },
         }); 
     });
