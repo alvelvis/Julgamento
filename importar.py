@@ -463,11 +463,11 @@ def checkCorpora():
 
     if COMCORHD:
         for x in os.listdir(COMCORHD_FOLDER):
-            if x.endswith('.conllu') and not x.endswith('_sistema.conllu') and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}"):
+            if x.endswith('.conllu') and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}"):
                 missingSystem += [conllu(x).naked]
 
     for x in os.listdir(UPLOAD_FOLDER):
-        if x.endswith('.conllu') and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not x.endswith('_sistema.conllu') and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}") and not conllu(x).naked in missingSystem:
+        if x.endswith('.conllu') and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}") and not conllu(x).naked in missingSystem:
             missingSystem += [conllu(x).naked]
     
     inProgress = [{'nome': conllu(x).naked, 'data': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(conllu(x).findInProgress())))} for x in os.listdir(UPLOAD_FOLDER) if x.endswith('_inProgress')]
