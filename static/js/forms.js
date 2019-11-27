@@ -167,11 +167,11 @@ function atualizar(){
         if ($button.hasClass('editGoldenAndSystem')) {
             $button.parent().parent().parent().find('.sendGoldenAnnotation').children("[name=goldenAndSystem]").val('1');
             $goldenLabel = '.goldenAndSystemLabel';
-            $title = "Salvar golden e sistema ao mesmo tempo (Ctrl+3)";
+            $title = "Editar golden e sistema ao mesmo tempo (Ctrl+3)";
         } else {
             $button.parent().parent().parent().find('.sendGoldenAnnotation').children("[name=goldenAndSystem]").val('0');            
             $goldenLabel = '.goldenLabel';
-            $title = "Salvar golden (Ctrl+1)";
+            $title = "Mostrar golden (Ctrl+1)";
         };
         $button.parent().parent().parent().find('.sendGoldenAnnotation').ajaxSubmit({
             url: "/api/sendAnnotation",
