@@ -5,6 +5,7 @@ fi
 
 if [ ! -e prod.db ]; then
   python3 once.py
+  sudo chmod a+rwx -R *
 fi
 
 export OAUTHLIB_INSECURE_TRANSPORT=1
