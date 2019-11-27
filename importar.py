@@ -335,9 +335,11 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     for sentid, sentence in golden.sentences.items():
         for t, token in enumerate(sentence.tokens):
             if not token.col[coluna.lower()] in dicionario:
-                dicionario[token.col[coluna.lower()]] = [0, 0]
+                dicionario[token.col[coluna.lower()]] = [0, 0, 0]
                 if not token.col[coluna.lower()] in UAS: UAS[token.col[coluna.lower()]] = dict()
             dicionario[token.col[coluna.lower()]][0] += 1
+            if coluna == "DEPREL" and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
+                dicionario[token.col[coluna.lower()]][2] += 1
             if len(system.sentences[sentid].tokens) > t and ((coluna == "DEPREL" and system.sentences[sentid].tokens[t].col['dephead'] == token.col['dephead']) or (coluna == "UPOS")) and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
                 dicionario[token.col[coluna.lower()]][1] += 1
             elif system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
@@ -353,16 +355,18 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
 
 
     coluna1 = ""
-    coluna2 = ""    
+    coluna2 = ""
+    coluna3 = ""    
     if coluna == "DEPREL":
-        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{(sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
-        coluna1 = "<a style='text-decoration:underline; color:white; cursor:text;' title='LAS é quando o deprel e o dephead estão corretos'>LAS</a>"
-        coluna2 = "<a style='text-decoration:underline; color:white; cursor:text;' title='Os erros de dephead são contabilizados apenas quando a etiqueta deprel está correta; para verificar divergências de deprel, verificar matriz de confusão'>Erros de dephead</a>"
+        conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][2] / dicionario[x][0])*100}%</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td><a href='/corpus?c={c}&{coluna}={x}'>{(sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
+        coluna2 = "<a style='text-decoration:underline; color:white; cursor:text;' title='LAS é quando o deprel e o dephead estão corretos'>LAS</a>"
+        coluna3 = "<a style='text-decoration:underline; color:white; cursor:text;' title='Os erros de dephead são contabilizados apenas quando a etiqueta deprel está correta. Para ver divergências de deprel, verificar matriz de confusão'>Erros de dephead</a>"
+        coluna1 = "<a style='text-decoration:underline; color:white; cursor:text;' title='Acertos de deprel sem contabilizar dephead. Para ver divergências de deprel, verificar matriz de confusão'>Acertos</a>"
     elif coluna == "UPOS":
         conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td></tr>" for x in sorted(dicionario, key=lambda x: x)])
-        coluna1 = "Acertos de upos"
+        coluna1 = "Acertos"
 
-    tables += f"<table id='t01' style='margin:auto; max-height:70vh; display:block; overflow-x: auto; overflow-y:auto;'><thead><tr style='text-align:center;'><th>{coluna}</th><th>Total</th>{'<th>' + coluna1 + '</th>' if coluna1 else ''}{'<th>' + coluna2 + '</th>' if coluna2 else ''}</tr></thead>\
+    tables += f"<table id='t01' style='margin:auto; max-height:70vh; display:block; overflow-x: auto; overflow-y:auto;'><thead><tr style='text-align:center;'><th>{coluna}</th><th>Total</th>{'<th>' + coluna1 + '</th>' if coluna1 else ''}{'<th>' + coluna2 + '</th>' if coluna2 else ''}{'<th>' + coluna3 + '</th>' if coluna3 else ''}</tr></thead>\
         {conteudo}\
         </table>"
 

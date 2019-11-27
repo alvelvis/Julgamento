@@ -188,13 +188,13 @@ def getTables():
 	elif table == 'accuracy':
 		return jsonify({
 			'html': f'''
-			<div id="POSAccuracy" class="col-lg-6">
+			<div id="POSAccuracy" class="col-lg-4">
 				<div class=" panel panel-default panel-body">
 					<h3>Acurácia por UPOS</h3>
 					{categoryAccuracy(request.values.get('ud1'), request.values.get('ud2'), request.values.get('c'), 'UPOS')['tables']}
 				</div>
 			</div>
-			<div id="DEPRELAccuracy" class="col-lg-6">
+			<div id="DEPRELAccuracy" class="col-lg-8">
 				<div class=" panel panel-default panel-body">
 					<h3>Acurácia por DEPREL</h3>
 					{categoryAccuracy(request.values.get('ud1'), request.values.get('ud2'), request.values.get('c'), 'DEPREL')['tables']}
