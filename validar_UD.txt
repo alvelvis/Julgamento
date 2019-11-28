@@ -32,7 +32,7 @@ deprel = "(appos|conj|fixed|compound|flat|flat:name)" and dephead > id
 deprel = "(case|cc|mark|det|cop|aux)" and dephead < id and misc != "MWE=.*"
 
 feats|erro: Features incompatíveis com a classe gramatical
-upos = "ADJ" and feats !== "Gender=Masc|Gender=Fem|Number=Sing|Number=Plur|NumType=Ord"
+upos = "ADJ" and feats !== "Gender=Masc|Gender=Fem|Gender=Unsp|Number=Sing|Number=Plur|NumType=Ord"
 upos = "ADV" and feats !== "_|Polarity=Neg"
 upos = "AUX" and feats !== "Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Number=Plur|VerbForm=Inf|VerbForm=Ger|Tense=Fut|Mood=Cnd|Tense=Imp|Tense=Past|VerbForm=Part|Person=1|Mood=Sub|Mood=Imp|Person=2|Gender=Masc|Tense=Pqp"
 upos = "CCONJ|INTJ|ADP|SCONJ|PUNCT|SYM|_" and feats !== "_"
