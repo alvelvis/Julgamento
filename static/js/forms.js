@@ -20,30 +20,7 @@ function apagarCorpusGolden(corpus){
     };
 };
 
-
 function atualizar(){
-
-    $('.sentence').unbind('mouseenter').mouseenter(function(){
-        $div = $(this);
-        $(document).bind('keydown', function ( e ) {
-            if ((e.metaKey || e.ctrlKey) && ( String.fromCharCode(e.which).toLowerCase() === '1') ) {
-                e.preventDefault();
-                $div.find($('.goldenButton')).click();
-            };
-            if ((e.metaKey || e.ctrlKey) && ( String.fromCharCode(e.which).toLowerCase() === '2') ) {
-                e.preventDefault();
-                $div.find($('.systemButton')).click();
-            };
-            if ((e.metaKey || e.ctrlKey) && ( String.fromCharCode(e.which).toLowerCase() === '3') ) {
-                e.preventDefault();
-                $div.find($('.editGoldenAndSystem')).click();
-            };
-            if ((e.metaKey || e.ctrlKey) && ( String.fromCharCode(e.which).toLowerCase() === '4') ) {
-                e.preventDefault();
-                $div.find($('.cancelChanges')).click();
-            };
-        });
-    });
 
     $('.repoName').on('change', function(){
         loadingScreen();
@@ -139,10 +116,10 @@ function atualizar(){
         $button = $(this);
         if ($button.hasClass('editGoldenAndSystem')) {
             $goldenLabel = '.goldenAndSystemLabel';
-            $title = "Salvar golden e sistema ao mesmo tempo (Ctrl+3)";
+            $title = "Salvar golden e sistema ao mesmo tempo";
         } else {
             $goldenLabel = '.goldenLabel';
-            $title = "Salvar golden (Ctrl+1)";
+            $title = "Salvar golden";
         };
         $button.siblings('.cancelChanges').click();
         $button.parent().parent().next('.getAnnotation').children('.ud').val('ud1');
@@ -167,11 +144,11 @@ function atualizar(){
         if ($button.hasClass('editGoldenAndSystem')) {
             $button.parent().parent().parent().find('.sendGoldenAnnotation').children("[name=goldenAndSystem]").val('1');
             $goldenLabel = '.goldenAndSystemLabel';
-            $title = "Editar golden e sistema ao mesmo tempo (Ctrl+3)";
+            $title = "Editar golden e sistema ao mesmo tempo";
         } else {
             $button.parent().parent().parent().find('.sendGoldenAnnotation').children("[name=goldenAndSystem]").val('0');            
             $goldenLabel = '.goldenLabel';
-            $title = "Mostrar golden (Ctrl+1)";
+            $title = "Mostrar golden";
         };
         $button.parent().parent().parent().find('.sendGoldenAnnotation').ajaxSubmit({
             url: "/api/sendAnnotation",
@@ -207,7 +184,7 @@ function atualizar(){
             success: function(data){
                 $button.siblings('.cancelChanges').show();
                 $button.html("<span class='glyphicon glyphicon-ok'></span>" + $button.siblings('.systemLabel').val().split('</i>')[1]);
-                $button.attr('title', 'Salvar sistema (Ctrl+2)');
+                $button.attr('title', 'Salvar sistema');
                 $button.removeClass('btn-default').addClass('btn-success').removeClass('showSystemAnnotation').addClass('hideSystemAnnotation');
                 $button.parents('.panel-body').find('.annotationSystem').html(data['annotationUd2']);
                 $button.parents('.panel-body').find('.annotationSystem').show();
@@ -228,7 +205,7 @@ function atualizar(){
                     '<div class="alert alert-success" role="alert">Alteração realizada com sucesso no sistema dia ' + data['data'] + '</div>'
                     )};
                 $button.siblings('.cancelChanges').hide();
-                $button.attr('title', 'Mostrar sistema (Ctrl+2)');
+                $button.attr('title', 'Mostrar sistema');
                 $button.html($button.siblings('.systemLabel').val());
                 $button.removeClass('btn-success').addClass('btn-default').removeClass('hideSystemAnnotation').addClass('showSystemAnnotation');
                 $button.parents('.panel-body').find('.annotationSystem').hide();
@@ -243,9 +220,9 @@ function atualizar(){
         $(this).parents('.panel-body').find('.annotationSystem').hide();
         $(this).parents('.panel-body').find('.annotationGolden').hide();
         $(this).hide();
-        $(this).siblings('.hideSystemAnnotation').removeClass('btn-success').addClass('btn-default').removeClass('hideSystemAnnotation').addClass('showSystemAnnotation').html($(this).siblings('.systemLabel').val()).attr('title', 'Mostrar sistema (Ctrl+2)');
-        $(this).siblings('.hideGoldenAnnotation').removeClass('btn-success').addClass('btn-default').removeClass('hideGoldenAnnotation').addClass('showGoldenAnnotation').html($(this).siblings('.goldenLabel').val()).attr('title', 'Mostrar golden (Ctrl+1)');
-        $(this).siblings('.editGoldenAndSystem').html($(this).siblings('.goldenAndSystemLabel').val()).attr('title', 'Editar golden e sistema ao mesmo tempo (Ctrl+3)');
+        $(this).siblings('.hideSystemAnnotation').removeClass('btn-success').addClass('btn-default').removeClass('hideSystemAnnotation').addClass('showSystemAnnotation').html($(this).siblings('.systemLabel').val()).attr('title', 'Mostrar sistema');
+        $(this).siblings('.hideGoldenAnnotation').removeClass('btn-success').addClass('btn-default').removeClass('hideGoldenAnnotation').addClass('showGoldenAnnotation').html($(this).siblings('.goldenLabel').val()).attr('title', 'Mostrar golden');
+        $(this).siblings('.editGoldenAndSystem').html($(this).siblings('.goldenAndSystemLabel').val()).attr('title', 'Editar golden e sistema ao mesmo tempo');
         $(this).parent().parent().parent().parent().get(0).scrollIntoView();
         atualizar();
     });
