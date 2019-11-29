@@ -3,6 +3,7 @@ import os
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 APP_NAME = "julgamento"
 VALIDATE_UD = f'{os.path.abspath(os.path.dirname(__file__))}/validate.py'
+VALIDAR_UD = f'{os.path.abspath(os.path.dirname(__file__))}/validar_UD.txt'
 VALIDATE_LANG = 'PT'
 DEBUG = True
 SQLALCHEMY_TRACK_MODIFICATIONS = False
