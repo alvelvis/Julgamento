@@ -476,7 +476,7 @@ def getAnnotation():
 			for col, coluna in enumerate(linha.split("\t")):
 				if col == 0: drag = 'id notPipe '
 				elif col == 6: drag = 'drag notPipe '
-				elif col in [3, 4, 7, 8]: drag = "notPipe "
+				elif col in [3, 7] or coluna == "_": drag = "notPipe "
 				else: drag = ""
 				html1 += '<td contenteditable=true class="{drag}valor"><input type=hidden name="{col}<coluna>{t}">{coluna}</td>'.format(col=col, t=t, coluna=coluna, drag=drag)
 			html1 += "</tr>"
