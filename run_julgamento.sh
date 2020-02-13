@@ -1,6 +1,7 @@
 if [ -d .git ]; then
   git update-index --assume-unchanged config.py
   git update-index --assume-unchanged localtime.py
+  git pull
 fi
 
 if [ ! -e prod.db ]; then
