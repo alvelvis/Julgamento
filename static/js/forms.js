@@ -479,6 +479,8 @@ $(document).ready(function(){
     });
 
     $('.catSent').click(function(e){
+        $('tr').css('background-color', 'inherit');
+        $(this).parents('tr').css('background-color', 'yellow');
         loadingScreen();
         $button = $(this);
         e.preventDefault();

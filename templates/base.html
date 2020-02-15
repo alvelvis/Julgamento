@@ -134,10 +134,11 @@
       <div class="container-fluid collapse navbar-collapse">
         <ul class="nav navbar-nav">
           <li><a href="#" style="cursor:default">{{ user['email'] }}</a></li>
-          {% if c %}{% if not pagina %}<li><a href="/corpus?c={{c}}">mudar forma de avaliação</a></li>{% endif %}
+          {% if c %}{% if not pagina %}<li><a href="/corpus?c={{c}}">tabela de conteúdos</a></li>{% endif %}
           <li><a href="/corpus">mudar corpus</a></li>{% else %}
           <li><a href="/corpus">escolher corpus</a></li>{% endif %}
           {% if user['email'] %}<li><a href="/logout">sair</a></li>{% endif %}
+          <li><a href="/upload">gerenciar corpora</a></li>
         </ul>
       </div>
     </div>
@@ -153,7 +154,7 @@
      <div class="panel panel-default col-md-6 col-md-offset-3">
       <div class="panel-body">
         <p>Julgamento é parte da ET | <a href="https://github.com/alvelvis/Julgamento" target="_blank">Github</a></p>
-        <p><a href="http://comcorhd.letras.puc-rio.br/interrogatorio" target="_blank">Interrogatório - ambiente de busca e revisão de corpora anotados</a></p>
+        <p><a href="http://comcorhd.letras.puc-rio.br/interrogatorio" target="_blank">Interrogatório - Ambiente de busca e revisão de corpora anotados</a></p>
         <p><a href="http://comcorhd.letras.puc-rio.br/" target="_blank">ComCorHd - Linguística Computacional, Corpus e Humanidades Digitais</a></p>
       </div>
      </div>

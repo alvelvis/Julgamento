@@ -173,7 +173,13 @@ def getTables():
 		return redirect(url_for('google.login'))
 	table = request.values.get('table')
 
-	if table == 'metrics':
+	if table == "caracteristicas":
+		return jsonify({
+			'html': caracteristicasCorpus(request.values.get('ud1'), request.values.get('ud2')),
+			'success': True
+		})
+
+	elif table == 'metrics':
 		return jsonify({
 			'html': '<h3>Métricas do conll18_ud_eval.py</h3>' + metrics(request.values.get('ud1'), request.values.get('ud2')),
 			'success': True

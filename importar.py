@@ -372,6 +372,42 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
 
     return {'tables': tables, 'UAS': UAS}
 
+def caracteristicasCorpus(ud1, ud2):
+    golden = allCorpora.corpora.get(conllu(ud1).golden())
+    system = allCorpora.corpora.get(conllu(ud2).system())
+
+    n_Tokens = 0
+    n_Sentences = len(golden.sentences)
+    dicionario_Lemas = {}
+    for sentence in golden.sentences.values():
+        for token in sentence.tokens:
+            if not '-' in token.id:
+                if not token.lemma in dicionario_Lemas:
+                    dicionario_Lemas[token.lemma] = 0
+                dicionario_Lemas[token.lemma] += 1
+                n_Tokens += 1
+
+    n_Tokens_s = 0
+    n_Sentences_s = len(system.sentences)
+    dicionario_Categorias_s = {}
+    dicionario_Lemas_s = {}
+    for sentence in system.sentences.values():
+        for token in sentence.tokens:
+            if not '-' in token.id:
+                if not token.lemma in dicionario_Lemas_s:
+                    dicionario_Lemas_s[token.lemma] = 0
+                dicionario_Lemas_s[token.lemma] += 1
+                n_Tokens_s += 1
+
+    tabela_Geral = "<center><table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
+    tabela_Geral += "<tr><td></td><th>Golden</th><th>Sistema</th></tr>"
+    tabela_Geral += f"<tr><th>Sentenças</th><td>{n_Sentences}</td><td>{n_Sentences_s}</td></tr>"
+    tabela_Geral += f"<tr><th>Tokens</th><td>{n_Tokens}</td><td>{n_Tokens_s}</td></tr>"
+    tabela_Geral += f"<tr><th>Lemas</th><td>{len(dicionario_Lemas)}</td><td>{len(dicionario_Lemas_s)}</td></tr>"
+    tabela_Geral += "</table></center>"
+
+    return tabela_Geral
+
 def sentAccuracy(ud1, ud2):
     golden = allCorpora.corpora.get(conllu(ud1).golden())
     system = allCorpora.corpora.get(conllu(ud2).system())
