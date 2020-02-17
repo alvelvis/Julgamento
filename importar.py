@@ -390,7 +390,7 @@ def modificacoes(c):
     deprel_diferentes = {}
     sentences_diferentes = []
     for sentid, sentence in antes.sentences.items():
-        if sentence.to_str() != depois.sentences[sentid].to_str():
+        if sentence.tokens_to_str() != depois.sentences[sentid].tokens_to_str():
             sentences_diferentes.append(sentid)
         for t, token in enumerate(sentence.tokens):
             if token.lemma != depois.sentences[sentid].tokens[t].lemma:
@@ -462,17 +462,14 @@ def caracteristicasCorpus(ud1, ud2):
     tabela_Geral = "<h3>Características do corpus</h3>"
     if system:
         tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
-        tabela_Geral += "<tr><td></td><th>Golden</th><th>Sistema</th></tr>"
-        tabela_Geral += f"<tr><th>Sentenças</th><td>{n_Sentences}</td><td>{n_Sentences_s}</td></tr>"
-        tabela_Geral += f"<tr><th>Tokens</th><td>{n_Tokens}</td><td>{n_Tokens_s}</td></tr>"
-        tabela_Geral += f"<tr><th>Lemas diferentes</th><td>{len(dicionario_Lemas)}</td><td>{len(dicionario_Lemas_s)}</td></tr>"
+        tabela_Geral += "<tr><td></td><th>Sentenças</th><th>Tokens</th><th>Lemas diferentes</th></tr>"
+        tabela_Geral += f"<tr><th>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
+        tabela_Geral += f"<tr><th>Sistema</th><td>{n_Sentences_s}</td><td>{n_Tokens_s}</td><td>{len(dicionario_Lemas_s)}</td></tr>"
         tabela_Geral += "</table>"
     else:
         tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
-        tabela_Geral += "<tr><td></td><th>Golden</th></tr>"
-        tabela_Geral += f"<tr><th>Sentenças</th><td>{n_Sentences}</td></tr>"
-        tabela_Geral += f"<tr><th>Tokens</th><td>{n_Tokens}</td></tr>"
-        tabela_Geral += f"<tr><th>Lemas diferentes</th><td>{len(dicionario_Lemas)}</td></tr>"
+        tabela_Geral += "<tr><td></td><th>Sentenças</th><th>Tokens</th><th>Lemas diferentes</th></tr>"
+        tabela_Geral += f"<tr><th>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
         tabela_Geral += "</table>"
 
     return tabela_Geral
