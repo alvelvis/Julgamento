@@ -414,19 +414,19 @@ def modificacoes(c):
 
     html += f"<br><h4>Lemas diferentes ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
     html += "<table>"
-    html += "<tr><th>Antes</th><th>Depois</th><th>#</th></tr>"
+    html += "<tr><th>ANTES</th><th>DEPOIS</th><th>#</th></tr>"
     html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=lemma'>" + str(len(lemas_diferentes[x])) + "</a></td></tr>" for x in sorted(lemas_diferentes, reverse=True, key=lambda y: len(lemas_diferentes[y]))])
     html += "</table>"
 
     html += f"<br><h4>UPOS diferentes ({sum([len(upos_diferentes[x]) for x in upos_diferentes])})</h4>"
     html += "<table>"
-    html += "<tr><th>Antes</th><th>Depois</th><th>#</th></tr>"
+    html += "<tr><th>ANTES</th><th>DEPOIS</th><th>#</th></tr>"
     html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=upos'>" + str(len(upos_diferentes[x])) + "</a></td></tr>" for x in sorted(upos_diferentes, reverse=True, key=lambda y: len(upos_diferentes[y]))])
     html += "</table>"
 
     html += f"<br><h4>DEPREL diferentes ({sum([len(deprel_diferentes[x]) for x in deprel_diferentes])})</h4>"
     html += "<table>"
-    html += "<tr><th>Antes</th><th>Depois</th><th>#</th></tr>"
+    html += "<tr><th>ANTES</th><th>DEPOIS</th><th>#</th></tr>"
     html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=deprel'>" + str(len(deprel_diferentes[x])) + "</a></td></tr>" for x in sorted(deprel_diferentes, reverse=True, key=lambda y: len(deprel_diferentes[y]))])
     html += "</table>"
 
@@ -489,8 +489,8 @@ def sentAccuracy(ud1, ud2):
             if acertos == len(sentence.tokens):
                 sent_accuracy[1] += 1
 
-    return "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'><tr><td>Sentenças comparáveis</td><td>{comparableSentences}</td><td>{percentSentences}</td></tr>\
-        <tr><td>Sentenças corretas</td><td>{correctSentences}</td><td>{percentCorrect}</td></tr>\
+    return "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'><tr><th></th><th>#</th><th>%</th></tr><tr><th>Sentenças comparáveis</th><td>{comparableSentences}</td><td>{percentSentences}</td></tr>\
+        <tr><th>Sentenças corretas</th><td>{correctSentences}</td><td>{percentCorrect}</td></tr>\
         </table>".format(
             comparableSentences=sent_accuracy[0],
             percentSentences=f"{(sent_accuracy[0] / len(golden.sentences)) * 100}%",

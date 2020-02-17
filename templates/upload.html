@@ -33,35 +33,35 @@
         </ul>
     </div>
 
-    <div class="col-lg-9 uploadOption deleteSystem" style="display:none">
-        <h3>Excluir corpus pronto para julgamento</h3>
-        <div class="well">
-            <input type=checkbox class="deleteGoldenToo"> <a style="cursor:pointer; text-decoration:none;" title="Caso esteja desmarcado, apenas o arquivo sistema será excluído" onclick="($('.deleteGoldenToo').click())">Deletar arquivo golden também</a>
-        </div>
-        <div class="panel panel-default panel-body">
-            <div class="col-lg-6 col-lg-offset-3">
-                <center>
-                <input class='form-control filterDeleteSystem' placeholder="Filtrar...">
-                <br>
-                <ul class="list-group deleteSystemCorpora">
-                    {{findCorpora(filtro='', tipo='delete')|safe}}
-                </ul>
-                </center>
+    <div class="col-lg-9 uploadOption deleteSystem  panel panel-default" style="display:none">
+        <div class="col-lg-6 panel panel-body">
+            <h3>Excluir corpus pronto para julgamento</h3>
+            <HR>
+            <div class="well">
+                <input type=checkbox class="deleteGoldenToo"> <a style="cursor:pointer; text-decoration:none;" title="Caso esteja desmarcado, apenas o arquivo sistema será excluído" onclick="($('.deleteGoldenToo').click())">Deletar arquivo golden também</a>
+            </div>
+            <div class="">
+                <div class="">
+                    <input class='form-control filterDeleteSystem' placeholder="Filtrar...">
+                    <ul class="list-group deleteSystemCorpora panel-body">
+                        {{findCorpora(filtro='', tipo='delete')|safe}}
+                    </ul>
+                </div>
             </div>
         </div>
-        <h3>Excluir corpus "golden" do Julgamento</h3>
-        <div class="well">
-            Os arquivos listados não têm uma contraparte "sistema" e, portanto, têm o seu julgamento limitado a poucas funcionalidades.
-        </div>
-        <div class="panel panel-default panel-body">
-            <div class="col-lg-6 col-lg-offset-3">
-                <center>
-                <input class='form-control filterDeleteGolden' placeholder="Filtrar...">
-                <br>
-                <ul class="list-group deleteGoldenCorpora">
-                    {{findCorpora(filtro='', tipo='deleteGolden')|safe}}
-                </ul>
-                </center>
+        <div class="col-lg-6 panel panel-body">
+            <h3>Excluir corpus "golden" do Julgamento</h3>
+            <HR>
+            <div class="well">
+                Os arquivos listados não têm uma contraparte "sistema" e, portanto, têm o seu julgamento limitado a poucas funcionalidades.
+            </div>
+            <div class=" ">
+                <div class="">
+                    <input class='form-control filterDeleteGolden' placeholder="Filtrar...">
+                    <ul class="list-group deleteGoldenCorpora panel-body">
+                        {{findCorpora(filtro='', tipo='deleteGolden')|safe}}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

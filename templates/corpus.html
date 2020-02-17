@@ -10,33 +10,30 @@
     <hr>
 
     {% if corpora['available'] %}
-    <div class="{{colCorpus}}">
+    <div class="{{colCorpus}} panel panel-default">
         <h3>Corpora prontos para julgamento</h3>
         <input class='form-control filterAvailableCorpora' placeholder="Filtrar...">
-        <br>
-        <ul class='list-group availableCorpora'>
+        <ul class='list-group panel panel-body availableCorpora'>
             {{findCorpora(filtro='', tipo='available')|safe}}
         </ul>
     </div>
     {% endif %}
 
     {% if corpora['onlyGolden'] %}
-    <div class="{{colCorpus}}">
+    <div class="{{colCorpus}} panel panel-default">
         <h3>Material dourado pronto para julgamento <span class="badge" style="background-color: red;">novidade</span></h3>
         <input class='form-control filterOnlyGolden' placeholder="Filtrar...">
-        <br>
-        <ul class='list-group onlyGolden'>
+        <ul class='list-group panel panel-body onlyGolden'>
             {{findCorpora(filtro='', tipo='onlyGolden')|safe}}
         </ul>
     </div>
     {% endif %}
 
     {% if corpora['inProgress'] %}
-    <div class="col-lg-6">
+    <div class="col-lg-6 panel panel-default">
         <h3>Treinamentos em progresso</h3>
         <input class='form-control filterTrainingCorpora' placeholder="Filtrar...">
-        <br>
-        <ul class="list-group trainingCorpora">
+        <ul class="list-group panel panel-body trainingCorpora">
             {{findCorpora(filtro='', tipo='training')|safe}}
         </ul>
     </div>
