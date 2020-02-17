@@ -3,7 +3,7 @@ from flask import render_template, request
 import pandas as pd
 import os, estrutura_ud, estrutura_dados, confusao, re, time, datetime, validar_UD
 import models, pickle
-from app import db, app, executor, allCorpora
+from app import db, app, executor, allCorpora, modificacoesCorpora
 from localtime import localtime
 
 
@@ -106,7 +106,7 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
                                 c=c,
                                 t=sent_id['t'],
                                 bold=sent_id['bold'],
-                                goldenAndSystem=True,
+                                goldenAndSystem=True if conllu(c).system() in allCorpora.corpora else False,
                             ) + "</div></div>"
                     else:
                         html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(sent_ids[problem]) }: {sent_id["id"]}</div>'
@@ -129,11 +129,13 @@ def findCorpora(filtro, tipo):
         corpora = checkCorpora()['success']
     elif tipo == 'delete':
         corpora = checkCorpora()['available']
+    elif tipo == 'onlyGolden':
+        corpora = checkCorpora()['missingSystem']
     elif tipo == 'deleteGolden':
         corpora = checkCorpora()['missingSystem']
     filtro = filtro.split()
     for corpus in corpora:
-        if tipo != "deleteGolden":
+        if tipo not in ["deleteGolden", "onlyGolden"]:
             sobre = corpus['sobre'] if 'sobre' in corpus else ""
             corpusNom = corpus['nome']
             corpusDate = corpus['data'] 
@@ -155,6 +157,8 @@ def findCorpora(filtro, tipo):
                 lista.append(f'<a style="cursor:pointer" onclick="apagarCorpus(\'{corpus["nome"]}\')" class="list-group-item"><strong>{ corpus["nome"] }</strong> <span class="badge">{ corpus["sentences"] } sentenças</span><br>{ corpus["sobre"] }<br><small>{ prettyDate(corpus["data"]).prettyDateDMAH() }</small></a>')
             elif tipo == 'deleteGolden':
                 lista.append(f'<a style="cursor:pointer" onclick="apagarCorpusGolden(\'{corpus}\')" class="list-group-item"><strong>{ corpus }</strong></a>')
+            elif tipo == 'onlyGolden':
+                lista.append(f'<a href="/corpus?c={ corpus }" class="list-group-item"><strong>{ corpus }</strong></a>')
 
 
     return "\n".join(lista)
@@ -372,9 +376,65 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
 
     return {'tables': tables, 'UAS': UAS}
 
+def modificacoes(c):
+    depois = allCorpora.corpora[conllu(c).golden()]
+    antes = allCorpora.corpora[conllu(c).original()]
+
+    if len(antes.sentences) != len(depois.sentences):
+        return "Os corpora antes e depois não coincidem."
+
+    html = "<h3>Modificações realizadas no corpus</h3>"
+
+    lemas_diferentes = {}
+    upos_diferentes = {}
+    deprel_diferentes = {}
+    sentences_diferentes = []
+    for sentid, sentence in antes.sentences.items():
+        if sentence.to_str() != depois.sentences[sentid].to_str():
+            sentences_diferentes.append(sentid)
+        for t, token in enumerate(sentence.tokens):
+            if token.lemma != depois.sentences[sentid].tokens[t].lemma:
+                if not token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma in lemas_diferentes:
+                    lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma] = []
+                lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+            if token.upos != depois.sentences[sentid].tokens[t].upos:
+                if not token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos in upos_diferentes:
+                    upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos] = []
+                upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+            if token.deprel != depois.sentences[sentid].tokens[t].deprel:
+                if not token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel in deprel_diferentes:
+                    deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel] = []
+                deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+    
+    modificacoesCorpora.modificacoes[c] = {'lemma': lemas_diferentes, 'upos': upos_diferentes, 'deprel': deprel_diferentes}
+
+    sentences_iguais = [x for x in depois.sentences if x not in sentences_diferentes]
+    html += f"<br><h4>Sentenças modificadas ({len(sentences_diferentes)})</h4><pre>{'; '.join(sentences_diferentes)}</pre>"
+    html += f"<br><h4>Sentenças não modificadas ({len(sentences_iguais)})</h4><pre>{'; '.join(sentences_iguais)}</pre>"
+
+    html += f"<br><h4>Lemas diferentes ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
+    html += "<table>"
+    html += "<tr><th>Antes</th><th>Depois</th><th>#</th></tr>"
+    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=lemma'>" + str(len(lemas_diferentes[x])) + "</a></td></tr>" for x in sorted(lemas_diferentes, reverse=True, key=lambda y: len(lemas_diferentes[y]))])
+    html += "</table>"
+
+    html += f"<br><h4>UPOS diferentes ({sum([len(upos_diferentes[x]) for x in upos_diferentes])})</h4>"
+    html += "<table>"
+    html += "<tr><th>Antes</th><th>Depois</th><th>#</th></tr>"
+    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=upos'>" + str(len(upos_diferentes[x])) + "</a></td></tr>" for x in sorted(upos_diferentes, reverse=True, key=lambda y: len(upos_diferentes[y]))])
+    html += "</table>"
+
+    html += f"<br><h4>DEPREL diferentes ({sum([len(deprel_diferentes[x]) for x in deprel_diferentes])})</h4>"
+    html += "<table>"
+    html += "<tr><th>Antes</th><th>Depois</th><th>#</th></tr>"
+    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=deprel'>" + str(len(deprel_diferentes[x])) + "</a></td></tr>" for x in sorted(deprel_diferentes, reverse=True, key=lambda y: len(deprel_diferentes[y]))])
+    html += "</table>"
+
+    return html
+
 def caracteristicasCorpus(ud1, ud2):
     golden = allCorpora.corpora.get(conllu(ud1).golden())
-    system = allCorpora.corpora.get(conllu(ud2).system())
+    system = "" if not ud2 else allCorpora.corpora.get(conllu(ud2).system())
 
     n_Tokens = 0
     n_Sentences = len(golden.sentences)
@@ -387,24 +447,33 @@ def caracteristicasCorpus(ud1, ud2):
                 dicionario_Lemas[token.lemma] += 1
                 n_Tokens += 1
 
-    n_Tokens_s = 0
-    n_Sentences_s = len(system.sentences)
-    dicionario_Categorias_s = {}
-    dicionario_Lemas_s = {}
-    for sentence in system.sentences.values():
-        for token in sentence.tokens:
-            if not '-' in token.id:
-                if not token.lemma in dicionario_Lemas_s:
-                    dicionario_Lemas_s[token.lemma] = 0
-                dicionario_Lemas_s[token.lemma] += 1
-                n_Tokens_s += 1
+    if system:
+        n_Tokens_s = 0
+        n_Sentences_s = len(system.sentences)
+        dicionario_Lemas_s = {}
+        for sentence in system.sentences.values():
+            for token in sentence.tokens:
+                if not '-' in token.id:
+                    if not token.lemma in dicionario_Lemas_s:
+                        dicionario_Lemas_s[token.lemma] = 0
+                    dicionario_Lemas_s[token.lemma] += 1
+                    n_Tokens_s += 1
 
-    tabela_Geral = "<center><table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
-    tabela_Geral += "<tr><td></td><th>Golden</th><th>Sistema</th></tr>"
-    tabela_Geral += f"<tr><th>Sentenças</th><td>{n_Sentences}</td><td>{n_Sentences_s}</td></tr>"
-    tabela_Geral += f"<tr><th>Tokens</th><td>{n_Tokens}</td><td>{n_Tokens_s}</td></tr>"
-    tabela_Geral += f"<tr><th>Lemas</th><td>{len(dicionario_Lemas)}</td><td>{len(dicionario_Lemas_s)}</td></tr>"
-    tabela_Geral += "</table></center>"
+    tabela_Geral = "<h3>Características do corpus</h3>"
+    if system:
+        tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
+        tabela_Geral += "<tr><td></td><th>Golden</th><th>Sistema</th></tr>"
+        tabela_Geral += f"<tr><th>Sentenças</th><td>{n_Sentences}</td><td>{n_Sentences_s}</td></tr>"
+        tabela_Geral += f"<tr><th>Tokens</th><td>{n_Tokens}</td><td>{n_Tokens_s}</td></tr>"
+        tabela_Geral += f"<tr><th>Lemas diferentes</th><td>{len(dicionario_Lemas)}</td><td>{len(dicionario_Lemas_s)}</td></tr>"
+        tabela_Geral += "</table>"
+    else:
+        tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
+        tabela_Geral += "<tr><td></td><th>Golden</th></tr>"
+        tabela_Geral += f"<tr><th>Sentenças</th><td>{n_Sentences}</td></tr>"
+        tabela_Geral += f"<tr><th>Tokens</th><td>{n_Tokens}</td></tr>"
+        tabela_Geral += f"<tr><th>Lemas diferentes</th><td>{len(dicionario_Lemas)}</td></tr>"
+        tabela_Geral += "</table>"
 
     return tabela_Geral
 
@@ -465,22 +534,24 @@ def resub(s, a, b):
 @executor.job
 def loadCorpus(x):
     if not conllu(x).golden() in allCorpora.corpora or not conllu(x).system() in allCorpora.corpora or (conllu(x).golden() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).golden()], str)) or (conllu(x).system() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).system()], str)):    
-        print(f"carregando corpus {conllu(x).naked}")
-        corpusGolden, corpusSystem = estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True)
-        corpusGolden.load(conllu(x).findGolden())
-        corpusSystem.load(conllu(x).findSystem())
-        print("carregamento do corpus " + x + " concluido")
-        renderErrors(c=x, texto="", fromZero=True)
-        print("carregamento de erros " + x + " concluído com sucesso")    
-        with open(conllu(x).findErrorsValidarUD(), "wb") as f:
-            f.write(pickle.dumps(validar_UD.validate(
-                conllu=corpusGolden,
-                errorList=JULGAMENTO_FOLDER + "/validar_UD.txt"
-                ))
-            )
-        allCorpora.corpora[conllu(x).golden()] = corpusGolden
-        allCorpora.corpora[conllu(x).system()] = corpusSystem
-        print("carregamento de erros " + x + " 2 concluído com sucesso")
+        corpusGolden, corpusSystem, corpusOriginal = estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True)
+        if not conllu(x).golden() in allCorpora.corpora:
+            corpusGolden.load(conllu(x).findGolden())
+            corpusOriginal.load(conllu(x).findOriginal())
+            renderErrors(c=x, texto="", fromZero=True)
+            with open(conllu(x).findErrorsValidarUD(), "wb") as f:
+                f.write(pickle.dumps(validar_UD.validate(
+                    conllu=corpusGolden,
+                    errorList=JULGAMENTO_FOLDER + "/validar_UD.txt"
+                    ))
+                )
+        if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
+            corpusSystem.load(conllu(x).findSystem())
+        if not conllu(x).golden() in allCorpora.corpora:
+            allCorpora.corpora[conllu(x).golden()] = corpusGolden
+            allCorpora.corpora[conllu(x).original()] = corpusOriginal
+        if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
+            allCorpora.corpora[conllu(x).system()] = corpusSystem
 
 def checkCorpora():
     availableCorpora = []
@@ -500,10 +571,12 @@ def checkCorpora():
     if COMCORHD:
         for x in os.listdir(COMCORHD_FOLDER):
             if x.endswith('.conllu') and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}"):
+                loadCorpus.submit(conllu(x).naked)
                 missingSystem += [conllu(x).naked]
 
     for x in os.listdir(UPLOAD_FOLDER):
         if x.endswith('.conllu') and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}") and not conllu(x).naked in missingSystem:
+            loadCorpus.submit(conllu(x).naked)
             missingSystem += [conllu(x).naked]
     
     inProgress = [{'nome': conllu(x).naked, 'data': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(conllu(x).findInProgress())))} for x in os.listdir(UPLOAD_FOLDER) if x.endswith('_inProgress')]
@@ -512,6 +585,7 @@ def checkCorpora():
     return {
         'available': sorted(availableCorpora, key=lambda x: x['data'], reverse=True),
         'missingSystem': sorted(missingSystem),
+        'onlyGolden': sorted(missingSystem),
         'inProgress': sorted(inProgress, key=lambda x: x['data'], reverse=True),
         'success': sorted(success, key=lambda x: x['data'], reverse=True),
         }

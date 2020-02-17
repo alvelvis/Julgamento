@@ -36,7 +36,7 @@
     <div class="col-lg-9 uploadOption deleteSystem" style="display:none">
         <h3>Excluir corpus pronto para julgamento</h3>
         <div class="well">
-            <input type=checkbox class="deleteGoldenToo"> <a style="cursor:pointer; text-decoration:none;" onclick="($('.deleteGoldenToo').click())">Deletar arquivo golden além do sistema</a>
+            <input type=checkbox class="deleteGoldenToo"> <a style="cursor:pointer; text-decoration:none;" title="Caso esteja desmarcado, apenas o arquivo sistema será excluído" onclick="($('.deleteGoldenToo').click())">Deletar arquivo golden também</a>
         </div>
         <div class="panel panel-default panel-body">
             <div class="col-lg-6 col-lg-offset-3">
@@ -51,7 +51,7 @@
         </div>
         <h3>Excluir corpus "golden" do Julgamento</h3>
         <div class="well">
-            Os arquivos listados não têm uma contraparte "sistema" e, portanto, não estão prontos para Julgamento.
+            Os arquivos listados não têm uma contraparte "sistema" e, portanto, têm o seu julgamento limitado a poucas funcionalidades.
         </div>
         <div class="panel panel-default panel-body">
             <div class="col-lg-6 col-lg-offset-3">
@@ -213,8 +213,8 @@
             </div>
             <div class="form-horizontal">
                 <div class="form-group">
-                    <center><input name="criarRamo" type="checkbox" checked> Criar ramo no Github 
-                    <span class='glyphicon glyphicon-info-sign' title='Um novo ramo será criado no Github para o commit selecionado, permitindo que o merge ocorra adequadamente entre diferentes versões'></span></center>
+                    <center><input name="criarRamo" type="checkbox" > <a style="cursor:pointer" onclick="$(this).siblings('[type=checkbox]').prop('checked', !$(this).siblings('[type=checkbox]').prop('checked'));">Criar ramo no Github</a>
+                    <span class='glyphicon glyphicon-info-sign' title='Um novo ramo será criado no Github para o commit selecionado, permitindo que o merge ocorra adequadamente entre diferentes versões. É necessário ter configurado username e senha de colaborador do repositório'></span></center>
                 </div>
 
             </div>

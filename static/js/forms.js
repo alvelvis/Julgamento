@@ -425,6 +425,20 @@ $(document).ready(function(){
         }); 
     });
 
+    $('.filterOnlyGolden').keyup(function(){
+        $.ajax({
+            url:"/api/filterCorpora",
+            method:"POST",
+            data: {
+                filtro: $('.filterOnlyGolden').val(),
+                tipo: 'onlyGolden',
+            },
+            success: function(data){
+                $('.onlyGolden').html(data['html']);
+            },
+        }); 
+    });
+
     $('.filterTrainingCorpora').keyup(function(){
         $.ajax({
             url:"/api/filterCorpora",

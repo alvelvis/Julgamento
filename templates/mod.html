@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Modificações em {{c}}: {{antes}} -> {{depois}}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<input type=hidden id="cat1" value ="{{antes}}">
+<input type=hidden id="cat2" value ="{{depois}}">
+
+<h1>Modificações em {{c}}: "{{antes}}" virou "{{depois}}"</h1>
+<h3>Coluna: {{ mod }}</h3>
+<hr>
+<br>
+{% for sentence in sentences %}
+    <div class="panel panel-default col-lg-10 col-lg-offset-1">
+        <div class="panel-body">
+            {{ loop.index }} / {{ sentences | length }}
+        </div>
+        {% with sent_id=sentence['sent_id'], golden=sentence['golden'], bold=sentence['bold'], t=sentence['t'] %}
+            {% include 'sentence.html' %}
+        {% endwith %}
+    </div>
+{% endfor %}
+{% endblock %}

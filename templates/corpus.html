@@ -20,6 +20,17 @@
     </div>
     {% endif %}
 
+    {% if corpora['onlyGolden'] %}
+    <div class="{{colCorpus}}">
+        <h3>Material dourado pronto para julgamento <span class="badge" style="background-color: red;">novidade</span></h3>
+        <input class='form-control filterOnlyGolden' placeholder="Filtrar...">
+        <br>
+        <ul class='list-group onlyGolden'>
+            {{findCorpora(filtro='', tipo='onlyGolden')|safe}}
+        </ul>
+    </div>
+    {% endif %}
+
     {% if corpora['inProgress'] %}
     <div class="col-lg-6">
         <h3>Treinamentos em progresso</h3>

@@ -34,7 +34,13 @@ class Corpora:
     def __init__(self):
         self.corpora = {}
 
+class Modificacoes:
+
+	def __init__(self):
+		self.modificacoes = {}
+
 allCorpora = Corpora()
+modificacoesCorpora = Modificacoes()
 
 @app.route("/api/changeAbout", methods="POST".split("|"))
 def changeAbout():
@@ -57,8 +63,10 @@ def refreshTables():
 	#allCorpora.corpora.pop(conllu(request.values.get("c")).golden(), None)
 	#allCorpora.corpora.pop(conllu(request.values.get("c")).system(), None)
 	#loadCorpus.submit(request.values.get("c"))
-	allCorpora.corpora[conllu(request.values.get("c")).golden()] = ""
-	allCorpora.corpora[conllu(request.values.get("c")).system()] = ""
+	allCorpora.corpora.pop(conllu(request.values.get("c")).golden())
+	#allCorpora.corpora[] = ""
+	if conllu(request.values.get("c")).system() in allCorpora.corpora:
+		allCorpora.corpora[conllu(request.values.get("c")).system()] = ""
 	checkCorpora()
 	return jsonify({'success': True})
 
@@ -113,7 +121,7 @@ def getErrorsValidarUD():
 						c=request.values.get("c"),
 						t=value['t'],
 						bold={'word': value['sentence'].tokens[value['t']].word, 'color': 'black'},
-						goldenAndSystem=True,
+						goldenAndSystem=True if conllu(request.values.get("c")).system() in allCorpora.corpora else False,
 					) + "</div>"
 			elif value['sent_id']:
 				html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(errors[error]) }: {value["sent_id"]}</div></div>'
@@ -175,7 +183,13 @@ def getTables():
 
 	if table == "caracteristicas":
 		return jsonify({
-			'html': caracteristicasCorpus(request.values.get('ud1'), request.values.get('ud2')),
+			'html': caracteristicasCorpus(request.values.get('ud1'), request.values.get('ud2') if request.values.get('ud2') else ""),
+			'success': True
+		})
+
+	elif table == "modificacoes":
+		return jsonify({
+			'html': modificacoes(request.values.get("c")),
 			'success': True
 		})
 
@@ -263,7 +277,7 @@ def upload(alert="", success=""):
 				goldenFile.save(COMCORHD_FOLDER + '/' + goldenFileName) if COMCORHD else goldenFile.save(UPLOAD_FOLDER + '/' + goldenFileName)
 				shutil.copyfile(conllu(goldenFileName).findGolden(), conllu(goldenFileName).findOriginal())
 				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/Interrogat-rio'>Interrogatório</a>, ou, (2) "
-				success = f'"{goldenFileName}" enviado com sucesso! {textInterrogatorio if COMCORHD else ""}Para julgá-lo, treine um modelo a partir do arquivo selecionando "Treinar um modelo" no menu lateral ou envie a versão sistema equivalente ao corpus.'
+				success = f'"{goldenFileName}" enviado com sucesso! {textInterrogatorio if COMCORHD else ""}Julgue-o na <a href="/corpus">página inicial</a>.'
 			else:
 				alert = "Arquivo golden já existe na pasta."
 		else:
@@ -513,7 +527,7 @@ def getAnnotation():
 
 @app.route("/corpus")
 def corpus():
-	if not google.authorized and GOOGLE_LOGIN:
+	if GOOGLE_LOGIN and not google.authorized:
 		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
 
 	resp = google.get('/oauth2/v2/userinfo')
@@ -523,6 +537,17 @@ def corpus():
 			'corpus.html',
 			user = resp.json(),
 			corpora = checkCorpora()
+		)
+
+	elif request.args.get('mod'):
+		return render_template(
+			'mod.html',
+			user=resp.json(),
+			antes=request.args.get('antes'),
+			depois=request.args.get('depois'),
+			mod=request.args.get('mod'),
+			c=request.args.get("c"),
+			sentences=modificacoesCorpora.modificacoes[request.args.get("c")][request.args.get('mod')][request.args.get('antes') + "<depois>" + request.args.get('depois')],
 		)
 	
 	elif request.args.get('ud1') and request.args.get('ud2') and request.args.get('col'):
