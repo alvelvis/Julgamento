@@ -66,7 +66,7 @@ def refreshTables():
 	allCorpora.corpora.pop(conllu(request.values.get("c")).golden())
 	#allCorpora.corpora[] = ""
 	if conllu(request.values.get("c")).system() in allCorpora.corpora:
-		allCorpora.corpora[conllu(request.values.get("c")).system()] = ""
+		allCorpora.corpora.pop(conllu(request.values.get("c")).system())
 	checkCorpora()
 	return jsonify({'success': True})
 
