@@ -121,13 +121,13 @@
                 <div class="form-group">
                     <label for="sysAbout" class="col-sm-4 control-label">Sobre o corpus <span class='glyphicon glyphicon-info-sign' title='Informação extra para ajudar a identificar os diferentes corpora disponíveis'></span></label>
                     <div class="col-sm-8">
-                        <input class="form-control" id="sysAbout" name="sysAbout" required>
+                        <input class="form-control" id="sysAbout" name="sysAbout" >
                     </div>
                 </div>
                 <center><h3>Selecione um arquivo "sistema"</h3><h1><span style="cursor:pointer" onClick="$('#optSysSystemFile').click();" title="Selecione um arquivo" class="glyphOptSysSystem glyphicon glyphicon-upload"></span></h1><br></center>
             </form>            
         </div>
-        <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptSysSystem').hasClass('glyphicon-ok') && $('[name=sysGoldenFile]').val() && $('[name=sysAbout]').val()) { $('.formSys').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> Enviar</button></center>
+        <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptSysSystem').hasClass('glyphicon-ok') && $('[name=sysGoldenFile]').val()) { $('.formSys').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> Enviar</button></center>
     </div>
     
     <div class="col-lg-9 uploadOption optTrainSys" style="display:none">
