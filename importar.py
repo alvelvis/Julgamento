@@ -158,7 +158,8 @@ def findCorpora(filtro, tipo):
             elif tipo == 'deleteGolden':
                 lista.append(f'<a style="cursor:pointer" onclick="apagarCorpusGolden(\'{corpus}\')" class="list-group-item"><strong>{ corpus }</strong></a>')
             elif tipo == 'onlyGolden':
-                lista.append(f'<a href="/corpus?c={ corpus }" class="list-group-item"><strong>{ corpus }</strong></a>')
+                if os.path.isfile(conllu(corpus).findOriginal()):
+                    lista.append(f'<a href="/corpus?c={ corpus }" class="list-group-item"><strong>{ corpus }</strong></a>')
 
 
     return "\n".join(lista)
@@ -548,25 +549,26 @@ def resub(s, a, b):
 
 @executor.job
 def loadCorpus(x):
-    if not conllu(x).golden() in allCorpora.corpora or not conllu(x).system() in allCorpora.corpora or (conllu(x).golden() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).golden()], str)) or (conllu(x).system() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).system()], str)):    
-        corpusGolden, corpusSystem, corpusOriginal = estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True)
-        if not conllu(x).golden() in allCorpora.corpora:
-            corpusGolden.load(conllu(x).findGolden())
-            corpusOriginal.load(conllu(x).findOriginal())
-            renderErrors(c=x, texto="", fromZero=True)
-            with open(conllu(x).findErrorsValidarUD(), "wb") as f:
-                f.write(pickle.dumps(validar_UD.validate(
-                    conllu=corpusGolden,
-                    errorList=JULGAMENTO_FOLDER + "/validar_UD.txt"
-                    ))
-                )
-        if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
-            corpusSystem.load(conllu(x).findSystem())
-        if not conllu(x).golden() in allCorpora.corpora:
-            allCorpora.corpora[conllu(x).golden()] = corpusGolden
-            allCorpora.corpora[conllu(x).original()] = corpusOriginal
-        if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
-            allCorpora.corpora[conllu(x).system()] = corpusSystem
+    if os.path.isfile(conllu(x).findOriginal()):
+        if not conllu(x).golden() in allCorpora.corpora or not conllu(x).system() in allCorpora.corpora or (conllu(x).golden() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).golden()], str)) or (conllu(x).system() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).system()], str)):    
+            corpusGolden, corpusSystem, corpusOriginal = estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True)
+            if not conllu(x).golden() in allCorpora.corpora:
+                corpusGolden.load(conllu(x).findGolden())
+                corpusOriginal.load(conllu(x).findOriginal())
+                renderErrors(c=x, texto="", fromZero=True)
+                with open(conllu(x).findErrorsValidarUD(), "wb") as f:
+                    f.write(pickle.dumps(validar_UD.validate(
+                        conllu=corpusGolden,
+                        errorList=JULGAMENTO_FOLDER + "/validar_UD.txt"
+                        ))
+                    )
+            if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
+                corpusSystem.load(conllu(x).findSystem())
+            if not conllu(x).golden() in allCorpora.corpora:
+                allCorpora.corpora[conllu(x).golden()] = corpusGolden
+                allCorpora.corpora[conllu(x).original()] = corpusOriginal
+            if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
+                allCorpora.corpora[conllu(x).system()] = corpusSystem
 
 def checkCorpora():
     availableCorpora = []

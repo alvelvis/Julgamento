@@ -289,6 +289,8 @@ def upload(alert="", success=""):
 		if systemFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
 			systemFileName = conllu(goldenFile).system()
 			systemFile.save(UPLOAD_FOLDER + '/' + systemFileName)
+			if not os.path.isfile(conllu(systemFileName).findOriginal()):
+				shutil.copyfile(conllu(systemFileName).findGolden(), conllu(systemFileName).findOriginal())
 			corpusGolden = estrutura_ud.Corpus(recursivo=False)
 			corpusSystem = estrutura_ud.Corpus(recursivo=False)
 			corpusGolden.load(conllu(goldenFile).findGolden())
