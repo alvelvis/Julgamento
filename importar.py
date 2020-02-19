@@ -417,19 +417,19 @@ def modificacoes(c):
     html += f"<br><h4>Lemas diferentes ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
     html += "<table>"
     html += "<tr><th>ANTES</th><th>DEPOIS</th><th>#</th></tr>"
-    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=lemma'>" + str(len(lemas_diferentes[x])) + "</a></td></tr>" for x in sorted(lemas_diferentes, reverse=True, key=lambda y: len(lemas_diferentes[y]))])
+    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=lemma'>" + str(len(lemas_diferentes[x])) + "</a></td></tr>" for x in sorted(lemas_diferentes, reverse=False, key=lambda y: (-len(lemas_diferentes[y]), y))])
     html += "</table>"
 
     html += f"<br><h4>UPOS diferentes ({sum([len(upos_diferentes[x]) for x in upos_diferentes])})</h4>"
     html += "<table>"
     html += "<tr><th>ANTES</th><th>DEPOIS</th><th>#</th></tr>"
-    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=upos'>" + str(len(upos_diferentes[x])) + "</a></td></tr>" for x in sorted(upos_diferentes, reverse=True, key=lambda y: len(upos_diferentes[y]))])
+    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=upos'>" + str(len(upos_diferentes[x])) + "</a></td></tr>" for x in sorted(upos_diferentes, reverse=False, key=lambda y: (-len(upos_diferentes[y]), y))])
     html += "</table>"
 
     html += f"<br><h4>DEPREL diferentes ({sum([len(deprel_diferentes[x]) for x in deprel_diferentes])})</h4>"
     html += "<table>"
     html += "<tr><th>ANTES</th><th>DEPOIS</th><th>#</th></tr>"
-    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=deprel'>" + str(len(deprel_diferentes[x])) + "</a></td></tr>" for x in sorted(deprel_diferentes, reverse=True, key=lambda y: len(deprel_diferentes[y]))])
+    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=deprel'>" + str(len(deprel_diferentes[x])) + "</a></td></tr>" for x in sorted(deprel_diferentes, reverse=False, key=lambda y: (-len(deprel_diferentes[y]), y))])
     html += "</table>"
 
     return html
@@ -539,7 +539,7 @@ def matrix(table, c, kind="UPOS"):
         html += "<tr>"
         for k, coluna in enumerate(linha.split()):
             ud2 = colunas[k] if len(colunas) > k else ""
-            html += "<t{dorh}>{0}{2}{1}</t{dorh}>".format(f"<a href='/corpus?c={c}&ud1={ud1}&ud2={ud2}&col={kind}'>" if k != 0 and i != 0 and k + 1 < len(linha.split()) and i + 1 < len(table.splitlines()) else "", "</a>" if k != 0 and i != 0 and k + 1 < len(linha.split()) and i + 1 < len(table.splitlines()) else "", coluna, dorh="h" if k == 0 or i == 0 else "d")
+            html += "<t{dorh}>{0}{2}{1}</t{dorh}>".format(f"<a href='/corpus?c={c}&ud1={ud1}&ud2={ud2}&col={kind}' onclick='$(\".matrixTd\").css(\"background-color\", \"white\"); $(this).parents(\".matrixTd\").css(\"background-color\", \"yellow\");'>" if k != 0 and i != 0 and k + 1 < len(linha.split()) and i + 1 < len(table.splitlines()) else "", "</a>" if k != 0 and i != 0 and k + 1 < len(linha.split()) and i + 1 < len(table.splitlines()) else "", coluna, dorh="h" if k == 0 or i == 0 else "d class='matrixTd'")
         html += '</tr>'
         if i == 0:
             html += "</thead>"
