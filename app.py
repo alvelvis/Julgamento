@@ -428,9 +428,10 @@ def sendAnnotation():
 				if request.values.get("headToken"):
 					headTokenNum = request.values.get("headToken") if request.values.get("headToken") != "_" else "0"
 				headToken = f'\ncorpus.sentences["{sent_id}"].tokens[{token}].dephead = "{headTokenNum}"\n' if request.values.get('headToken') else "\n"
-				exec(f'if corpus.sentences["{sent_id}"].tokens[{token}].{coluna} != "{valor}":\n\tcorpus.sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"{headToken}globals()["change"] = True')
+				exec(f'if corpus.sentences["{sent_id}"].tokens[{token}].{coluna} != "{valor}":\n\tcorpus.sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"{headToken}globals()["change"] = True\nglobals()["allCorpora"].corpora["{conllu(request.values.get("c")).golden()}"].sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"')
+				
 				if goldenAndSystem:
-					exec(f'if corpusSystem.sentences["{sent_id}"].tokens[{token}].{coluna} != "{valor}":\n\tcorpusSystem.sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"{headToken}globals()["change"] = True')
+					exec(f'if corpusSystem.sentences["{sent_id}"].tokens[{token}].{coluna} != "{valor}":\n\tcorpusSystem.sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"{headToken}globals()["change"] = True\nglobals()["allCorpora"].corpora["{conllu(request.values.get("c")).system()}"].sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"')
 
 		attention = []
 		if globals()["change"]:
