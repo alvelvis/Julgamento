@@ -480,14 +480,14 @@ def caracteristicasCorpus(ud1, ud2):
     tabela_Geral += "<div style='margin-top:10px' class='col-lg-10 col-lg-offset-1'>"
     tabela_Geral += "<div class='col-lg-6'><table>"
     tabela_Geral += "<tr><th>Lemas em Golden</th><th>#</th><th>%</th></tr>"
-    tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas[x]}</td><td>{str((dicionario_Lemas[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas, reverse=True, key=lambda y: dicionario_Lemas[y])])
+    tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas[x]}</td><td>{str((dicionario_Lemas[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas, reverse=False, key=lambda y: (-dicionario_Lemas[y], y))])
     tabela_Geral += "</table></div>"
 
     if system:
         total_lemas = sum([dicionario_Lemas_s[y] for y in dicionario_Lemas_s])
         tabela_Geral += "<div class='col-lg-6'><table>"
         tabela_Geral += "<tr><th>Lemas em Sistema</th><th>#</th><th>%</th></tr>"
-        tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas_s[x]}</td><td>{str((dicionario_Lemas_s[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas_s, reverse=True, key=lambda y: dicionario_Lemas_s[y])])
+        tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas_s[x]}</td><td>{str((dicionario_Lemas_s[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas_s, reverse=False, key=lambda y: (-dicionario_Lemas_s[y], y))])
         tabela_Geral += "</table></div>"
 
     tabela_Geral += "</div>"
