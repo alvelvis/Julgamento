@@ -174,7 +174,7 @@ def formDB():
     <div class="form-group">
         <label for="about" class="col-sm-4 control-label">Sobre o corpus <span class='glyphicon glyphicon-info-sign' title='Informação extra para ajudar a identificar os diferentes corpora disponíveis'></span></label>
         <div class="col-sm-8">
-            <input class="form-control" id="about" name="about" required>
+            <input class="form-control" id="about" name="about" >
         </div>
     </div>
     <div class="form-group">

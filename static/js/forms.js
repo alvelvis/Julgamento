@@ -296,6 +296,9 @@ $(document).ready(function(){
 
     $('.sobreCorpus').blur(function(){
         loadingScreen();
+        if (!$(".sobreCorpus").text()){
+            $(".sobreCorpus").text(">");
+        };
         $.ajax({
             url: "/api/changeAbout",
             method: "POST",
