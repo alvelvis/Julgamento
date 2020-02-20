@@ -118,7 +118,7 @@ function atualizar(){
         });
 
     $('.showGoldenAnnotation').unbind('click').click(function(){
-        loadingScreen();
+        //loadingScreen();
         $button = $(this);
         if ($button.hasClass('editGoldenAndSystem')) {
             $goldenLabel = '.goldenAndSystemLabel';
@@ -180,7 +180,7 @@ function atualizar(){
     });
 
     $('.showSystemAnnotation').unbind('click').click(function(){
-        loadingScreen();
+        //loadingScreen();
         $button = $(this);
         $button.siblings('.cancelChanges').click();
         $button.parent().parent().next('.getAnnotation').children('.ud').val('ud2');
@@ -267,26 +267,27 @@ function atualizar(){
 function loadingScreen(){
     $('#loading-bg').show();
     $('#loading-image-nobg').show();
+    $("title").text("Carregando | " + $("title").text());
 }
 
 function endLoadingScreen(){
     $('#loading-bg').hide();
     $('#loading-image-nobg').hide();
-}
+    if ($("title").text().indexOf("Carregando | ") !== -1){
+        $("title").text($("title").text().split("Carregando | ")[1]);
+    }
+};
 
 $(window).on('beforeunload', function() {
-    $('#loading-bg').show();
-    $('#loading-image').show();
+    loadingScreen();
 });
 
 $(window).on('unload', function() {
-    $('#loading-bg').hide();
-    $('#loading-image').hide();
+    endLoadingScreen();
 });
 
 $(window).ready(function(){
-    $('#loading-bg').hide();
-    $('#loading-image').hide();
+    endLoadingScreen();
 });
 
 $(document).ready(function(){

@@ -461,7 +461,7 @@ def caracteristicasCorpus(ud1, ud2):
                     dicionario_Lemas_s[token.lemma] += 1
                     n_Tokens_s += 1
 
-    tabela_Geral = "<h3>Características do corpus</h3><br><div class='col-lg-6 col-lg-offset-3'>"
+    tabela_Geral = "<h3>Características do corpus</h3><br><div class='col-lg-8 col-lg-offset-2'>"
     if system:
         tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
         tabela_Geral += "<tr><td></td><th>Sentenças</th><th>Tokens</th><th>Lemas diferentes</th></tr>"
@@ -477,7 +477,7 @@ def caracteristicasCorpus(ud1, ud2):
     tabela_Geral += "</div>"
 
     total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
-    tabela_Geral += "<div class='col-lg-10 col-lg-offset-1'>"
+    tabela_Geral += "<div style='margin-top:10px' class='col-lg-10 col-lg-offset-1'>"
     tabela_Geral += "<div class='col-lg-6'><table>"
     tabela_Geral += "<tr><th>Lemas em Golden</th><th>#</th><th>%</th></tr>"
     tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas[x]}</td><td>{str((dicionario_Lemas[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas, reverse=True, key=lambda y: dicionario_Lemas[y])])
