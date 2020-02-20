@@ -60,6 +60,11 @@ if ($('.repoName').length) {
 
 function atualizar(){
 
+    $('.matrixTd').children("a").click(function(){
+        $(".matrixTd").css("background-color", "white");
+        $(this).parents(".matrixTd").css("background-color", "yellow");
+    });
+
     $('.drag').draggable({
         zIndex: 100,
         revert: true,
