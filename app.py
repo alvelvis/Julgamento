@@ -273,11 +273,11 @@ def upload(alert="", success=""):
 		goldenFile = request.files.get('goldenFile')
 		if goldenFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
 			goldenFileName = removerAcento(conllu(request.values.get('goldenName')).golden())
-			if (COMCORHD and not os.path.isfile(COMCORHD_FOLDER + '/' + goldenFileName)) or (not COMCORHD and not os.path.isfile(UPLOAD_FOLDER + '/' + goldenFileName)):
-				goldenFile.save(COMCORHD_FOLDER + '/' + goldenFileName) if COMCORHD else goldenFile.save(UPLOAD_FOLDER + '/' + goldenFileName)
+			if (INTERROGATORIO and not os.path.isfile(COMCORHD_FOLDER + '/' + goldenFileName)) or (not INTERROGATORIO and not os.path.isfile(UPLOAD_FOLDER + '/' + goldenFileName)):
+				goldenFile.save(COMCORHD_FOLDER + '/' + goldenFileName) if INTERROGATORIO else goldenFile.save(UPLOAD_FOLDER + '/' + goldenFileName)
 				shutil.copyfile(conllu(goldenFileName).findGolden(), conllu(goldenFileName).findOriginal())
 				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/Interrogat-rio'>Interrogatório</a>, ou, (2) "
-				success = f'"{goldenFileName}" enviado com sucesso! {textInterrogatorio if COMCORHD else ""}Julgue-o na <a href="/corpus">página inicial</a>.'
+				success = f'"{goldenFileName}" enviado com sucesso! {textInterrogatorio if INTERROGATORIO else ""}Julgue-o na <a href="/corpus">página inicial</a>.'
 			else:
 				alert = "Arquivo golden já existe na pasta."
 		else:
@@ -355,7 +355,7 @@ def upload(alert="", success=""):
 		if not os.path.isfile(f"{conllu(removerAcento(request.values.get('repoCorpusName'))).findGolden()}"):
 			os.system(sh)
 			textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/interrogat-rio'>Interrogatório</a>, ou, (2) "
-			success = f"Corpus {'e ramo ' if request.values.get('criarRamo') else ''}\"{removerAcento(request.values.get('repoCorpusName'))}\" criado{'s' if request.values.get('criarRamo') else ''} com sucesso! {textInterrogatorio if COMCORHD else ''}Para prosseguir com o julgamento, treine um modelo a partir desse corpus clicando no menu lateral \"Treinar um modelo\" ou envie um arquivo sistema equivalente ao corpus."
+			success = f"Corpus {'e ramo ' if request.values.get('criarRamo') else ''}\"{removerAcento(request.values.get('repoCorpusName'))}\" criado{'s' if request.values.get('criarRamo') else ''} com sucesso! {textInterrogatorio if INTERROGATORIO else ''}Para prosseguir com o julgamento, treine um modelo a partir desse corpus clicando no menu lateral \"Treinar um modelo\" ou envie um arquivo sistema equivalente ao corpus."
 		else:
 			alert = f"Corpus com o nome '{removerAcento(request.values.get('repoCorpusName'))}' já existe."
 
@@ -651,7 +651,7 @@ app.jinja_env.filters['resub'] = resub
 app.jinja_env.filters['sortLambda'] = sortLambda
 app.jinja_env.globals.update(re=re)
 app.jinja_env.globals.update(conllu=conllu)
-app.jinja_env.globals.update(comcorhd=COMCORHD)
+app.jinja_env.globals.update(comcorhd=globals()['INTERROGATORIO'])
 app.jinja_env.globals.update(upload_folder=UPLOAD_FOLDER)
 app.jinja_env.globals.update(checkCorpora=checkCorpora)
 app.jinja_env.globals.update(checkRepo=checkRepo)

@@ -161,12 +161,12 @@ function atualizar(){
             type: 'POST',
             success: function(data){
                 if (data['change']){
-                    $button.parents('.sentence').append(
-                    '<div class="alert alert-success" role="alert">Alteração realizada com sucesso dia ' + data['data'] + '</div>'
+                    $button.parents('.sentence').children('.modification').html(
+                    '<div class="alert alert-success" role="alert">Alteração no GOLDEN realizada com sucesso dia ' + data['data'] + '</div>'
                     )
                 };
                 if (data['attention']){
-                    $button.parents('.sentence').append(data['attention'])
+                    $button.parents('.sentence').children('.modification').append(data['attention'])
                 };
                 $button.siblings('.cancelChanges').hide();
                 $button.attr('title', $title);
@@ -207,8 +207,8 @@ function atualizar(){
             type: 'POST',
             success: function(data){
                 if (data['change']){
-                    $button.parents('.sentence').append(
-                    '<div class="alert alert-success" role="alert">Alteração realizada com sucesso no sistema dia ' + data['data'] + '</div>'
+                    $button.parents('.sentence').children('.modification').html(
+                    '<div class="alert alert-danger" role="alert">Alteração no <font color="red"><b>SISTEMA</b></font> realizada com sucesso dia ' + data['data'] + '</div>'
                     )};
                 $button.siblings('.cancelChanges').hide();
                 $button.attr('title', 'Mostrar sistema');
@@ -241,7 +241,7 @@ function atualizar(){
             type: 'POST',
             success: function(data){
                 if (data['change']){
-                    $button.parents('.sentence').append(
+                    $button.parents('.sentence').children('.modification').html(
                     '<div class="alert alert-success" role="alert">Alteração realizada com sucesso dia ' + data['data'] + '</div>'
                     );
                     $button.removeClass('btn-default').addClass('btn-success');

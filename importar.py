@@ -1,12 +1,17 @@
-from config import UPLOAD_FOLDER, COMCORHD, COMCORHD_FOLDER, JULGAMENTO_FOLDER, REPOSITORIES, VALIDATE_UD, VALIDATE_LANG
+from config import UPLOAD_FOLDER, COMCORHD_FOLDER, JULGAMENTO_FOLDER, REPOSITORIES, VALIDATE_UD, VALIDATE_LANG
 from flask import render_template, request
 import pandas as pd
 import os, estrutura_ud, estrutura_dados, confusao, re, time, datetime, validar_UD
 import models, pickle
 from app import db, app, executor, allCorpora, modificacoesCorpora
 from localtime import localtime
+import sys
 
-
+INTERROGATORIO = False
+if os.path.isdir(JULGAMENTO_FOLDER.rsplit('/', 1)[0] + "/Interrogat-rio"):
+    globals()['INTERROGATORIO'] = True
+else:
+    globals()['INTERROGATORIO'] = False
 
 def checkRepo(repositorio="", branch=""):
     if not os.path.isdir(UPLOAD_FOLDER + "/" + 'repositories'):
@@ -229,11 +234,11 @@ class conllu:
         return self.naked + "_errors"
 
     def findGolden(self):
-        if COMCORHD and os.path.isfile(f'{COMCORHD_FOLDER}/{self.naked}.conllu'):
+        if INTERROGATORIO and os.path.isfile(f'{COMCORHD_FOLDER}/{self.naked}.conllu'):
             return f'{COMCORHD_FOLDER}/{self.naked}.conllu'
         elif os.path.isfile(UPLOAD_FOLDER + "/" + self.naked + ".conllu"):
             return UPLOAD_FOLDER + "/" + self.naked + ".conllu"
-        elif COMCORHD:
+        elif INTERROGATORIO:
             return f'{COMCORHD_FOLDER}/{self.naked}.conllu'
         else:
             return UPLOAD_FOLDER + "/" + self.naked + ".conllu"
@@ -575,7 +580,7 @@ def checkCorpora():
     availableCorpora = []
     missingSystem = []
 
-    if COMCORHD:
+    if INTERROGATORIO:
         for x in os.listdir(COMCORHD_FOLDER):
             if x.endswith('.conllu') and os.path.isfile(f'{UPLOAD_FOLDER}/{conllu(x).system()}') and db.session.query(models.Corpus).get(conllu(x).naked):
                 loadCorpus.submit(conllu(x).naked)
@@ -586,7 +591,7 @@ def checkCorpora():
             loadCorpus.submit(conllu(x).naked)
             availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).system() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).system()], str) else 0}]
 
-    if COMCORHD:
+    if INTERROGATORIO:
         for x in os.listdir(COMCORHD_FOLDER):
             if x.endswith('.conllu') and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}"):
                 loadCorpus.submit(conllu(x).naked)
