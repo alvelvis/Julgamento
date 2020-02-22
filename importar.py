@@ -93,11 +93,8 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
                     if not linha.split(":", 1)[1] in sent_ids:
                         sent_ids[linha.split(":", 1)[1]] = []
                     bold = {'word': arquivoSplit[t-1].split("\t")[1], 'color': 'black'}# if '\t' in arquivo.splitlines()[t-1] else ""
-                    t = re.search(r"^#.*?\n.*?" + re.escape(arquivoSplit[t-1]), arquivo, flags=re.DOTALL)
-                    if t:
-                        sem_nn = t[0].splitlines() if not '\n\n' in t[0] else t[0].rsplit("\n\n", 1)[1].splitlines()
-                        t = len([x for x in sem_nn if x.startswith("#")]) -1
-                        sent_ids[linha.split(":", 1)[1]].append({'id': linha.split("]:")[0].split("Sent ", 1)[1], 't': t, 'bold': bold})
+                    t = allCorpora.corpora[conllu(c).golden()].sentences[linha.split("]:")[0].split("Sent ", 1)[1]].map_token_id[arquivo.splitlines()[t-1].split("\t")[0]]
+                    sent_ids[linha.split(":", 1)[1]].append({'id': linha.split("]:")[0].split("Sent ", 1)[1], 't': t, 'bold': bold})
         html = ""
         for k, problem in enumerate(sorted(sent_ids)):
             html += f"<div class='alert alert-warning' role='alert'>{k+1} / {len(sent_ids)} - {problem}</div>"
