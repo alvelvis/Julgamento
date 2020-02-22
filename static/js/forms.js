@@ -328,6 +328,25 @@ $(document).ready(function(){
         });
     });
 
+    $('.cristianMarneffeToggle').click(function(){
+        loadingScreen();
+        $('.tables').hide();
+        tipo = $(this).attr("tipo");
+        $.ajax({
+            url:"/api/cristianMarneffe",
+            method:"POST",
+            data: {
+                c: $('#c').val(),
+                tipo: tipo,
+            },
+            success: function(data){
+                $('#cristianMarneffe').html('<h3>Cristian-Marneffe (' + tipo + ')</h3>' + data['html'] + "</div>");
+                $('#cristianMarneffe').show();
+                atualizar();
+            }
+        })
+    });
+
     $('.errorLogToggle').click(function(){
         loadingScreen();
         $('.tables').hide();

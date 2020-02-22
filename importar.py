@@ -1,4 +1,4 @@
-from config import UPLOAD_FOLDER, COMCORHD_FOLDER, JULGAMENTO_FOLDER, REPOSITORIES, VALIDATE_UD, VALIDATE_LANG
+from config import UPLOAD_FOLDER, COMCORHD_FOLDER, JULGAMENTO_FOLDER, REPOSITORIES, VALIDATE_UD, VALIDATE_LANG, GOOGLE_LOGIN, VALIDAR_UD
 from flask import render_template, request
 import pandas as pd
 import os, estrutura_ud, estrutura_dados, confusao, re, time, datetime, validar_UD
@@ -63,8 +63,9 @@ def checkRepo(repositorio="", branch=""):
 def renderErrors(c, texto="", exc=[], fromZero=False):
     if not os.path.isfile(conllu(c).findErrors() + "_html") or fromZero:
         if fromZero or not texto:
-            if os.system(f'python3 {VALIDATE_UD} {conllu(c).findGolden()} --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee {conllu(c).findErrors()}'):
-                pass
+            if not os.path.isfile(conllu(c).findErrors()):
+                if os.system(f'python3 {VALIDATE_UD} {conllu(c).findGolden()} --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee {conllu(c).findErrors()}'):
+                    pass
             with open(conllu(c).findErrors()) as f:
                 texto = f.read()
         if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora.get(conllu(c).golden()):
@@ -98,10 +99,9 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
                         t = len([x for x in sem_nn if x.startswith("#")]) -1
                         sent_ids[linha.split(":", 1)[1]].append({'id': linha.split("]:")[0].split("Sent ", 1)[1], 't': t, 'bold': bold})
         html = ""
-        for problem in sorted(sent_ids):
-            html += f"<div class='alert alert-warning' role='alert'>Erro: {problem}</div>"
+        for k, problem in enumerate(sorted(sent_ids)):
+            html += f"<div class='alert alert-warning' role='alert'>{k+1} / {len(sent_ids)} - {problem}</div>"
             for i, sent_id in enumerate(sent_ids[problem]):
-                print(corpus)
                 if sent_id['id'] in corpus.sentences:
                     if sent_id['bold']['word'] and sent_id['bold']['color'] and sent_id['t']:
                         html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(sent_ids[problem]) }</div>' + \
@@ -161,8 +161,7 @@ def findCorpora(filtro, tipo):
             elif tipo == 'delete':
                 lista.append(f'<a style="cursor:pointer" onclick="apagarCorpus(\'{corpus["nome"]}\')" class="list-group-item"><strong>{ corpus["nome"] }</strong> <span class="badge">{ corpus["sentences"] } sentenças</span><br>{ corpus["sobre"] }<br><small>{ prettyDate(corpus["data"]).prettyDateDMAH() }</small></a>')
             elif tipo == 'deleteGolden':
-                if os.path.isfile(conllu(corpus).findOriginal()):
-                    lista.append(f'<a style="cursor:pointer" onclick="apagarCorpusGolden(\'{corpus}\')" class="list-group-item"><strong>{ corpus }</strong></a>')
+                lista.append(f'<a style="cursor:pointer" onclick="apagarCorpusGolden(\'{corpus}\')" class="list-group-item"><strong>{ corpus }</strong></a>')
             elif tipo == 'onlyGolden':
                 if os.path.isfile(conllu(corpus).findOriginal()):
                     lista.append(f'<a href="/corpus?c={ corpus }" class="list-group-item"><strong>{ corpus }</strong></a>')
@@ -561,13 +560,14 @@ def loadCorpus(x):
             if not conllu(x).golden() in allCorpora.corpora:
                 corpusGolden.load(conllu(x).findGolden())
                 corpusOriginal.load(conllu(x).findOriginal())
-                renderErrors(c=x, texto="", fromZero=True)
-                with open(conllu(x).findErrorsValidarUD(), "wb") as f:
-                    f.write(pickle.dumps(validar_UD.validate(
-                        conllu=corpusGolden,
-                        errorList=JULGAMENTO_FOLDER + "/validar_UD.txt"
-                        ))
-                    )
+                if GOOGLE_LOGIN:
+                    renderErrors(c=x, texto="", fromZero=True)
+                    with open(conllu(x).findErrorsValidarUD(), "wb") as f:
+                        f.write(pickle.dumps(validar_UD.validate(
+                            conllu=corpusGolden,
+                            errorList=VALIDAR_UD,
+                            ))
+                        )
             if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
                 corpusSystem.load(conllu(x).findSystem())
             if not conllu(x).golden() in allCorpora.corpora:

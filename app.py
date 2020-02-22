@@ -12,6 +12,7 @@ import validar_UD, functions
 from functions import cleanEstruturaUD
 from flask_executor import Executor
 from subprocess import Popen
+import json
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -68,6 +69,14 @@ def refreshTables():
 	if conllu(request.values.get("c")).system() in allCorpora.corpora:
 		allCorpora.corpora.pop(conllu(request.values.get("c")).system())
 	checkCorpora()
+	if os.path.isdir(UPLOAD_FOLDER + "/CM-" + request.values.get("c")):
+		shutil.rmtree(UPLOAD_FOLDER + "/CM-" + request.values.get("c") + "/", ignore_errors=True)
+	if os.path.isfile(conllu(request.values.get("c")).findErrorsValidarUD()):
+		os.remove(conllu(request.values.get("c")).findErrorsValidarUD())
+	if os.path.isfile(conllu(request.values.get("c")).findErrors()):
+		os.remove(conllu(request.values.get("c")).findErrors())
+	if os.path.isfile(conllu(request.values.get("c")).findErrors() + "_html"):
+		os.remove(conllu(request.values.get("c")).findErrors() + "_html")
 	return jsonify({'success': True})
 
 @app.route("/api/getCommits", methods="POST".split("|"))
@@ -87,13 +96,51 @@ def getCommits():
 			'success': True,
 		})
 
+@app.route("/api/cristianMarneffe", methods="POST".split("|"))
+def cristianMarneffe():
+	if not google.authorized and GOOGLE_LOGIN:
+		return redirect(url_for("google.login"))
+
+	if not os.path.isfile(UPLOAD_FOLDER + f"/CM-{request.values.get('c')}/results_{request.values.get('tipo')}.json"):
+		os.system("python3 Cristian-Marneffe.py {} {}".format(
+			conllu(request.values.get("c")).findGolden(), 
+			request.values.get("tipo"),
+			))
+
+	with open(UPLOAD_FOLDER + f"/CM-{request.values.get('c')}/results_{request.values.get('tipo')}.json") as f:
+		results = json.load(f)
+
+	html = ""
+	if not results:
+		html += f"<div class='alert alert-warning' role='alert'>Não foram encontradas inconsistências do tipo Cristian-Marneffe.</div>"
+	else:
+		for i, exemplo in enumerate(results):
+			html += f"<div class='alert alert-warning' role='alert'>{i+1} / {len(results)} - {exemplo['exemplo']}</div>"
+			for k, frase in enumerate(exemplo['frases']):
+				html += f'<div class="panel panel-default"><div class="panel-body">{ k+1 } / { len(exemplo["frases"]) }</div>'
+				html += render_template(
+						'sentence.html',
+						golden=allCorpora.corpora[conllu(request.values.get("c")).golden()].sentences[frase["sent_id"]],
+						c=request.values.get("c"),
+						t=allCorpora.corpora[conllu(request.values.get("c")).golden()].sentences[frase["sent_id"]].map_token_id[str(frase["id1"])],
+						bold={'word': frase['WORD1'], 'color': 'red'},
+						rel=frase["rel"],
+						secBold={'word': frase['WORD2'], 'color': 'blue'},
+						goldenAndSystem=True if conllu(request.values.get("c")).system() in allCorpora.corpora else False
+						) + "</div>"
+	
+	return jsonify({
+		'html': html,
+		'success': True,
+		'c': request.values.get('c'),
+	}) 
 
 @app.route('/api/getErrors', methods="POST".split("|"))
 def getErrors():
 	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 		
-	html = renderErrors(c=request.values.get("c"), exc=request.values.get('exceptions').split("|") if request.values.get('exceptions') else "", fromZero=request.values.get("fromZero") if request.values.get("fromZero") else False)
+	html = renderErrors(c=request.values.get("c"), exc=request.values.get('exceptions').split("|") if request.values.get('exceptions') else "", fromZero=False)
 	return jsonify({
 		'html': html,
 		'success': True,
@@ -106,12 +153,18 @@ def getErrorsValidarUD():
 		return redirect(url_for("google.login"))
 	
 	html = ""
-	with open(conllu(request.values.get("c")).findErrorsValidarUD(), "rb") as f:
-		errors = pickle.loads(f.read())
+	if os.path.isfile(conllu(request.values.get("c")).findErrorsValidarUD()):
+		with open(conllu(request.values.get("c")).findErrorsValidarUD(), "rb") as f:
+			errors = pickle.loads(f.read())
+	else:
+		errors = validar_UD.validate(allCorpora.corpora[conllu(request.values.get("c")).golden()], errorList=VALIDAR_UD, noMissingToken=True)
+		with open(conllu(request.values.get("c")).findErrorsValidarUD(), "wb") as f:
+			f.write(pickle.dumps(errors))
+
 	if not errors:
-		html = "Não foram encontrados erros de validação."
-	for error in errors:
-		html += f"<div class='alert alert-warning' role='alert'>Erro: {error}</div>"
+		html = "<div class='alert alert-warning' role='alert'>Não foram encontrados erros de validação.</div>"
+	for k, error in enumerate(errors):
+		html += f"<div class='alert alert-warning' role='alert'>{k+1} / {len(errors)} - {error}</div>"
 		for i, value in enumerate(errors[error]):
 			if value['sentence']:
 				html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(errors[error]) }</div>' + \
@@ -256,6 +309,9 @@ def getTables():
 		return ""
 
 	elif table == 'errorValidarUD':
+		return ""
+
+	elif table == 'cristianMarneffe':
 		return ""
 
 @app.route('/upload', methods="GET|POST".split("|"))
@@ -438,7 +494,7 @@ def sendAnnotation():
 			corpus.save(arquivo)
 			if goldenAndSystem:
 				corpusSystem.save(arquivoSystem)
-			errors = validar_UD.validate(corpus, errorList=JULGAMENTO_FOLDER + "/validar_UD.txt", noMissingToken=True)
+			errors = validar_UD.validate(corpus, errorList=VALIDAR_UD, noMissingToken=True)
 			if errors:
 				for error in errors:
 					if error.strip():

@@ -75,6 +75,7 @@ class Sentence:
 		self.tokens = list()
 		self.tokens_incompletos = list()
 		self.separator = separator
+		self.map_token_id = {}
 
 
 	def get_head(self, token):
@@ -112,20 +113,22 @@ class Sentence:
 			self.id = txt.split('# id =')[1].split('\n')[0].strip()
 			self.metadados["id"] = self.id
 		
+		n_token = 0
 		for linha in txt.split(self.separator):
 			if linha and "#" == linha[0] and "=" in linha:
 				identificador = linha.split("#", 1)[1].split('=', 1)[0].strip()
 				if identificador not in ["text", "sent_id", "source", "id"]:
 					valor = linha.split('=', 1)[1].strip()
 					self.metadados[identificador] = valor
-			if "\t" in linha:
+			if not linha.startswith("# ") and "\t" in linha:
 				tok = Token(sent_id = self.sent_id, text = self.text)
 				tok.build(linha)
 				tok.head_token = self.default_token
 				tok.next_token = self.default_token
 				tok.previous_token = self.default_token
+				self.map_token_id[tok.id] = n_token
 				self.tokens.append(tok)
-
+				n_token += 1
 
 		if self.recursivo != False:
 			for token in self.tokens:

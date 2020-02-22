@@ -17,12 +17,14 @@
     <div class="panel-body">
         <h3>Tabela de conteúdos</h3>
         <ul class="list-group">
-            <a href="#caracteristicas" name="caracteristicas" class="tables-toggle list-group-item">Características do corpus <span class="badge" style="background-color: red;">novidade</span></a>
-            <a href="#modificacoes" name="modificacoes" class="tables-toggle list-group-item">Modificações realizadas no corpus <span class="badge" style="background-color: red;">novidade</span></a>
+            <a href="#caracteristicas" name="caracteristicas" class="tables-toggle list-group-item">Características do corpus <span class="badge" >novidade</span></a>
+            <a href="#modificacoes" name="modificacoes" class="tables-toggle list-group-item">Modificações realizadas no corpus <span class="badge">novidade</span></a>
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#metrics" name="metrics" class="tables-toggle list-group-item">Métricas do conll18_ud_eval.py</a>{% endif %}
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#sentAccuracy" name="sentAccuracy" class="tables-toggle list-group-item">Acurácia das sentenças</a>{% endif %}
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSAccuracy" name="accuracy" class="tables-toggle list-group-item">Acurácia por categoria morfossintática</a>{% endif %}
             <!--a href="#DEPRELAccuracy" name="accuracy" class="tables-toggle list-group-item">Acurácia por DEPREL</a-->
+            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="lexicais" class="cristianMarneffeToggle list-group-item">Cristian-Marneffe (lexicais) <span class="badge" style="background-color: red;">novidade</span></a>
+            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="gramaticais" class="cristianMarneffeToggle list-group-item">Cristian-Marneffe (gramaticais) <span class="badge" style="background-color: red;">novidade</span></a>
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSMatrix" name="POSMatrix" class="tables-toggle list-group-item">Matriz de confusão de UPOS</a>{% endif %}
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#DEPRELMatrix" name="DEPRELMatrix" class="tables-toggle list-group-item">Matriz de confusão de DEPREL</a>{% endif %}
             <!--a href="#changes" name="changes" class="tables-toggle list-group-item">Relatório de modificações (em breve)</a-->
@@ -31,6 +33,8 @@
             <a href="#refreshTables" class="refreshTables list-group-item" title="Refazer tabelas de acordo com novas atualizações no corpus">Atualizar corpus e tabelas</a>
         </ul>
     </div>
+</div>
+<div id="cristianMarneffe" class="tables col-lg-10 col-lg-offset-1">
 </div>
 <div id="caracteristicas" class="tables col-lg-8 col-lg-offset-2 panel panel-default">
     <div class="panel-body">

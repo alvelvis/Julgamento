@@ -4,12 +4,13 @@
         <p>{% if c and conllu(c).original() in allCorpora.corpora and golden.sent_id in allCorpora.corpora[conllu(c).golden()].sentences and golden.sent_id in allCorpora.corpora[conllu(c).original()].sentences and allCorpora.corpora[conllu(c).golden()].sentences[golden.sent_id].tokens_to_str() != allCorpora.corpora[conllu(c).original()].sentences[golden.sent_id].tokens_to_str() %}<span title="Esta sentença já foi editada anteriormente" class="badge" style="background-color: red">!</span> {% endif %}{{ golden.sent_id or golden.id }}</p>
         <p>
             {% if thirdBold %}{{ golden.text | resub(re.escape(bold['word']), '<b><span style="color:'+bold['color']+';">' + bold['word'] + '</span></b>') | resub(re.escape(thirdBold['word']), '<span style="color:'+thirdBold['color']+';">' + thirdBold['word'] + '</span>') | resub(re.escape(secBold['word']), '<span style="color:'+secBold['color']+';">' + secBold['word'] + '</span>') | safe }}
+            {% elif secBold %}{{ golden.text | resub(re.escape(bold['word']), '<b><span style="color:'+bold['color']+';">' + bold['word'] + '</span></b>') | resub(re.escape(secBold['word']), '<span style="color:'+secBold['color']+';">' + secBold['word'] + '</span>') | safe }}
             {% elif not bold %}{{ golden.text | safe }}
             {% elif bold %}{{ golden.text | resub(re.escape(bold['word']), '<b><span style="color:'+bold['color']+';">' + bold['word'] + '</span></b>') | safe }}
             {% endif %}
         </p>
         <div class="btn-group" role="group">
-            <button type="button" title="Mostrar golden" sent_id="{{golden.sent_id or golden.id}}" class="goldenButton showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-user"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% endif %}</button>
+            <button type="button" title="Mostrar golden" sent_id="{{golden.sent_id or golden.id}}" class="goldenButton showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-user"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% elif rel %} {{rel}}{% endif %}</button>
             {% if system %}
                 <button type="button" title="Mostrar sistema" sent_id="{{golden.sent_id or golden.id}}" class="systemButton showAnnotation showSystemAnnotation btn btn-default"><i class="fa fa-laptop"></i>{% if divergence %} {{ divergence['system']['category'] }}{% endif %}</button>
             {% endif %}
