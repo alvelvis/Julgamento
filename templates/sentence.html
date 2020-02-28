@@ -1,7 +1,7 @@
 {% if golden %}
 <div class="panel-body sentence" style="max-width:100%;">
     <div class="container fixedHeader" style="max-height:70vh; overflow-y:auto; padding-bottom:30px; max-width:100%;">
-        <p>{% if c and conllu(c).original() in allCorpora.corpora and golden.sent_id in allCorpora.corpora[conllu(c).golden()].sentences and golden.sent_id in allCorpora.corpora[conllu(c).original()].sentences and allCorpora.corpora[conllu(c).golden()].sentences[golden.sent_id].tokens_to_str() != allCorpora.corpora[conllu(c).original()].sentences[golden.sent_id].tokens_to_str() %}<span title="Esta sentença já foi editada anteriormente" class="badge" style="background-color: red">!</span> {% endif %}{{ golden.sent_id or golden.id }}</p>
+        <p>{% if c and conllu(c).original() in allCorpora.corpora and golden.sent_id in allCorpora.corpora[conllu(c).golden()].sentences and golden.sent_id in allCorpora.corpora[conllu(c).original()].sentences and allCorpora.corpora[conllu(c).golden()].sentences[golden.sent_id].tokens_to_str() != allCorpora.corpora[conllu(c).original()].sentences[golden.sent_id].tokens_to_str() %}<span title="Esta sentença já foi editada anteriormente" class="badge translateTitle" style="background-color: red">!</span> {% endif %}{{ golden.sent_id or golden.id }}</p>
         <p>
             {% if thirdBold %}{{ golden.text | resub(re.escape(bold['word']), '<b><span style="color:'+bold['color']+';">' + bold['word'] + '</span></b>') | resub(re.escape(thirdBold['word']), '<span style="color:'+thirdBold['color']+';">' + thirdBold['word'] + '</span>') | resub(re.escape(secBold['word']), '<span style="color:'+secBold['color']+';">' + secBold['word'] + '</span>') | safe }}
             {% elif secBold %}{{ golden.text | resub(re.escape(bold['word']), '<b><span style="color:'+bold['color']+';">' + bold['word'] + '</span></b>') | resub(re.escape(secBold['word']), '<span style="color:'+secBold['color']+';">' + secBold['word'] + '</span>') | safe }}
@@ -10,18 +10,18 @@
             {% endif %}
         </p>
         <div class="btn-group" role="group">
-            <button type="button" title="Mostrar golden" sent_id="{{golden.sent_id or golden.id}}" class="goldenButton showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-user"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% elif rel %} {{rel}}{% endif %}</button>
+            <button type="button" title="Mostrar anotação golden" sent_id="{{golden.sent_id or golden.id}}" class="goldenButton translateTitle showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-user"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% elif rel %} {{rel}}{% endif %}</button>
             {% if system %}
-                <button type="button" title="Mostrar sistema" sent_id="{{golden.sent_id or golden.id}}" class="systemButton showAnnotation showSystemAnnotation btn btn-default"><i class="fa fa-laptop"></i>{% if divergence %} {{ divergence['system']['category'] }}{% endif %}</button>
+                <button type="button" title="Mostrar anotação sistema" sent_id="{{golden.sent_id or golden.id}}" class="systemButton translateTitle showAnnotation showSystemAnnotation btn btn-default"><i class="fa fa-laptop"></i>{% if divergence %} {{ divergence['system']['category'] }}{% endif %}</button>
             {% endif %}
             {% if goldenAndSystem %}
-                <button type="button" title="Editar golden e sistema ao mesmo tempo" sent_id="{{golden.sent_id or golden.id}}" class="editGoldenAndSystem showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-share"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% endif %}</button>
+                <button type="button" title="Editar golden e sistema ao mesmo tempo" sent_id="{{golden.sent_id or golden.id}}" class="editGoldenAndSystem translateTitle showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-share"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% endif %}</button>
             {% endif %}
             {% if divergence and system %}
             <!--button title="O sistema está certo! A coluna '{{col}}' do token '{{bold['word']}}' no arquivo golden será alterada para '{{ divergence['system']['category'] }}', e o token passará a apontar para '{{ divergence['system']['head']['word'] }}'" type="button" class="quickSendAnnotation btn btn-default"><span class='glyphicon glyphicon-flash'></span></button-->
             <!--form class="quickFormAnnotation" style="display:none"><input type=hidden name="c" value="{{c}}"><input type=hidden name="sent_id" value="{{golden.sent_id}}"><input type=hidden name="{{ boldCol }}" value="{{ divergence['system']['category'] }}"><input type=hidden name="headToken" value="{{ divergence['system']['head']['id'] }}"><input type=hidden name="ud" value="ud1"></form-->
             {% endif %}
-            <button type="button" id="cancelChanges" class="cancelChanges btn btn-danger" title="Descartar alterações" style="display:none"><span class="glyphicon glyphicon-remove"></span></button>
+            <button type="button" id="cancelChanges" class="cancelChanges translateTitle btn btn-danger" title="Descartar alterações" style="display:none"><span class="glyphicon glyphicon-remove"></span></button>
             <input type="hidden" class="goldenLabel" value="<i class='fa fa-user'></i>{% if divergence %} {{ divergence['golden']['category'] }}{% endif %}">
             <input type="hidden" class="goldenAndSystemLabel" value="<i class='fa fa-share'></i>{% if divergence %} {{ divergence['golden']['category'] }}{% endif %}">
             <input type="hidden" class="systemLabel" value="<i class='fa fa-laptop'></i>{% if divergence %} {{ divergence['system']['category'] }}{% endif %}">

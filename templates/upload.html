@@ -93,7 +93,7 @@
             </div>
             <form class="formGold" enctype="multipart/form-data" method="POST" action="/upload">
                 <input style="display:none" type=file onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptGoldGold').removeClass('glyphicon-upload').addClass('glyphicon-ok'); $('#goldenName').val($(this).val().replace(/^.*[\\\/]/, '').split('.conllu')[0]); } else { $('.glyphOptGoldGold').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optGoldGoldenFile" name="goldenFile">
-                <center><input style="width:50%; text-align: center;" placeholder="Nome do corpus" class="form-control" id="goldenName" name="goldenName" required></center>
+                <center><input style="width:50%; text-align: center;" placeholder="Nome do corpus" class="form-control translatePlaceholder id="goldenName" name="goldenName" required></center>
             </form>
         </div>
         <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptGoldGold').hasClass('glyphicon-ok')) { $('.formGold').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> <span class="translateHtml">Enviar</span></button></center>
@@ -108,10 +108,10 @@
             <form class="formSys" enctype="multipart/form-data" method="POST" action="/upload">
                 <input type=file style="display:none" onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptSysSystem').removeClass('glyphicon-upload').addClass('glyphicon-ok'); } else { $('.glyphOptSysSystem').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optSysSystemFile" name="systemFile">
                 <div class="form-group">
-                    <label for="sysGoldenFile" class="col-sm-4 control-label">Arquivo golden <span class='glyphicon glyphicon-info-sign translateTitle' title='Para enviar um arquivo golden, selecione "Enviar arquivo golden" no menu lateral'></span></label>
+                    <label for="sysGoldenFile" class="col-sm-4 control-label"><span class="translateHtml">Arquivo golden</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='Para enviar um arquivo golden, selecione "Enviar arquivo golden" no menu lateral'></span></label>
                     <div class="col-sm-8">
                         <select name="sysGoldenFile" id="sysGoldenFile" class="form-control selectpicker" data-live-search="true" required>
-                            <option disabled selected value> -- escolha uma opção -- </option>
+                            <option class="translateHtml" disabled selected value> -- escolha uma opção -- </option>
                             {% for x in checkCorpora()['missingSystem'] %}
                             <option>{{x}}</option>
                             {% endfor %}

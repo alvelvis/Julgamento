@@ -173,13 +173,13 @@ def formDB():
     return '''
 <div class="form-horizontal">
     <div class="form-group">
-        <label for="about" class="col-sm-4 control-label">Sobre o corpus <span class='glyphicon glyphicon-info-sign translateTitle' title='Informação extra para ajudar a identificar os diferentes corpora disponíveis'></span></label>
+        <label for="about" class="col-sm-4 control-label"><span class="translateHtml">Sobre o corpus</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='Informação extra para ajudar a identificar os diferentes corpora disponíveis'></span></label>
         <div class="col-sm-8">
             <input class="form-control" id="about" name="about" >
         </div>
     </div>
     <div class="form-group">
-        <label for="partitions" class="col-sm-4 control-label">Partições <span class='glyphicon glyphicon-info-sign translateTitle' title='A separação entre as partições train/test/dev deve ser feita por meio de arquivos .txt, contendo um ID de sentença por linha, na pasta /static/uploads'></span></label>
+        <label for="partitions" class="col-sm-4 control-label"><span class="translateHtml">Partições</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='A separação entre as partições train/test/dev deve ser feita por meio de arquivos .txt, contendo um ID de sentença por linha, na pasta /static/uploads'></span></label>
         <div class="col-sm-8">
             <select class="form-control selectpicker" data-live-search="true" id="partitions" name="partitions" required>
                 ''' + "\n".join(\
@@ -415,7 +415,7 @@ def modificacoes(c):
     html += f"<br><h4><span class='translateHtml'>Sentenças modificadas</span> ({len(sentences_diferentes)})</h4><pre>{'; '.join(sentences_diferentes)}</pre>"
     html += f"<br><h4><span class='translateHtml'>Sentenças não modificadas</span> ({len(sentences_iguais)})</h4><pre>{'; '.join(sentences_iguais)}</pre>"
 
-    html += f"<br><h4><span class='translateHtml>Lemas diferentes</span> ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
+    html += f"<br><h4><span class='translateHtml'>Lemas diferentes</span> ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
     html += "<table>"
     html += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
     html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=lemma'>" + str(len(lemas_diferentes[x])) + "</a></td></tr>" for x in sorted(lemas_diferentes, reverse=False, key=lambda y: (-len(lemas_diferentes[y]), y))])

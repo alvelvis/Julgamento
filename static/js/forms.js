@@ -1,13 +1,548 @@
 var translations = {
+    "Não foram encontradas inconsistências do tipo Cristian-Marneffe.": {
+        "pt-BR": "Não foram encontradas inconsistências do tipo Cristian-Marneffe.",
+        "en-US": "No Cristian-Marneffe inconsistencies were found."
+    },
+    "Não foram encontrados erros de validação.": {
+        "pt-BR": "Não foram encontrados erros de validação.",
+        "en-US": "Validation errors not found."
+    },
+    "Métricas do conll18_ud_eval.py": {
+        "pt-BR": "Métricas do conll18_ud_eval.py",
+        "en-US": "Metrics from conll18_ud_eval.py"
+    },
+    "Sentenças com UPOS e DEPREL corretas": {
+        "pt-BR": "Sentenças com UPOS e DEPREL corretas",
+        "en-US": "Sentences with correct UPOS and DEPREL"
+    },
+    "Acurácia por UPOS": {
+        "pt-BR": "Acurácia por UPOS",
+        "en-US": "UPOS accuracy"
+    },
+    "Acurácia por DEPREL": {
+        "pt-BR": "Acurácia por DEPREL",
+        "en-US": "DEPREL accuracy"
+    },
+    "Matriz de confusão de UPOS": {
+        "pt-BR": "Matriz de confusão de UPOS",
+        "en-US": "UPOS confusion matrix"
+    },
+    "Matriz de confusão de DEPREL": {
+        "pt-BR": "Matriz de confusão de DEPREL",
+        "en-US": "DEPREL confusion matrix"
+    },
+    " -- escolha um ramo -- ": {
+        "pt-BR": " -- escolha um ramo -- ",
+        "en-US": " -- choose a branch -- "
+    },
+    "sentenças": {
+        "pt-BR": "sentenças",
+        "en-US": "sentences"
+    },
+    "Última modificação:": {
+        "pt-BR": "Última modificação:",
+        "en-US": "Last modified:"
+    },
+    "Conclusão:": {
+        "pt-BR": "Conclusão:",
+        "en-US": "Completed:"
+    },
+    "Treinar todo o corpus (crossvalidation)": {
+        "pt-BR": "Usar o dataset inteiro (crossvalidation)",
+        "en-US": "Use the whole dataset (crossvalidation)"
+    },
+    "LAS": {
+        "pt-BR": "LAS",
+        "en-US": "LAS"
+    },
+    "Erros de dephead": {
+        "pt-BR": "Erros de dephead",
+        "en-US": "DEPHEAD erros"
+    },
+    "Acertos": {
+        "pt-BR": "Acertos",
+        "en-US": "Hits"
+    },
+    "Os corpora antes e depois não coincidem.": {
+        "pt-BR": "Os corpora antes e depois não coincidem.",
+        "en-US": "Corpora do not coincide."
+    },
+    "Modificações realizadas no corpus": {
+        "pt-BR": "Modificações realizadas no corpus",
+        "en-US": "Modifications made to the corpus"
+    },
+    "Sentenças modificadas": {
+        "pt-BR": "Sentenças modificadas",
+        "en-US": "Modified sentences"
+    },
+    "Sentenças não modificadas": {
+        "pt-BR": "Sentenças não modificadas",
+        "en-US": "Unmodified sentences"
+    },
+    "Lemas diferentes": {
+        "pt-BR": "Lemas diferentes",
+        "en-US": "Different lemmas"
+    },
+    "ANTES": {
+        "pt-BR": "ANTES",
+        "en-US": "BEFORE"
+    },
+    "DEPOIS": {
+        "pt-BR": "DEPOIS",
+        "en-US": "AFTER"
+    },
+    "UPOS diferentes": {
+        "pt-BR": "UPOS diferentes",
+        "en-US": "Different UPOS"
+    },
+    "DEPREL diferentes": {
+        "pt-BR": "DEPREL diferentes",
+        "en-US": "Different DEPREL"
+    },
+    "Características do corpus": {
+        "pt-BR": "Características do corpus",
+        "en-US": "Corpus' technical features"
+    },
+    "Sentenças": {
+        "pt-BR": "Sentenças",
+        "en-US": "Sentences"
+    },
+    "Tokens": {
+        "pt-BR": "Tokens",
+        "en-US": "Tokens"
+    },
+    "Golden": {
+        "pt-BR": "Golden",
+        "en-US": "Golden"
+    },
+    "Sistema": {
+        "pt-BR": "Sistema",
+        "en-US": "System"
+    },
+    "Lemas em Golden": {
+        "pt-BR": "Lemas em Golden",
+        "en-US": "Golden Lemmas"
+    },
+    "Lemas em Sistema": {
+        "pt-BR": "Lemas em Sistema",
+        "en-US": "System Lemmas"
+    },
+    "Sentenças comparáveis": {
+        "pt-BR": "Sentenças comparáveis",
+        "en-US": "Comparable sentences"
+    },
+    "Sentenças corretas": {
+        "pt-BR": "Sentenças corretas",
+        "en-US": "Correct sentences"
+    },
+    "tabela de conteúdos": {
+        "pt-BR": "tabela de conteúdos",
+        "en-US": "table of contents"
+    },
+    "mudar corpus": {
+        "pt-BR": "mudar corpus",
+        "en-US": "change corpus"
+    },
+    "escolher corpus": {
+        "pt-BR": "escolher corpus",
+        "en-US": "choose a corpus"
+    },
+    "sair": {
+        "pt-BR": "sair",
+        "en-US": "logout"
+    },
+    "gerenciar corpora": {
+        "pt-BR": "gerenciar corpora",
+        "en-US": "manage corpora"
+    },
+    "Julgamento é parte da ET | <a href=\"https://github.com/alvelvis/Julgamento\" target=\"_blank\">GitHub</a>": {
+        "pt-BR": "Julgamento é parte da ET | <a href=\"https://github.com/alvelvis/Julgamento\" target=\"_blank\">GitHub</a>",
+        "en-US": "Julgamento is part of ET | <a href=\"https://github.com/alvelvis/Julgamento\" target=\"_blank\">GitHub</a>"
+    },
+    "Wiki - documentação das ferramentas": {
+        "pt-BR": "Wiki - documentação das ferramentas",
+        "en-US": "Wiki - documentation for our tools"
+    },
+    "Interrogatório - Ambiente de busca e revisão de corpora anotados": {
+        "pt-BR": "Interrogatório - Ambiente de busca e revisão de corpora anotados",
+        "en-US": "Interrogatório - Environment for querying and revising annotated corpora"
+    },
+    "ComCorHd - Linguística Computacional, Corpus e Humanidades Digitais": {
+        "pt-BR": "ComCorHd - Linguística Computacional, Corpus e Humanidades Digitais",
+        "en-US": "ComCorHd - Computational Linguistics, Corpus and Digital Humanities"
+    },
+    "Quem é o pai do": {
+        "pt-BR": "Quem é o pai do",
+        "en-US": "Who is the head of"
+    },
+    "Divergências em": {
+        "pt-BR": "Divergências em",
+        "en-US": "Divergences in"
+    },
+    "Selecione um corpus": {
+        "pt-BR": "Selecione um corpus",
+        "en-US": "Select a corpus"
+    },
+    "Corpora prontos para julgamento": {
+        "pt-BR": "Corpora prontos para julgamento",
+        "en-US": "Corpora ready for judgement"
+    },
+    "Material dourado pronto para julgamento <span class=\"badge\" style=\"background-color: red;\">novidade</span>": {
+        "pt-BR": "Material dourado pronto para julgamento <span class=\"badge\" style=\"background-color: red;\">novidade</span>",
+        "en-US": "Golden material ready for judgement <span class=\"badge\" style=\"background-color: red;\">new</span>"
+    },
+    "Treinamentos em progresso": {
+        "pt-BR": "Treinamentos em progresso",
+        "en-US": "Trainings in progress"
+    },
+    "Treinamento de": {
+        "pt-BR": "Treinamento de",
+        "en-US": "Training of"
+    },
+    "Status:": {
+        "pt-BR": "Status:",
+        "en-US": "Status"
+    },
+    "Concluído": {
+        "pt-BR": "Concluído",
+        "en-US": "Completed"
+    },
+    "Ir para o julgamento do corpus": {
+        "pt-BR": "Ir para o julgamento do corpus",
+        "en-US": "Go to the corpus judgement"
+    },
+    "Cancelado": {
+        "pt-BR": "Cancelado",
+        "en-US": "Canceled"
+    },
+    "Apagar relatório": {
+        "pt-BR": "Apagar relatório",
+        "en-US": "Delete record"
+    },
+    "Em progresso": {
+        "pt-BR": "Em progresso",
+        "en-US": "In progress"
+    },
+    "Confusões entre": {
+        "pt-BR": "Confusões entre",
+        "en-US": "Confusions between"
+    },
+    "golden": {
+        "pt-BR": "golden",
+        "en-US": "golden"
+    },
+    "e": {
+        "pt-BR": "e",
+        "en-US": "and"
+    },
+    "sistema": {
+        "pt-BR": "sistema",
+        "en-US": "system"
+    },
+    "Coluna:": {
+        "pt-BR": "Coluna:",
+        "en-US": "Column:"
+    },
+    "Golden:": {
+        "pt-BR": "Golden:",
+        "en-US": "Golden:"
+    },
+    "Sistema:": {
+        "pt-BR": "Sistema:",
+        "en-US": "System:"
+    },
+    "Tabela de conteúdos": {
+        "pt-BR": "Tabela de conteúdos",
+        "en-US": "Table of contents"
+    },
+    "Características do corpus <span class=\"badge\">novidade</span>": {
+        "pt-BR": "Características do corpus <span class=\"badge\">novidade</span>",
+        "en-US": "Corpus' technical features <span class=\"badge\">new</span>"
+    },
+    "Modificações realizadas no corpus <span class=\"badge\">novidade</span>": {
+        "pt-BR": "Modificações realizadas no corpus <span class=\"badge\">novidade</span>",
+        "en-US": "Modifications made to the corpus <span class=\"badge\">new</span>"
+    },
+    "Acurácia das sentenças": {
+        "pt-BR": "Acurácia das sentenças",
+        "en-US": "Sentences accuracy"
+    },
+    "Acurácia por categoria morfossintática": {
+        "pt-BR": "Acurácia por categoria morfossintática",
+        "en-US": "Accuracy per morphosyntactic category"
+    },
+    "Cristian-Marneffe (lexicais) <span class=\"badge\" style=\"background-color: red;\">novidade</span>": {
+        "pt-BR": "Cristian-Marneffe (lexicais) <span class=\"badge\" style=\"background-color: red;\">novidade</span>",
+        "en-US": "Cristian-Marneffe (lexical) <span class=\"badge\" style=\"background-color: red;\">new</span>"
+    },
+    "Cristian-Marneffe (gramaticais) <span class=\"badge\" style=\"background-color: red;\">novidade</span>": {
+        "pt-BR": "Cristian-Marneffe (gramaticais) <span class=\"badge\" style=\"background-color: red;\">novidade</span>",
+        "en-US": "Cristian-Marneffe (grammatical) <span class=\"badge\" style=\"background-color: red;\">new</span>"
+    },
+    "Erros de validar_UD.py": {
+        "pt-BR": "Erros de validar_UD.py",
+        "en-US": "Errors from validar_UD.py"
+    },
+    "Erros de validate.py": {
+        "pt-BR": "Erros de validate.py",
+        "en-US": "Errors from validate.py"
+    },
+    "Atualizar corpus e tabelas": {
+        "pt-BR": "Atualizar corpus e tabelas",
+        "en-US": "Update corpus and tables"
+    },
+    "Corpus está sendo carregado, aguarde um momento ou <a href=\"/corpus\">volte mais tarde</a>.": {
+        "pt-BR": "Corpus está sendo carregado, aguarde um momento ou <a href=\"/corpus\">volte mais tarde</a>.",
+        "en-US": "Corpus is loading, please wait a moment or <a href=\"/corpus\">comeback later</a>."
+    },
+    "Gerenciamento de corpora": {
+        "pt-BR": "Gerenciamento de corpora",
+        "en-US": "Corpora management"
+    },
+    "Alguns caminhos": {
+        "pt-BR": "Alguns caminhos",
+        "en-US": "Choose a path"
+    },
+    "Enviar arquivo golden": {
+        "pt-BR": "Enviar arquivo golden",
+        "en-US": "Upload golden corpus file"
+    },
+    "Enviar arquivo sistema": {
+        "pt-BR": "Enviar arquivo sistema",
+        "en-US": "Upload system corpus file"
+    },
+    "Puxar golden do GitHub": {
+        "pt-BR": "Puxar golden do GitHub",
+        "en-US": "Pull golden corpus from GitHub"
+    },
+    "Treinar um modelo": {
+        "pt-BR": "Treinar um modelo",
+        "en-US": "Train a model"
+    },
+    "Excluir corpus do Julgamento": {
+        "pt-BR": "Excluir corpus do Julgamento",
+        "en-US": "Delete corpus from Julgamento"
+    },
+    "Relatórios de treinamento": {
+        "pt-BR": "Relatórios de treinamento",
+        "en-US": "Training reports"
+    },
+    "Excluir corpus pronto para julgamento": {
+        "pt-BR": "Excluir corpus pronto para julgamento",
+        "en-US": "Delete corpus ready for judgement"
+    },
+    "Deletar arquivo golden também": {
+        "pt-BR": "Deletar arquivo golden também",
+        "en-US": "Delete golden corpus file too"
+    },
+    "Excluir corpus \"golden\" do Julgamento": {
+        "pt-BR": "Excluir corpus \"golden\" do Julgamento",
+        "en-US": "Delete \"golden\" corpus from Julgamento"
+    },
+    "Os arquivos listados não têm uma contraparte \"sistema\" e, portanto, têm o seu julgamento limitado a poucas funcionalidades.": {
+        "pt-BR": "Os arquivos listados não têm uma contraparte \"sistema\" e, portanto, têm o seu julgamento limitado a poucas funcionalidades.",
+        "en-US": "The listed files do not have a \"system corpus\" counterpart and, therefore, have their judgement limited to a few features."
+    },
+    "Relatórios de treinamentos concluidos": {
+        "pt-BR": "Relatórios de treinamentos concluidos",
+        "en-US": "Reports from completed trainings"
+    },
+    "O arquivo deve ter a extensão \".conllu\".": {
+        "pt-BR": "O arquivo deve ter a extensão \".conllu\".",
+        "en-US": "The file must have the extension \".conllu\"."
+    },
+    "O arquivo será salvo no repositório do Interrogatório.": {
+        "pt-BR": "O arquivo será salvo no repositório do Interrogatório.",
+        "en-US": "The file will be saved in the Interrogatório folder."
+    },
+    "O arquivo será salvo no repositório do Julgamento.": {
+        "pt-BR": "O arquivo será salvo no repositório do Julgamento.",
+        "en-US": "The file will be saved in the Julgamento folder."
+    },
+    "Selecione um arquivo \"golden\"": {
+        "pt-BR": "Selecione um arquivo \"golden\"",
+        "en-US": "Choose a \"golden\" file"
+    },
+    "Enviar": {
+        "pt-BR": "Enviar",
+        "en-US": "Upload"
+    },
+    "Para enviar um arquivo sistema, é necessário que já haja seu arquivo golden no repositório.": {
+        "pt-BR": "Para enviar um arquivo sistema, é necessário que já haja seu arquivo golden no repositório.",
+        "en-US": "In order to upload a system file, its golden counterpart must be already uploaded"
+    },
+    " -- escolha uma opção -- ": {
+        "pt-BR": " -- escolha uma opção -- ",
+        "en-US": " -- choose an option -- "
+    },
+    "Sobre o corpus": {
+        "pt-BR": "Sobre o corpus",
+        "en-US": "About the corpus"
+    },
+    "Selecione um arquivo \"sistema\"": {
+        "pt-BR": "Selecione um arquivo \"sistema\"",
+        "en-US": "Choose a \"system\" file"
+    },
+    "O treinamento será realizando utilizando o UDPipe versão 1.2.0.": {
+        "pt-BR": "O treinamento será realizando utilizando o UDPipe versão 1.2.0.",
+        "en-US": "The training process is done with UDPipe version 1.2.0."
+    },
+    "O treinamento para um corpus de 9 mil sentenças dura, em média, 6 horas.": {
+        "pt-BR": "O treinamento para um corpus de 9 mil sentenças dura, em média, 6 horas.",
+        "en-US": "The training process for a copus of 9k sentences lasts around 6 hours."
+    },
+    "Após o treinamento de um modelo, a partição teste (ou o corpus todo, no caso de crossvalidation) será anotada utilizando esse modelo, e o resultado será alinhado com o seu golden para que se possa realizar o julgamento.": {
+        "pt-BR": "Após o treinamento de um modelo, a partição teste (ou o corpus todo, no caso de crossvalidation) será anotada utilizando esse modelo, e o resultado será alinhado com o seu golden para que se possa realizar o julgamento.",
+        "en-US": "After the training is complete, the test partition (or the whole dataset, in case of crossvalidation) will be annotated using the resulting model, and the final result will be aligned with its golden so the judgement is possible."
+    },
+    "Caso queira utilizar o modelo treinado, encontre-o na pasta com o nome do corpus em /static/uploads": {
+        "pt-BR": "Caso queira utilizar o modelo treinado, encontre-o na pasta com o nome do corpus em /static/uploads",
+        "en-US": "In case you want to use the trained model, find it in the folder with the corpus name in /static/uploads"
+    },
+    "Arquivo golden": {
+        "pt-BR": "Arquivo golden",
+        "en-US": "Golden file"
+    },
+    "Treinar": {
+        "pt-BR": "Treinar",
+        "en-US": "Train"
+    },
+    "Criar ramo no Github": {
+        "pt-BR": "Criar novo ramo no GitHub",
+        "en-US": "Create new GitHub branch"
+    },
+    "Os repositórios devem estar listados no arquivo de configurações do servidor.": {
+        "pt-BR": "Os repositórios devem estar listados no arquivo de configurações do servidor.",
+        "en-US": "The repositories must be listed in the server configuration file."
+    },
+    "Os repositórios devem conter uma pasta \"documents\" com arquivos no formato \".conllu\".": {
+        "pt-BR": "Os repositórios devem conter uma pasta \"documents\" com arquivos no formato \".conllu\".",
+        "en-US": "The repositories must contain a \"documents\" folder with files in the \".conllu\" extension."
+    },
+    "O corpus será enviado para o repositório do Interrogatório.": {
+        "pt-BR": "O corpus será enviado para o repositório do Interrogatório.",
+        "en-US": "The corpus will be sent to the Interrogatório folder."
+    },
+    "O corpus será enviado para o repositório do Julgamento.": {
+        "pt-BR": "O corpus será enviado para o repositório do Julgamento.",
+        "en-US": "The corpus will be sent to the Julgamento folder."
+    },
+    "Repositório": {
+        "pt-BR": "Repositório",
+        "en-US": "Repository"
+    },
+    "Ramo": {
+        "pt-BR": "Ramo",
+        "en-US": "Branch"
+    },
+    " -- escolha um repositório antes -- ": {
+        "pt-BR": " -- escolha um repositório antes -- ",
+        "en-US": " -- choose a repository beforehand -- "
+    },
+    "Commit": {
+        "pt-BR": "Commit",
+        "en-US": "Commit"
+    },
+    " -- escolha um ramo antes -- ": {
+        "pt-BR": " -- escolha um ramo antes -- ",
+        "en-US": " -- choose a branch beforehand -- "
+    },
+    "Nome do corpus": {
+        "pt-BR": "Nome do corpus",
+        "en-US": "Corpus name"
+    },
+    "Enviar arquivos de partição": {
+        "pt-BR": "Enviar arquivos de partição",
+        "en-US": "Upload partition files"
+    },
+    "Puxar versão": {
+        "pt-BR": "Puxar versão",
+        "en-US": "Pull version"
+    },
     "Filtrar...": {
-        'en-US': "Filter..."
+        "pt-BR": "Filtrar...",
+        "en-US": "Filter..."
+    },
+    "Informação extra para ajudar a identificar os diferentes corpora disponíveis": {
+        "pt-BR": "Informação extra para ajudar a identificar os diferentes corpora disponíveis",
+        "en-US": "Extra information to help identify the different available corpora"
+    },
+    "A separação entre as partições train/test/dev deve ser feita por meio de arquivos .txt, contendo um ID de sentença por linha, na pasta /static/uploads": {
+        "pt-BR": "A separação entre as partições train/test/dev deve ser feita por meio de arquivos .txt, contendo um ID de sentença por linha, na pasta /static/uploads",
+        "en-US": "The train/test/dev partitioning split must be done through .txt files, containing one sentence id per line, in the folder /static/uploads"
+    },
+    "Treinar um corpus inteiro (crossvalidation) significa que vários modelos serão treinados, um para cada pedaço do corpus, de modo a garantir que o treino será realizado em todo o corpus e não haverá enviesamento. Pode demorar alguns dias para concluir o processo.": {
+        "pt-BR": "Treinar um corpus inteiro (crossvalidation) significa que vários modelos serão treinados, um para cada pedaço do corpus, de modo a garantir que o treino será realizado em todo o corpus e não haverá enviesamento. Pode demorar alguns dias para concluir o processo.",
+        "en-US": "When you choose crossvalidation, several models will be trained, one for each piece of the corpus, so that we guarantee the results correspond to the whole corpus and theres is no biasing. It may take several days for the process to complete."
+    },
+    "LAS é quando o deprel e o dephead estão corretos": {
+        "pt-BR": "LAS é quando o deprel e o dephead estão corretos",
+        "en-US": "LAS is when both deprel and dephead are correct"
+    },
+    "Os erros de dephead são contabilizados apenas quando a etiqueta deprel está correta. Para ver divergências de deprel, verificar matriz de confusão": {
+        "pt-BR": "Os erros de dephead são contabilizados apenas quando a etiqueta deprel está correta. Para ver divergências de deprel, verificar matriz de confusão",
+        "en-US": "Dephead errors are counted only when the deprel tag is correct. To see deprel divergences, check the confusion matrix"
+    },
+    "Acertos de deprel sem contabilizar dephead. Para ver divergências de deprel, verificar matriz de confusão": {
+        "pt-BR": "Acertos de deprel sem contabilizar dephead. Para ver divergências de deprel, verificar matriz de confusão",
+        "en-US": "Deprel hits without counting dephead correctness. To see deprel divergences, check the confusion matrix"
+    },
+    "Clique aqui para voltar ao topo": {
+        "pt-BR": "Clique aqui para voltar ao topo",
+        "en-US": "Click here to go back to the top"
+    },
+    "Refazer tabelas de acordo com novas atualizações no corpus": {
+        "pt-BR": "Refazer tabelas de acordo com novas atualizações no corpus",
+        "en-US": "Reconstruct tables according to the new corpus updates"
+    },
+    "Edite a descrição do corpus": {
+        "pt-BR": "Edite a descrição do corpus",
+        "en-US": "Edit the corpus description"
+    },
+    "Caso esteja desmarcado, apenas o arquivo sistema será excluído": {
+        "pt-BR": "Caso esteja desmarcado, apenas o arquivo sistema será excluído",
+        "en-US": "In case it is unchecked, only the system file will be deleted"
+    },
+    "Selecione um arquivo": {
+        "pt-BR": "Selecione um arquivo",
+        "en-US": "Choose a file"
+    },
+    "Para enviar um arquivo golden, selecione \"Enviar arquivo golden\" no menu lateral": {
+        "pt-BR": "Para enviar um arquivo golden, selecione \"Enviar arquivo golden\" no menu lateral",
+        "en-US": "To upload a golden file, select \"Upload golden file\" in the lateral menu"
+    },
+    "Um novo ramo será criado no Github para o commit selecionado, permitindo que o merge ocorra adequadamente entre diferentes versões. É necessário ter configurado username e senha de colaborador do repositório": {
+        "pt-BR": "Um novo ramo será criado no GitHub para o commit selecionado, permitindo que o merge ocorra adequadamente entre diferentes versões. É necessário ter configurado username e senha de colaborador do repositório",
+        "en-US": "A new branch will be created on GitHub for the selected commit, allowing the future merge to adequately occur between the different versions. It is necessary to have your collaborator usename and password set in the configuration file"
+    },
+    "Mostrar anotação golden": {
+        'pt-BR': "Mostrar anotação golden",
+        "en-US": "Show golden annotation"
+    },
+    "Mostrar anotação sistema": {
+        'pt-BR': "Mostrar anotação sistema",
+        "en-US": "Show system annotation"
+    },
+    "Editar golden e sistema ao mesmo tempo": {
+        'pt-BR': "Editar golden e sistema ao mesmo tempo",
+        'en-US': "Edit golden and system at the same time"
+    },
+    "Descartar alterações": {
+        'pt-BR': 'Descartar alterações',
+        'en-US': 'Discard changes'
+    },
+    "Gerenciamento - Julgamento": {
+        'en-US': 'Management - Julgamento'
+    },
+    "Partições": {
+        'en-US': 'Partitions'
     }
 };
 
 function updateTranslation(){
     $('.translateHtml').each(function(){
         if (translations[$(this).html()]) {
-            if (userLang == "ptt-BR") {
+            if (userLang == "pt-BR") {
                 if (translations[$(this).html()]["pt-BR"]) {
                     $(this).html(translations[$(this).html()]["pt-BR"]);
                 }
@@ -20,7 +555,7 @@ function updateTranslation(){
     });
     $('.translateVal').each(function(){
         if (translations[$(this).attr("value")]) {
-            if (userLang == "ptt-BR") {
+            if (userLang == "pt-BR") {
                 if (translations[$(this).attr("value")]["pt-BR"]) {
                     $(this).attr("value", translations[$(this).attr("value")]["pt-BR"]);
                 }
@@ -33,7 +568,7 @@ function updateTranslation(){
     });
     $('.translateTitle').each(function(){
         if (translations[$(this).attr("title")]) {
-            if (userLang == "ptt-BR") {
+            if (userLang == "pt-BR") {
                 if (translations[$(this).attr("title")]["pt-BR"]) {
                     $(this).attr("title", translations[$(this).attr("title")]["pt-BR"]);
                 }
@@ -46,7 +581,7 @@ function updateTranslation(){
     });
     $('.translatePlaceholder').each(function(){
         if (translations[$(this).attr("placeholder")]) {
-            if (userLang == "ptt-BR") {
+            if (userLang == "pt-BR") {
                 if (translations[$(this).attr("placeholder")]["pt-BR"]) {
                     $(this).attr("placeholder", translations[$(this).attr("placeholder")]["pt-BR"]);
                 }
