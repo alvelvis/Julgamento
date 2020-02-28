@@ -38,7 +38,7 @@ def checkRepo(repositorio="", branch=""):
         for branchFor in texto:
             if branchFor and '/heads/' in branchFor:
                 microBranches.append("<option>" + branchFor.split('/heads/')[1].strip() + "</option>")
-        branches = ['<select name="branch" id="branch" class="form-control selectpicker branch" data-live-search="true" required>'] + ['<option disabled selected value> -- escolha um ramo -- </option>'] + sorted(microBranches) + ["</select>"]
+        branches = ['<select name="branch" id="branch" class="form-control selectpicker branch" data-live-search="true" required>'] + ['<option class="translateHtml" disabled selected value> -- escolha um ramo -- </option>'] + sorted(microBranches) + ["</select>"]
 
     
     commits = []
@@ -147,16 +147,16 @@ def findCorpora(filtro, tipo):
             corpusDate = ""
         if not filtro or all(x.lower() in (corpusNom+sobre+corpusDate).lower() for x in filtro):
             if tipo == 'available':
-                lista.append(f'<a href="/corpus?c={ corpus["nome"] }" class="list-group-item"><strong>{ corpus["nome"] }</strong> <span class="badge">{ corpus["sentences"] } sentenças</span><br>{ corpus["sobre"] }<br><small>{ prettyDate(corpus["data"]).prettyDateDMAH() }</small></a>')
+                lista.append(f'<a href="/corpus?c={ corpus["nome"] }" class="list-group-item"><strong>{ corpus["nome"] }</strong> <span class="badge">{ corpus["sentences"] } <span class="translateHtml">sentenças</span></span><br>{ corpus["sobre"] }<br><small>{ prettyDate(corpus["data"]).prettyDateDMAH() }</small></a>')
             elif tipo == 'training':
                 terminated = ""
                 if prettyDate(corpus["data"]).hora +3 < prettyDate(str(datetime.datetime.now())).hora:
                     terminated = "&terminated=True"
-                lista.append(f'<a href="/log?c={ corpus["nome"] }{terminated}" class="list-group-item"><strong>{ corpus["nome"] }</strong><br>Última modificação: { prettyDate(corpus["data"]).prettyDateDMAH() }</a>')
+                lista.append(f'<a href="/log?c={ corpus["nome"] }{terminated}" class="list-group-item"><strong>{ corpus["nome"] }</strong><br><span class="translateHtml">Última modificação:</span> { prettyDate(corpus["data"]).prettyDateDMAH() }</a>')
             elif tipo == 'success':
-                lista.append(f'<a href="/log?c={ corpus["nome"] }" class="list-group-item"><strong>{ corpus["nome"] }</strong><br>Conclusão: { prettyDate(corpus["data"]).prettyDateDMAH() }</a>')
+                lista.append(f'<a href="/log?c={ corpus["nome"] }" class="list-group-item"><strong>{ corpus["nome"] }</strong><br><span class="translateHtml">Conclusão:</span> { prettyDate(corpus["data"]).prettyDateDMAH() }</a>')
             elif tipo == 'delete':
-                lista.append(f'<a style="cursor:pointer" onclick="apagarCorpus(\'{corpus["nome"]}\')" class="list-group-item"><strong>{ corpus["nome"] }</strong> <span class="badge">{ corpus["sentences"] } sentenças</span><br>{ corpus["sobre"] }<br><small>{ prettyDate(corpus["data"]).prettyDateDMAH() }</small></a>')
+                lista.append(f'<a style="cursor:pointer" onclick="apagarCorpus(\'{corpus["nome"]}\')" class="list-group-item"><strong>{ corpus["nome"] }</strong> <span class="badge">{ corpus["sentences"] } <span class="translateHtml">sentenças</span></span><br>{ corpus["sobre"] }<br><small>{ prettyDate(corpus["data"]).prettyDateDMAH() }</small></a>')
             elif tipo == 'deleteGolden':
                 lista.append(f'<a style="cursor:pointer" onclick="apagarCorpusGolden(\'{corpus}\')" class="list-group-item"><strong>{ corpus }</strong></a>')
             elif tipo == 'onlyGolden':
@@ -173,13 +173,13 @@ def formDB():
     return '''
 <div class="form-horizontal">
     <div class="form-group">
-        <label for="about" class="col-sm-4 control-label">Sobre o corpus <span class='glyphicon glyphicon-info-sign' title='Informação extra para ajudar a identificar os diferentes corpora disponíveis'></span></label>
+        <label for="about" class="col-sm-4 control-label">Sobre o corpus <span class='glyphicon glyphicon-info-sign translateTitle' title='Informação extra para ajudar a identificar os diferentes corpora disponíveis'></span></label>
         <div class="col-sm-8">
             <input class="form-control" id="about" name="about" >
         </div>
     </div>
     <div class="form-group">
-        <label for="partitions" class="col-sm-4 control-label">Partições <span class='glyphicon glyphicon-info-sign' title='A separação entre as partições train/test/dev deve ser feita por meio de arquivos .txt, contendo um ID de sentença por linha, na pasta /static/uploads'></span></label>
+        <label for="partitions" class="col-sm-4 control-label">Partições <span class='glyphicon glyphicon-info-sign translateTitle' title='A separação entre as partições train/test/dev deve ser feita por meio de arquivos .txt, contendo um ID de sentença por linha, na pasta /static/uploads'></span></label>
         <div class="col-sm-8">
             <select class="form-control selectpicker" data-live-search="true" id="partitions" name="partitions" required>
                 ''' + "\n".join(\
@@ -196,8 +196,8 @@ def formDB():
         <div class="col-sm-offset-4 col-sm-8">
             <div class="checkbox">
                 <label>
-                    <input name="crossvalidation" type="checkbox"> Treinar todo o corpus (crossvalidation) 
-                    <span class='glyphicon glyphicon-info-sign' title='Treinar um corpus inteiro (crossvalidation) significa que vários modelos serão treinados, um para cada pedaço do corpus, de modo a garantir que o treino será realizado em todo o corpus e não haverá enviesamento. Pode demorar alguns dias para concluir o processo.'></span>
+                    <input name="crossvalidation" type="checkbox"> <span class="translateHtml">Treinar todo o corpus (crossvalidation)</span> 
+                    <span class='glyphicon glyphicon-info-sign translateTitle' title='Treinar um corpus inteiro (crossvalidation) significa que vários modelos serão treinados, um para cada pedaço do corpus, de modo a garantir que o treino será realizado em todo o corpus e não haverá enviesamento. Pode demorar alguns dias para concluir o processo.'></span>
                 </label>
             </div>
         </div>
@@ -366,12 +366,12 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     coluna3 = ""    
     if coluna == "DEPREL":
         conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][2] / dicionario[x][0])*100}%</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td><td class='matrixTd'><a href='/corpus?c={c}&{coluna}={x}'>{(sum([len(UAS[x][y][1]) for y in UAS[x]]) / dicionario[x][0])*100}%</a></td></tr>" for x in sorted(dicionario, key=lambda x: x)])
-        coluna2 = "<a style='text-decoration:underline; color:white; cursor:text;' title='LAS é quando o deprel e o dephead estão corretos'>LAS</a>"
-        coluna3 = "<a style='text-decoration:underline; color:white; cursor:text;' title='Os erros de dephead são contabilizados apenas quando a etiqueta deprel está correta. Para ver divergências de deprel, verificar matriz de confusão'>Erros de dephead</a>"
-        coluna1 = "<a style='text-decoration:underline; color:white; cursor:text;' title='Acertos de deprel sem contabilizar dephead. Para ver divergências de deprel, verificar matriz de confusão'>Acertos</a>"
+        coluna2 = "<a style='text-decoration:underline; color:white; cursor:text;' class='translateTitle translateHtml' title='LAS é quando o deprel e o dephead estão corretos'>LAS</a>"
+        coluna3 = "<a style='text-decoration:underline; color:white; cursor:text;' class='translateTitle translateHtml' title='Os erros de dephead são contabilizados apenas quando a etiqueta deprel está correta. Para ver divergências de deprel, verificar matriz de confusão'>Erros de dephead</a>"
+        coluna1 = "<a style='text-decoration:underline; color:white; cursor:text;' class='translateTitle translateHtml' title='Acertos de deprel sem contabilizar dephead. Para ver divergências de deprel, verificar matriz de confusão'>Acertos</a>"
     elif coluna == "UPOS":
         conteudo = "".join([f"<tr><td>{x}</td><td>{dicionario[x][0]}</td><td>{(dicionario[x][1] / dicionario[x][0])*100}%</td></tr>" for x in sorted(dicionario, key=lambda x: x)])
-        coluna1 = "Acertos"
+        coluna1 = "<span class='translateHtml'>Acertos</span>"
 
     tables += f"<table id='t01' style='margin:auto; max-height:70vh; display:block; overflow-x: auto; overflow-y:auto;'><thead><tr style='text-align:center;'><th>{coluna}</th><th>Total</th>{'<th>' + coluna1 + '</th>' if coluna1 else ''}{'<th>' + coluna2 + '</th>' if coluna2 else ''}{'<th>' + coluna3 + '</th>' if coluna3 else ''}</tr></thead>\
         {conteudo}\
@@ -384,9 +384,9 @@ def modificacoes(c):
     antes = allCorpora.corpora[conllu(c).original()]
 
     if len(antes.sentences) != len(depois.sentences):
-        return "Os corpora antes e depois não coincidem."
+        return "<span class='translateHtml'>Os corpora antes e depois não coincidem.</span>"
 
-    html = "<h3>Modificações realizadas no corpus</h3>"
+    html = "<h3 class='translateHtml'>Modificações realizadas no corpus</h3>"
 
     lemas_diferentes = {}
     upos_diferentes = {}
@@ -412,24 +412,24 @@ def modificacoes(c):
     modificacoesCorpora.modificacoes[c] = {'lemma': lemas_diferentes, 'upos': upos_diferentes, 'deprel': deprel_diferentes}
 
     sentences_iguais = [x for x in depois.sentences if x not in sentences_diferentes]
-    html += f"<br><h4>Sentenças modificadas ({len(sentences_diferentes)})</h4><pre>{'; '.join(sentences_diferentes)}</pre>"
-    html += f"<br><h4>Sentenças não modificadas ({len(sentences_iguais)})</h4><pre>{'; '.join(sentences_iguais)}</pre>"
+    html += f"<br><h4><span class='translateHtml'>Sentenças modificadas</span> ({len(sentences_diferentes)})</h4><pre>{'; '.join(sentences_diferentes)}</pre>"
+    html += f"<br><h4><span class='translateHtml'>Sentenças não modificadas</span> ({len(sentences_iguais)})</h4><pre>{'; '.join(sentences_iguais)}</pre>"
 
-    html += f"<br><h4>Lemas diferentes ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
+    html += f"<br><h4><span class='translateHtml>Lemas diferentes</span> ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
     html += "<table>"
-    html += "<tr><th>ANTES</th><th>DEPOIS</th><th>#</th></tr>"
+    html += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
     html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=lemma'>" + str(len(lemas_diferentes[x])) + "</a></td></tr>" for x in sorted(lemas_diferentes, reverse=False, key=lambda y: (-len(lemas_diferentes[y]), y))])
     html += "</table>"
 
-    html += f"<br><h4>UPOS diferentes ({sum([len(upos_diferentes[x]) for x in upos_diferentes])})</h4>"
+    html += f"<br><h4><span class='translateHtml'>UPOS diferentes</span> ({sum([len(upos_diferentes[x]) for x in upos_diferentes])})</h4>"
     html += "<table>"
-    html += "<tr><th>ANTES</th><th>DEPOIS</th><th>#</th></tr>"
+    html += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
     html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=upos'>" + str(len(upos_diferentes[x])) + "</a></td></tr>" for x in sorted(upos_diferentes, reverse=False, key=lambda y: (-len(upos_diferentes[y]), y))])
     html += "</table>"
 
-    html += f"<br><h4>DEPREL diferentes ({sum([len(deprel_diferentes[x]) for x in deprel_diferentes])})</h4>"
+    html += f"<br><h4><span class='translateHtml'>DEPREL diferentes</span> ({sum([len(deprel_diferentes[x]) for x in deprel_diferentes])})</h4>"
     html += "<table>"
-    html += "<tr><th>ANTES</th><th>DEPOIS</th><th>#</th></tr>"
+    html += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
     html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=deprel'>" + str(len(deprel_diferentes[x])) + "</a></td></tr>" for x in sorted(deprel_diferentes, reverse=False, key=lambda y: (-len(deprel_diferentes[y]), y))])
     html += "</table>"
 
@@ -462,17 +462,17 @@ def caracteristicasCorpus(ud1, ud2):
                     dicionario_Lemas_s[token.lemma] += 1
                     n_Tokens_s += 1
 
-    tabela_Geral = "<h3>Características do corpus</h3><br><div class='col-lg-8 col-lg-offset-2'>"
+    tabela_Geral = "<h3 class='translateHtml'>Características do corpus</h3><br><div class='col-lg-8 col-lg-offset-2'>"
     if system:
         tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
-        tabela_Geral += "<tr><td></td><th>Sentenças</th><th>Tokens</th><th>Lemas diferentes</th></tr>"
-        tabela_Geral += f"<tr><th>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
-        tabela_Geral += f"<tr><th>Sistema</th><td>{n_Sentences_s}</td><td>{n_Tokens_s}</td><td>{len(dicionario_Lemas_s)}</td></tr>"
+        tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
+        tabela_Geral += f"<tr><th class='translateHtml'>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
+        tabela_Geral += f"<tr><th class='translateHtml'>Sistema</th><td>{n_Sentences_s}</td><td>{n_Tokens_s}</td><td>{len(dicionario_Lemas_s)}</td></tr>"
         tabela_Geral += "</table>"
     else:
         tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
-        tabela_Geral += "<tr><td></td><th>Sentenças</th><th>Tokens</th><th>Lemas diferentes</th></tr>"
-        tabela_Geral += f"<tr><th>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
+        tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
+        tabela_Geral += f"<tr><th class='translateHtml'>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
         tabela_Geral += "</table>"
 
     tabela_Geral += "</div>"
@@ -480,14 +480,14 @@ def caracteristicasCorpus(ud1, ud2):
     total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
     tabela_Geral += "<div style='margin-top:10px' class='col-lg-10 col-lg-offset-1'>"
     tabela_Geral += "<div class='col-lg-6'><table>"
-    tabela_Geral += "<tr><th>Lemas em Golden</th><th>#</th><th>%</th></tr>"
+    tabela_Geral += "<tr><th class='translateHtml'>Lemas em Golden</th><th>#</th><th>%</th></tr>"
     tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas[x]}</td><td>{str((dicionario_Lemas[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas, reverse=False, key=lambda y: (-dicionario_Lemas[y], y))])
     tabela_Geral += "</table></div>"
 
     if system:
         total_lemas = sum([dicionario_Lemas_s[y] for y in dicionario_Lemas_s])
         tabela_Geral += "<div class='col-lg-6'><table>"
-        tabela_Geral += "<tr><th>Lemas em Sistema</th><th>#</th><th>%</th></tr>"
+        tabela_Geral += "<tr><th class='translateHtml'>Lemas em Sistema</th><th>#</th><th>%</th></tr>"
         tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas_s[x]}</td><td>{str((dicionario_Lemas_s[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas_s, reverse=False, key=lambda y: (-dicionario_Lemas_s[y], y))])
         tabela_Geral += "</table></div>"
 
@@ -510,8 +510,8 @@ def sentAccuracy(ud1, ud2):
             if acertos == len(sentence.tokens):
                 sent_accuracy[1] += 1
 
-    return "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'><tr><th></th><th>#</th><th>%</th></tr><tr><th>Sentenças comparáveis</th><td>{comparableSentences}</td><td>{percentSentences}</td></tr>\
-        <tr><th>Sentenças corretas</th><td>{correctSentences}</td><td>{percentCorrect}</td></tr>\
+    return "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'><tr><th></th><th>#</th><th>%</th></tr><tr><th class='translateHtml'>Sentenças comparáveis</th><td>{comparableSentences}</td><td>{percentSentences}</td></tr>\
+        <tr><th class='translateHtml'>Sentenças corretas</th><td>{correctSentences}</td><td>{percentCorrect}</td></tr>\
         </table>".format(
             comparableSentences=sent_accuracy[0],
             percentSentences=f"{(sent_accuracy[0] / len(golden.sentences)) * 100}%",

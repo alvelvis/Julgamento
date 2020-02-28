@@ -112,7 +112,7 @@ def cristianMarneffe():
 
 	html = ""
 	if not results:
-		html += f"<div class='alert alert-warning' role='alert'>Não foram encontradas inconsistências do tipo Cristian-Marneffe.</div>"
+		html += f"<div class='alert alert-warning translateHtml' role='alert'>Não foram encontradas inconsistências do tipo Cristian-Marneffe.</div>"
 	else:
 		for i, exemplo in enumerate(results):
 			html += f"<div class='alert alert-warning' role='alert'>{i+1} / {len(results)} - {exemplo['exemplo']}</div>"
@@ -162,7 +162,7 @@ def getErrorsValidarUD():
 			f.write(pickle.dumps(errors))
 
 	if not errors:
-		html = "<div class='alert alert-warning' role='alert'>Não foram encontrados erros de validação.</div>"
+		html = "<div class='alert alert-warning translateHtml' role='alert'>Não foram encontrados erros de validação.</div>"
 	for k, error in enumerate(errors):
 		html += f"<div class='alert alert-warning' role='alert'>{k+1} / {len(errors)} - {error}</div>"
 		for i, value in enumerate(errors[error]):
@@ -248,13 +248,13 @@ def getTables():
 
 	elif table == 'metrics':
 		return jsonify({
-			'html': '<h3>Métricas do conll18_ud_eval.py</h3>' + metrics(request.values.get('ud1'), request.values.get('ud2')),
+			'html': '<h3 class="translateHtml">Métricas do conll18_ud_eval.py</h3>' + metrics(request.values.get('ud1'), request.values.get('ud2')),
 			'success': True
 			})
 
 	elif table == 'sentAccuracy':
 		return jsonify({
-			'html': '<h3>Sentenças com UPOS e DEPREL corretas</h3>' + sentAccuracy(request.values.get('ud1'), request.values.get('ud2')),
+			'html': '<h3 class="translateHtml">Sentenças com UPOS e DEPREL corretas</h3>' + sentAccuracy(request.values.get('ud1'), request.values.get('ud2')),
 			'success': True,
 		})
 
@@ -263,13 +263,13 @@ def getTables():
 			'html': f'''
 			<div id="POSAccuracy" class="col-lg-4">
 				<div class=" panel panel-default panel-body">
-					<h3>Acurácia por UPOS</h3>
+					<h3 class="translateHtml">Acurácia por UPOS</h3>
 					{categoryAccuracy(request.values.get('ud1'), request.values.get('ud2'), request.values.get('c'), 'UPOS')['tables']}
 				</div>
 			</div>
 			<div id="DEPRELAccuracy" class="col-lg-8">
 				<div class=" panel panel-default panel-body">
-					<h3>Acurácia por DEPREL</h3>
+					<h3 class="translateHtml">Acurácia por DEPREL</h3>
 					{categoryAccuracy(request.values.get('ud1'), request.values.get('ud2'), request.values.get('c'), 'DEPREL')['tables']}
 				</div>
 			</div>
@@ -287,7 +287,7 @@ def getTables():
 		pd.options.display.max_columns = None
 		pd.set_option('display.expand_frame_repr', False)
 		return jsonify({
-			'html': '<h3>Matriz de confusão de UPOS</h3>' + matrix(str(pd.crosstab(pd.Series(listaPOS1), pd.Series(listaPOS2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind="UPOS"),
+			'html': '<h3 class="translateHtml">Matriz de confusão de UPOS</h3>' + matrix(str(pd.crosstab(pd.Series(listaPOS1), pd.Series(listaPOS2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind="UPOS"),
 			'success': True,
 		})
 
@@ -301,7 +301,7 @@ def getTables():
 		pd.options.display.max_columns = None
 		pd.set_option('display.expand_frame_repr', False)
 		return jsonify({
-			'html': '<h3>Matriz de confusão de DEPREL</h3>' + matrix(str(pd.crosstab(pd.Series(listaDep1), pd.Series(listaDep2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind="DEPREL"),
+			'html': '<h3 class="translateHtml">Matriz de confusão de DEPREL</h3>' + matrix(str(pd.crosstab(pd.Series(listaDep1), pd.Series(listaDep2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind="DEPREL"),
 			'success': True,
 		})
 
@@ -498,7 +498,7 @@ def sendAnnotation():
 			if errors:
 				for error in errors:
 					if error.strip():
-						attention += [f'<div class="alert alert-warning" role="alert">Atenção: {error}</div><ul>']
+						attention += [f'<div class="alert alert-warning translateHtml" role="alert">Atenção: {error}</div><ul>']
 						for value in errors[error]:
 							if value['sentence']:
 								attention += ["<li>" + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].id) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].word) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].col[value['attribute']]) + "</li>"]

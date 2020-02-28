@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}Treinamento em progresso{% endblock %}
 {% block content %}
-<h1>Treinamento de {{corpus}}</h1>
-<h4>O relatório é atualizado automaticamente.<br>Status: 
+<h1><span class="translateHtml">Treinamento de</span> {{corpus}}</h1>
+<h4><span class="translateHtml">O relatório é atualizado automaticamente.</span><br><span class="translateHtml">Status:</span> 
 {% if success %}
-Concluido
+<span class="translateHtml">Concluído</span>
 <br>
-<a href="/corpus?c={{corpus}}">Ir para o julgamento do corpus</a>
+<a href="/corpus?c={{corpus}}" class='translateHtml'>Ir para o julgamento do corpus</a>
 {% elif 'terminated' in log.lower() or " is not " in log.lower() or "cannot" in log.lower() or "can't" in log.lower() or 'error' in log.lower() or 'invalid' in log.lower() or 'Área de texto ocupada' in log or terminated or 'aborted' in log.lower() or 'denied' in log.lower() %}
-Cancelado
+<span class="translateHtml">Cancelado</span>
 <br>
-<a href="/cancelTrain?c={{corpus}}&delete=True">Apagar relatório</a>
+<a href="/cancelTrain?c={{corpus}}&delete=True" class='translateHtml'>Apagar relatório</a>
 {% else %}
-Em progresso {% if 'crossvalidation' in log and '[' in log %}(Part {{ log.rsplit('[', 1)[1].split(']')[0] }}, Iteration {{ log.rsplit('Iteration ', 1)[1].split(':')[0] }}/{{ log.rsplit('iterations=', 1)[1].split(',')[0] }}){% elif 'iterations=' in log %}(Iteration {{ log.rsplit('Iteration ', 1)[1].split(':')[0] }}/{{ log.rsplit('iterations=', 1)[1].split(',')[0] }}){% endif %}
+<span class="translateHtml">Em progresso</span> {% if 'crossvalidation' in log and '[' in log %}(Part {{ log.rsplit('[', 1)[1].split(']')[0] }}, Iteration {{ log.rsplit('Iteration ', 1)[1].split(':')[0] }}/{{ log.rsplit('iterations=', 1)[1].split(',')[0] }}){% elif 'iterations=' in log %}(Iteration {{ log.rsplit('Iteration ', 1)[1].split(':')[0] }}/{{ log.rsplit('iterations=', 1)[1].split(',')[0] }}){% endif %}
 {% endif %}
 </h4><hr>
 <pre id="log" style="overflow:auto; max-height:65vh">

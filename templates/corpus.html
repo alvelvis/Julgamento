@@ -5,14 +5,14 @@
 {% set colCorpus = "col-lg-8 col-lg-offset-2" if not findCorpora(filtro='', tipo='training') else "col-lg-6" %}
 
 <div class="col-lg-8 col-lg-offset-2">
-    <h1>Selecione um corpus</h1>
+    <h1 class="translateHtml">Selecione um corpus</h1>
     <!--a href="/upload" style="text-align:center;">Gerenciamento de corpora</a-->
     <hr>
 
     {% if corpora['available'] %}
     <div class="{{colCorpus}} panel panel-default">
-        <h3>Corpora prontos para julgamento</h3>
-        <input class='form-control filterAvailableCorpora' placeholder="Filtrar...">
+        <h3 class="translateHtml">Corpora prontos para julgamento</h3>
+        <input class='form-control filterAvailableCorpora translatePlaceholder' placeholder="Filtrar...">
         <ul class='list-group panel panel-body availableCorpora'>
             {{findCorpora(filtro='', tipo='available')|safe}}
         </ul>
@@ -21,8 +21,8 @@
 
     {% if corpora['onlyGolden'] %}
     <div class="{{colCorpus}} panel panel-default">
-        <h3>Material dourado pronto para julgamento <span class="badge" style="background-color: red;">novidade</span></h3>
-        <input class='form-control filterOnlyGolden' placeholder="Filtrar...">
+        <h3 class="translateHtml">Material dourado pronto para julgamento <span class="badge" style="background-color: red;">novidade</span></h3>
+        <input class='form-control filterOnlyGolden translatePlaceholder' placeholder="Filtrar...">
         <ul class='list-group panel panel-body onlyGolden'>
             {{findCorpora(filtro='', tipo='onlyGolden')|safe}}
         </ul>
@@ -31,8 +31,8 @@
 
     {% if corpora['inProgress'] %}
     <div class="col-lg-6 panel panel-default">
-        <h3>Treinamentos em progresso</h3>
-        <input class='form-control filterTrainingCorpora' placeholder="Filtrar...">
+        <h3 class="translateHtml">Treinamentos em progresso</h3>
+        <input class='form-control filterTrainingCorpora translatePlaceholder' placeholder="Filtrar...">
         <ul class="list-group panel panel-body trainingCorpora">
             {{findCorpora(filtro='', tipo='training')|safe}}
         </ul>

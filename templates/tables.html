@@ -9,28 +9,27 @@
 {% if conllu(c).system() in allCorpora.corpora %}<input type="hidden" id="ud2" value="{{conllu(c).findSystem()}}">{% endif %}
 <input type="hidden" id="c" value="{{c}}">
 <h1>{{c}}</h1>
-{% if conllu(c).system() in allCorpora.corpora %}<h4><i title="Edite a descrição do corpus" class="fa fa-edit"></i> <div class="sobreCorpus" style="display:inline-block;" contenteditable>{{ sobre | safe }}</div></h4>{% endif %}
-<h4>Golden: {{ conllu(c).findGolden() }}</h4>
-{% if conllu(c).system() in allCorpora.corpora %}<h4>Sistema: {{ conllu(c).findSystem() }}</h4>{% endif %}
+{% if conllu(c).system() in allCorpora.corpora %}<h4><i title="Edite a descrição do corpus" class="translateTitle fa fa-edit"></i> <div class="sobreCorpus" style="display:inline-block;" contenteditable>{{ sobre | safe }}</div></h4>{% endif %}
+<h4><span class="translateHtml">Golden:</span> {{ conllu(c).findGolden() }}</h4>
+{% if conllu(c).system() in allCorpora.corpora %}<h4><span class="translateHtml">Sistema:</span> {{ conllu(c).findSystem() }}</h4>{% endif %}
 <hr>
 <div class="col-lg-4 col-lg-offset-4 panel panel-default">
     <div class="panel-body">
-        <h3>Tabela de conteúdos</h3>
+        <h3 class="translateHtml">Tabela de conteúdos</h3>
         <ul class="list-group">
-            <a href="#caracteristicas" name="caracteristicas" class="tables-toggle list-group-item">Características do corpus <span class="badge" >novidade</span></a>
-            <a href="#modificacoes" name="modificacoes" class="tables-toggle list-group-item">Modificações realizadas no corpus <span class="badge">novidade</span></a>
-            {% if conllu(c).system() in allCorpora.corpora %}<a href="#metrics" name="metrics" class="tables-toggle list-group-item">Métricas do conll18_ud_eval.py</a>{% endif %}
-            {% if conllu(c).system() in allCorpora.corpora %}<a href="#sentAccuracy" name="sentAccuracy" class="tables-toggle list-group-item">Acurácia das sentenças</a>{% endif %}
-            {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSAccuracy" name="accuracy" class="tables-toggle list-group-item">Acurácia por categoria morfossintática</a>{% endif %}
-            <!--a href="#DEPRELAccuracy" name="accuracy" class="tables-toggle list-group-item">Acurácia por DEPREL</a-->
-            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="lexicais" class="cristianMarneffeToggle list-group-item">Cristian-Marneffe (lexicais) <span class="badge" style="background-color: red;">novidade</span></a>
-            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="gramaticais" class="cristianMarneffeToggle list-group-item">Cristian-Marneffe (gramaticais) <span class="badge" style="background-color: red;">novidade</span></a>
-            {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSMatrix" name="POSMatrix" class="tables-toggle list-group-item">Matriz de confusão de UPOS</a>{% endif %}
-            {% if conllu(c).system() in allCorpora.corpora %}<a href="#DEPRELMatrix" name="DEPRELMatrix" class="tables-toggle list-group-item">Matriz de confusão de DEPREL</a>{% endif %}
-            <!--a href="#changes" name="changes" class="tables-toggle list-group-item">Relatório de modificações (em breve)</a-->
-            <a href="#errorValidarUD" class="errorValidarUDToggle list-group-item">Erros de validar_UD.py</a>
-            <a href="#errorLog" class="errorLogToggle list-group-item">Erros de validate.py</a>
-            <a href="#refreshTables" class="refreshTables list-group-item" title="Refazer tabelas de acordo com novas atualizações no corpus">Atualizar corpus e tabelas</a>
+            <a href="#caracteristicas" name="caracteristicas" class="tables-toggle list-group-item translateHtml">Características do corpus <span class="badge" >novidade</span></a>
+            <a href="#modificacoes" name="modificacoes" class="tables-toggle list-group-item translateHtml">Modificações realizadas no corpus <span class="badge">novidade</span></a>
+            {% if conllu(c).system() in allCorpora.corpora %}<a href="#metrics" name="metrics" class="tables-toggle list-group-item translateHtml">Métricas do conll18_ud_eval.py</a>{% endif %}
+            {% if conllu(c).system() in allCorpora.corpora %}<a href="#sentAccuracy" name="sentAccuracy" class="tables-toggle list-group-item translateHtml">Acurácia das sentenças</a>{% endif %}
+            {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSAccuracy" name="accuracy" class="tables-toggle list-group-item translateHtml">Acurácia por categoria morfossintática</a>{% endif %}
+            <!--a href="#DEPRELAccuracy" name="accuracy" class="tables-toggle list-group-item translateHtml">Acurácia por DEPREL</a-->
+            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="lexicais" class="cristianMarneffeToggle list-group-item translateHtml">Cristian-Marneffe (lexicais) <span class="badge" style="background-color: red;">novidade</span></a>
+            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="gramaticais" class="cristianMarneffeToggle list-group-item translateHtml">Cristian-Marneffe (gramaticais) <span class="badge" style="background-color: red;">novidade</span></a>
+            {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSMatrix" name="POSMatrix" class="tables-toggle list-group-item translateHtml">Matriz de confusão de UPOS</a>{% endif %}
+            {% if conllu(c).system() in allCorpora.corpora %}<a href="#DEPRELMatrix" name="DEPRELMatrix" class="tables-toggle list-group-item translateHtml">Matriz de confusão de DEPREL</a>{% endif %}
+            <a href="#errorValidarUD" class="errorValidarUDToggle list-group-item translateHtml">Erros de validar_UD.py</a>
+            <a href="#errorLog" class="errorLogToggle list-group-item translateHtml">Erros de validate.py</a>
+            <a href="#refreshTables" class="refreshTables list-group-item translateHtml translateTitle" title="Refazer tabelas de acordo com novas atualizações no corpus">Atualizar corpus e tabelas</a>
         </ul>
     </div>
 </div>
@@ -66,11 +65,6 @@
     <div class="panel-body">
     </div>
 </div>
-<div id="changes" class="tables panel panel-default">
-    <div class="panel-body">
-        <h3>Relatório de modificações (em breve)</h3>
-    </div>
-</div>
 <div id="errorLog" class="tables col-lg-10 col-lg-offset-1">
 </div>
 <div id="errorValidarUD" class="tables col-lg-10 col-lg-offset-1">
@@ -84,6 +78,6 @@
 <h1>{{ c }}</h1><hr>
 <img style="width:64px; height:64px;" src="/static/loading.gif">
 <br>
-<h4>Corpus está sendo carregado, aguarde um momento ou <a href="/corpus">volte mais tarde</a>.</h4>
+<h4 class="translateHtml">Corpus está sendo carregado, aguarde um momento ou <a href="/corpus">volte mais tarde</a>.</h4>
 {% endif %}
 {% endblock %}

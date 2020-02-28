@@ -1,3 +1,64 @@
+var translations = {
+    "Filtrar...": {
+        'en-US': "Filter..."
+    }
+};
+
+function updateTranslation(){
+    $('.translateHtml').each(function(){
+        if (translations[$(this).html()]) {
+            if (userLang == "ptt-BR") {
+                if (translations[$(this).html()]["pt-BR"]) {
+                    $(this).html(translations[$(this).html()]["pt-BR"]);
+                }
+            } else {
+                if (translations[$(this).html()]["en-US"]) {
+                    $(this).html(translations[$(this).html()]["en-US"]);
+                }
+            };
+        };
+    });
+    $('.translateVal').each(function(){
+        if (translations[$(this).attr("value")]) {
+            if (userLang == "ptt-BR") {
+                if (translations[$(this).attr("value")]["pt-BR"]) {
+                    $(this).attr("value", translations[$(this).attr("value")]["pt-BR"]);
+                }
+            } else {
+                if (translations[$(this).attr("value")]["en-US"]) {
+                    $(this).attr("value", translations[$(this).attr("value")]["en-US"]);
+                }
+            };
+        };
+    });
+    $('.translateTitle').each(function(){
+        if (translations[$(this).attr("title")]) {
+            if (userLang == "ptt-BR") {
+                if (translations[$(this).attr("title")]["pt-BR"]) {
+                    $(this).attr("title", translations[$(this).attr("title")]["pt-BR"]);
+                }
+            } else {
+                if (translations[$(this).attr("title")]["en-US"]) {
+                    $(this).attr("title", translations[$(this).attr("title")]["en-US"]);
+                }
+            };
+        };
+    });
+    $('.translatePlaceholder').each(function(){
+        if (translations[$(this).attr("placeholder")]) {
+            if (userLang == "ptt-BR") {
+                if (translations[$(this).attr("placeholder")]["pt-BR"]) {
+                    $(this).attr("placeholder", translations[$(this).attr("placeholder")]["pt-BR"]);
+                }
+            } else {
+                if (translations[$(this).attr("placeholder")]["en-US"]) {
+                    $(this).attr("placeholder", translations[$(this).attr("placeholder")]["en-US"]);
+                }
+            };
+        };
+    });
+};
+
 String.prototype.rsplit = function(sep, maxsplit) {
     var split = this.split(sep);
     return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
@@ -59,6 +120,8 @@ if ($('.repoName').length) {
 };
 
 function atualizar(){
+
+    updateTranslation();
 
     $('.matrixTd').children("a").click(function(){
         $(".matrixTd").css("background-color", "white");
@@ -289,6 +352,8 @@ $(window).on('unload', function() {
 $(window).ready(function(){
     endLoadingScreen();
 });
+
+var userLang = navigator.language || navigator.userLanguage;
 
 $(document).ready(function(){
 
