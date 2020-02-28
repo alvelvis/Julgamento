@@ -31,3 +31,15 @@ That way, whenever you want to update the repository, you can simply pull the up
 	$ sh run_julgamento.sh
 
 All set, you'll be able to access Julgamento by the local page [http://127.0.0.1:5050/](http://127.0.0.1:5050/). End the server by pressing "Ctrl+C" in the terminal window.
+
+# How to cite
+
+```
+@inproceedings{ETtilic,
+  title={ET: uma Estação de Trabalho para revisão, edição e avaliação de corpora anotados morfossintaticamente},
+  author={de Souza, Elvis and Freitas, Cl{\'a}udia},
+  booktitle={VI Workshop de Iniciação Científica em Tecnologia da Informação e da Linguagem Humana (TILic 2019)},
+  place={Salvador, BA, Brazil, Outubro, 15-18, 2019},
+  year={2019}
+}
+```
