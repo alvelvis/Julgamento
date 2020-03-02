@@ -1,3 +1,4 @@
 prod.db
 *.pyc
 static/uploads/*
+.julgamento

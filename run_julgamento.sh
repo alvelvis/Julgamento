@@ -4,6 +4,12 @@ if [ -d .git ]; then
   git pull
 fi
 
+if [ ! -d .julgamento ]; then
+  sh install_julgamento.sh
+fi
+
+. .julgamento/bin/activate
+
 if ! python3 -c "import tqdm"; then
   if ! pip3 install -r requirements.txt; then
     sudo apt install python3-pip
