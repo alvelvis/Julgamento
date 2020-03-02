@@ -18,15 +18,11 @@ Check the [Wiki](https://github.com/alvelvis/Julgamento/wiki) for a broader unde
 
 	$ cd Julgamento
 
-That way, whenever you want to update the repository, you can simply pull the updates inside the folder:
-
-	$ git pull
-
 3) After downloading the repository, run the command below, and it will then create a Python 3 virtual environment and install the requirements in order to run Julgamento.
 
 	$ sh install_julgamento.sh
 	
-4) Then, whenever you intend to run Julgamento locally, run the command below and it will also auto-update when necessary:
+4) Then, whenever you intend to run Julgamento locally, run the command below and it will also auto-update when necessary if cloned the repo using Git:
 
 	$ sh run_julgamento.sh
 
