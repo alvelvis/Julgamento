@@ -22,11 +22,11 @@ That way, whenever you want to update the repository, you can simply pull the up
 
 	$ git pull
 
-3) After downloading the repository, install the requirements to your Python 3 libraries:
+3) After downloading the repository, run the command below, and it will then create a Python 3 virtual environment and install the requirements in order to run Julgamento.
 
-	$ pip3 install -r requirements.txt
-
-4) Then, if you intend to run Julgamento locally, run the command:
+	$ sh install_julgamento.sh
+	
+4) Then, whenever you intend to run Julgamento locally, run the command below and it will also auto-update when necessary:
 
 	$ sh run_julgamento.sh
 
