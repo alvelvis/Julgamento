@@ -22,7 +22,7 @@ Check the [Wiki](https://github.com/alvelvis/Julgamento/wiki) for a broader unde
 
 	$ sh install_julgamento.sh
 	
-4) Then, whenever you intend to run Julgamento locally, run the command below and it will also auto-update when necessary if cloned the repo using Git:
+4) Then, whenever you intend to run Julgamento locally, run the command below and it will also auto-update when necessary if you cloned the repo using Git:
 
 	$ sh run_julgamento.sh
 
