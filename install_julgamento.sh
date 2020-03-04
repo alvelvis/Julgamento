@@ -1,5 +1,8 @@
 if [ ! -d .julgamento ]; then
-    virtualenv .julgamento -p python3
+    if ! virtualenv .julgamento -p python3; then
+        sudo apt install virtualenv
+        virtualenv .julgamento -p python3
+    fi
 fi
 
 . .julgamento/bin/activate
