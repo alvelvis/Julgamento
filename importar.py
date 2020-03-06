@@ -167,7 +167,7 @@ def findCorpora(filtro, tipo):
     return "\n".join(lista)
 
 def removerAcento(s):
-    return re.sub(r'[^A-Za-z0-9_\.]', '', s)
+    return re.sub(r'[^A-Za-z0-9_\.\-]', '', s)
 
 def formDB():
     return '''
