@@ -93,10 +93,10 @@
             </div>
             <form class="formGold" enctype="multipart/form-data" method="POST" action="/upload">
                 <input style="display:none" type=file onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptGoldGold').removeClass('glyphicon-upload').addClass('glyphicon-ok'); $('#goldenName').val($(this).val().replace(/^.*[\\\/]/, '').split('.conllu')[0]); } else { $('.glyphOptGoldGold').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optGoldGoldenFile" name="goldenFile">
-                <center><input style="width:50%; text-align: center;" placeholder="Nome do corpus" class="form-control translatePlaceholder id="goldenName" name="goldenName" required></center>
+                <center><input style="width:50%; text-align: center;" placeholder="Nome do corpus" class="form-control translatePlaceholder" id="goldenName" name="goldenName" required></center>
             </form>
         </div>
-        <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptGoldGold').hasClass('glyphicon-ok')) { $('.formGold').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> <span class="translateHtml">Enviar</span></button></center>
+        <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptGoldGold').hasClass('glyphicon-ok') && $('#goldenName').val()) { $('.formGold').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> <span class="translateHtml">Enviar</span></button></center>
     </div>
 
     <div class="col-lg-9 uploadOption optSys" style="display:none">
