@@ -309,23 +309,24 @@ def getMatrixSentences(c, golden, system, coluna):
     ud2 = allCorpora.corpora.get(conllu(c).system())
     
     for sent_id, sentence in ud1.sentences.items():
-        for t, token in enumerate(sentence.tokens):
-            if token.col[coluna.lower()] == golden and ud2.sentences[sent_id].tokens[t].col[coluna.lower()] == system:
-                listaSentences.append({
-                    'sent_id': sent_id, 
-                    'golden': sentence, 
-                    'system': ud2.sentences[sent_id], 
-                    'divergence': {
-                        'system': {'category': system, 'head': {'id': ud2.sentences[sent_id].tokens[t].head_token.id, 'word': ud2.sentences[sent_id].tokens[t].head_token.word}},
-                        'golden': {'category': golden, 'head': {'id': token.head_token.id, 'word': token.head_token.word}}
-                        },
-                    'col': coluna.lower(),
-                    'bold': {'word': token.word, 'color': 'black'},
-                    'boldCol': f'{coluna.lower()}<coluna>{t}',
-                    'secBold': {'word': token.head_token.word, 'color': 'green'} if coluna.lower() in ["deprel"] else "",
-                    'thirdBold': {'word': ud2.sentences[sent_id].tokens[t].head_token.word, 'color': 'red'} if coluna.lower() in ["deprel"] else "",
-                    't': t
-                })
+        if sent_id in ud2.sentences and len(sentence.tokens) == len(ud2.sentences[sent_id].tokens):
+            for t, token in enumerate(sentence.tokens):
+                if token.col[coluna.lower()] == golden and ud2.sentences[sent_id].tokens[t].col[coluna.lower()] == system:
+                    listaSentences.append({
+                        'sent_id': sent_id, 
+                        'golden': sentence, 
+                        'system': ud2.sentences[sent_id], 
+                        'divergence': {
+                            'system': {'category': system, 'head': {'id': ud2.sentences[sent_id].tokens[t].head_token.id, 'word': ud2.sentences[sent_id].tokens[t].head_token.word}},
+                            'golden': {'category': golden, 'head': {'id': token.head_token.id, 'word': token.head_token.word}}
+                            },
+                        'col': coluna.lower(),
+                        'bold': {'word': token.word, 'color': 'black'},
+                        'boldCol': f'{coluna.lower()}<coluna>{t}',
+                        'secBold': {'word': token.head_token.word, 'color': 'green'} if coluna.lower() in ["deprel"] else "",
+                        'thirdBold': {'word': ud2.sentences[sent_id].tokens[t].head_token.word, 'color': 'red'} if coluna.lower() in ["deprel"] else "",
+                        't': t
+                    })
     
     return listaSentences
 
@@ -383,37 +384,57 @@ def modificacoes(c):
     depois = allCorpora.corpora[conllu(c).golden()]
     antes = allCorpora.corpora[conllu(c).original()]
 
-    if len(antes.sentences) != len(depois.sentences):
-        return "<span class='translateHtml'>Os corpora antes e depois não coincidem.</span>"
-
     html = "<h3 class='translateHtml'>Modificações realizadas no corpus</h3>"
 
     lemas_diferentes = {}
     upos_diferentes = {}
     deprel_diferentes = {}
     sentences_diferentes = []
+    text_diferentes = []
+    comparable_sentences = []
+    not_comparable_sentences = []
+    removed_sentences = []
     for sentid, sentence in antes.sentences.items():
+        if not sentid in depois.sentences:
+            removed_sentences.append(sentid)
+            continue
         if sentence.tokens_to_str() != depois.sentences[sentid].tokens_to_str():
             sentences_diferentes.append(sentid)
-        for t, token in enumerate(sentence.tokens):
-            if token.lemma != depois.sentences[sentid].tokens[t].lemma:
-                if not token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma in lemas_diferentes:
-                    lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma] = []
-                lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
-            if token.upos != depois.sentences[sentid].tokens[t].upos:
-                if not token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos in upos_diferentes:
-                    upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos] = []
-                upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
-            if token.deprel != depois.sentences[sentid].tokens[t].deprel:
-                if not token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel in deprel_diferentes:
-                    deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel] = []
-                deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+            if sentence.text != depois.sentences[sentid].text:
+                text_diferentes.append(sentid + "<br>" + sentence.text + "<depois>" + depois.sentences[sentid].text)
+        if len(sentence.tokens) != len(depois.sentences[sentid].tokens):
+            not_comparable_sentences.append(sentid)
+        else:
+            comparable_sentences.append(sentid)
+            for t, token in enumerate(sentence.tokens):
+                if token.lemma != depois.sentences[sentid].tokens[t].lemma:
+                    if not token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma in lemas_diferentes:
+                        lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma] = []
+                    lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+                if token.upos != depois.sentences[sentid].tokens[t].upos:
+                    if not token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos in upos_diferentes:
+                        upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos] = []
+                    upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+                if token.deprel != depois.sentences[sentid].tokens[t].deprel:
+                    if not token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel in deprel_diferentes:
+                        deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel] = []
+                    deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
     
     modificacoesCorpora.modificacoes[c] = {'lemma': lemas_diferentes, 'upos': upos_diferentes, 'deprel': deprel_diferentes}
 
     sentences_iguais = [x for x in depois.sentences if x not in sentences_diferentes]
     html += f"<br><h4><span class='translateHtml'>Sentenças modificadas</span> ({len(sentences_diferentes)})</h4><pre>{'; '.join(sentences_diferentes)}</pre>"
     html += f"<br><h4><span class='translateHtml'>Sentenças não modificadas</span> ({len(sentences_iguais)})</h4><pre>{'; '.join(sentences_iguais)}</pre>"
+    html += f"<br><h4><span class='translateHtml'>Sentenças removidas</span> ({len(removed_sentences)})</h4><pre>{'; '.join(removed_sentences)}</pre>"
+    html += f"<br><h4><span class='translateHtml'>Sentenças com tokenização diferente</span> ({len(not_comparable_sentences)})</h4><pre>{'; '.join(not_comparable_sentences)}</pre>"
+
+    html += f"<br><h4><span class='translateHtml'>\"# text\" diferentes</span> ({len(text_diferentes)})</h4>"
+    html += "<table>"
+    for entrada in text_diferentes:
+        html += "<tr><th></th><th>{}</th></tr>".format(entrada.split("<br>")[0])
+        html += "<tr><th class='translateHtml'>ANTES</th><td>{}</td></tr>".format(entrada.split("<depois>")[0].split("<br>")[1])
+        html += "<tr><th class='translateHtml'>DEPOIS</th><td>{}</td></tr>".format(entrada.split("<depois>")[1])    
+    html += "</table>"
 
     html += f"<br><h4><span class='translateHtml'>Lemas diferentes</span> ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
     html += "<table>"

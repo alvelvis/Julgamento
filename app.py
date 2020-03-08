@@ -64,6 +64,8 @@ def refreshTables():
 	#allCorpora.corpora.pop(conllu(request.values.get("c")).golden(), None)
 	#allCorpora.corpora.pop(conllu(request.values.get("c")).system(), None)
 	#loadCorpus.submit(request.values.get("c"))
+	if request.values.get("c") in modificacoesCorpora.modificacoes:
+		modificacoesCorpora.modificacoes.pop(request.values.get("c"))
 	allCorpora.corpora.pop(conllu(request.values.get("c")).golden())
 	#allCorpora.corpora[] = ""
 	if conllu(request.values.get("c")).system() in allCorpora.corpora:
@@ -199,6 +201,8 @@ def deleteGolden():
 	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 	os.remove(conllu(request.values.get("c")).findGolden())
+	if os.path.isfile(conllu(request.values.get("c")).findOriginal()):
+		os.remove(conllu(request.values.get("c")).findOriginal())
 	return render_template(
 		'upload.html',
 		success="Corpus golden \"" + request.values.get("c") + "\" deletado com sucesso!",
@@ -216,11 +220,15 @@ def cancelTrain():
 	else:
 		if request.args.get('golden') == 'true':
 			os.system(f'rm {conllu(request.args.get("c")).findGolden()}')
-		os.system(f'rm {conllu(request.args.get("c")).findInProgress()}')
-		os.system(f'rm {conllu(request.args.get("c")).findSystem()}')
+			os.system(f'rm {conllu(request.args.get("c")).findOriginal()}')
+			allCorpora.corpora.pop(conllu(request.values.get("c")).original)	
+		if os.path.isfile(conllu(request.args.get("c")).findInProgress()):
+			os.system(f'rm {conllu(request.args.get("c")).findInProgress()}')
+		if os.path.isfile(conllu(request.args.get("c")).findSystem()):
+			os.system(f'rm {conllu(request.args.get("c")).findSystem()}')
 		corpus = db.session.query(models.Corpus).get(conllu(request.args.get('c')).naked)
-		allCorpora.corpora[conllu(request.values.get("c")).golden()] = ""
-		allCorpora.corpora[conllu(request.values.get("c")).system()] = ""
+		allCorpora.corpora.pop(conllu(request.values.get("c")).golden())
+		allCorpora.corpora.pop(conllu(request.values.get("c")).system())
 		db.session.delete(corpus)
 		db.session.commit()
 		if not request.args.get('callback'):

@@ -63,10 +63,6 @@ var translations = {
         "pt-BR": "Acertos",
         "en-US": "Hits"
     },
-    "Os corpora antes e depois não coincidem.": {
-        "pt-BR": "Os corpora antes e depois não coincidem.",
-        "en-US": "Corpora do not coincide."
-    },
     "Modificações realizadas no corpus": {
         "pt-BR": "Modificações realizadas no corpus",
         "en-US": "Modifications made to the corpus"
@@ -78,6 +74,12 @@ var translations = {
     "Sentenças não modificadas": {
         "pt-BR": "Sentenças não modificadas",
         "en-US": "Unmodified sentences"
+    },
+    "Sentenças removidas": {
+        "en-US": "Removed sentences"
+    },
+    "Sentenças com tokenização diferente": {
+        "en-US": "Sentences with different tokenization"
     },
     "Lemas diferentes": {
         "pt-BR": "Lemas diferentes",
@@ -94,6 +96,9 @@ var translations = {
     "UPOS diferentes": {
         "pt-BR": "UPOS diferentes",
         "en-US": "Different UPOS"
+    },
+    '"# text" diferentes': {
+        'en-US': 'Different #text'
     },
     "DEPREL diferentes": {
         "pt-BR": "DEPREL diferentes",
