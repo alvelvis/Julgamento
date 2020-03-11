@@ -219,18 +219,24 @@ def cancelTrain():
 		return redirect("/log?c=" + request.args.get('c'))
 	else:
 		if request.args.get('golden') == 'true':
-			os.system(f'rm {conllu(request.args.get("c")).findGolden()}')
-			os.system(f'rm {conllu(request.args.get("c")).findOriginal()}')
-			allCorpora.corpora.pop(conllu(request.values.get("c")).original)	
+			if os.path.isfile(conllu(request.args.get("c")).findGolden()):
+				os.remove(conllu(request.args.get("c")).findGolden())
+			if os.path.isfile(conllu(request.args.get("c")).findOriginal()):
+				os.remove(conllu(request.args.get("c")).findOriginal())
+			if conllu(request.values.get("c")).original in allCorpora.corpora:
+				allCorpora.corpora.pop(conllu(request.values.get("c")).original)
 		if os.path.isfile(conllu(request.args.get("c")).findInProgress()):
-			os.system(f'rm {conllu(request.args.get("c")).findInProgress()}')
+			os.remove(conllu(request.args.get("c")).findInProgress())
 		if os.path.isfile(conllu(request.args.get("c")).findSystem()):
-			os.system(f'rm {conllu(request.args.get("c")).findSystem()}')
+			os.remove(conllu(request.args.get("c")).findSystem())
 		corpus = db.session.query(models.Corpus).get(conllu(request.args.get('c')).naked)
-		allCorpora.corpora.pop(conllu(request.values.get("c")).golden())
-		allCorpora.corpora.pop(conllu(request.values.get("c")).system())
-		db.session.delete(corpus)
-		db.session.commit()
+		if conllu(request.values.get("c")).golden() in allCorpora.corpora:
+			allCorpora.corpora.pop(conllu(request.values.get("c")).golden())
+		if conllu(request.values.get("c")).system() in allCorpora.corpora:
+			allCorpora.corpora.pop(conllu(request.values.get("c")).system())
+		if corpus:
+			db.session.delete(corpus)
+			db.session.commit()
 		if not request.args.get('callback'):
 			return redirect("/")
 		else:
