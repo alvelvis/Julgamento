@@ -486,6 +486,7 @@ def sendAnnotation():
 		
 		corpus = estrutura_ud.Corpus(recursivo=False, sent_id=request.values.get('sent_id'))
 		corpus.load(arquivo)
+
 		if goldenAndSystem:
 			corpusSystem = estrutura_ud.Corpus(recursivo=False, sent_id=request.values.get('sent_id'))
 			corpusSystem.load(arquivoSystem)
@@ -508,7 +509,7 @@ def sendAnnotation():
 			corpus.save(arquivo)
 			if goldenAndSystem:
 				corpusSystem.save(arquivoSystem)
-			errors = validar_UD.validate(corpus, errorList=VALIDAR_UD, noMissingToken=True)
+			errors = validar_UD.validate(corpus, errorList=VALIDAR_UD, noMissingToken=True, sent_id=request.values.get('sent_id'))
 			if errors:
 				for error in errors:
 					if error.strip():
