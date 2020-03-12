@@ -764,6 +764,7 @@ function atualizar(){
             type: 'POST',
             success: function(data){
                 if (data['change']){
+                    $button.parent().parent().find('.alreadyEdited').text('!');
                     $button.parents('.sentence').children('.modification').html(
                     '<div class="alert alert-success" role="alert">Alteração no GOLDEN realizada com sucesso dia ' + data['data'] + '</div>'
                     )
