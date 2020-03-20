@@ -64,7 +64,7 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
     if not os.path.isfile(conllu(c).findErrors() + "_html") or fromZero:
         if fromZero or not texto:
             if not os.path.isfile(conllu(c).findErrors()):
-                if os.system(f'python3 {VALIDATE_UD} {conllu(c).findGolden()} --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee {conllu(c).findErrors()}'):
+                if os.system(f'python3 {os.path.abspath(os.path.dirname(__file__))}/tools/validate.py {conllu(c).findGolden()} --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee {conllu(c).findErrors()}'):
                     pass
             with open(conllu(c).findErrors()) as f:
                 texto = f.read()
@@ -87,14 +87,14 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
         ]
         exceptions += exc
         for linha in texto.splitlines():
-            if linha and any(x.lower().strip() in linha.lower() for x in exceptions) and ']:' in linha and 'Sent ' in linha and ("Line " in linha or ' line ' in linha):
+            if linha and any(x.lower().strip() in linha.lower() for x in exceptions) and ' Node ' in linha and 'Sent ' in linha and ("Line " in linha or ' line ' in linha):
                 t = int(linha.split("Line ", 1)[1].split(" ")[0]) if "Line " in linha else int(linha.split(" line ", 1)[1].split(" ")[0])
                 if "\t" in arquivoSplit[t-1]:
                     if not linha.split(":", 1)[1] in sent_ids:
                         sent_ids[linha.split(":", 1)[1]] = []
                     bold = {'word': arquivoSplit[t-1].split("\t")[1], 'color': 'black'}# if '\t' in arquivo.splitlines()[t-1] else ""
-                    t = allCorpora.corpora[conllu(c).golden()].sentences[linha.split("]:")[0].split("Sent ", 1)[1]].map_token_id[arquivo.splitlines()[t-1].split("\t")[0]]
-                    sent_ids[linha.split(":", 1)[1]].append({'id': linha.split("]:")[0].split("Sent ", 1)[1], 't': t, 'bold': bold})
+                    t = allCorpora.corpora[conllu(c).golden()].sentences[linha.split(" Node ")[0].split("Sent ", 1)[1]].map_token_id[arquivo.splitlines()[t-1].split("\t")[0]]
+                    sent_ids[linha.split(":", 1)[1]].append({'id': linha.split(" Node ")[0].split("Sent ", 1)[1], 't': t, 'bold': bold})
         html = ""
         for k, problem in enumerate(sorted(sent_ids)):
             html += f"<div class='alert alert-warning' role='alert'>{k+1} / {len(sent_ids)} - {problem}</div>"
