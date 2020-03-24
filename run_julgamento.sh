@@ -1,6 +1,7 @@
 if [ -d .git ]; then
   git update-index --assume-unchanged config.py
   git update-index --assume-unchanged localtime.py
+  git submodule update --init
   git pull
 fi
 
