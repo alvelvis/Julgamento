@@ -6,6 +6,8 @@ Julgamento is part of [ET: a workstation for querying, revising and evaluating a
 
 If you wish to run your own version of Julgamento, a Linux computer (or Windows with [Windows Subsystem for Linux](https://docs.microsoft.com/pt-br/windows/wsl/install-win10)), `python3` and `virtualenv` are needed.
 
+If you wish to deploy Julgamento to a web server, using Ubuntu/Apache2, check [Deploying with Ubuntu/Apache2](https://github.com/alvelvis/Interrogat-rio/wiki/Deploying-with-Ubuntu-Apache2).
+
 Check the [Wiki](https://github.com/alvelvis/Julgamento/wiki) for a broader understanding of Julgamento tools.
 
 # How to install: 4-steps Tutorial
