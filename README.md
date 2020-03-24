@@ -4,13 +4,13 @@ Julgamento (Trial) is an enviroment for evaluating annotated corpora in the [CoN
 
 Julgamento is part of [ET: a workstation for querying, revising and evaluating annotated corpora](http://comcorhd.letras.puc-rio.br/ET). Consider also installing [Interrogatório](https://github.com/alvelvis/Interrogat-rio), an enviroment for querying and revising annotated corpora, in the same folder as Julgamento to integrate both.
 
-If you wish to run Julgamento in a local server, a Linux computer (or Windows with [Windows Subsystem for Linux](https://docs.microsoft.com/pt-br/windows/wsl/install-win10)), `python3` and `virtualenv` are needed.
-
 If you wish to deploy Julgamento to a web server, using Ubuntu/Apache2, check [Deploying with Ubuntu/Apache2](https://github.com/alvelvis/Interrogat-rio/wiki/Deploying-with-Ubuntu-Apache2).
 
 Check the [Wiki](https://github.com/alvelvis/Julgamento/wiki) for a broader understanding of Julgamento tools.
 
-# How to install: 4-steps Tutorial
+# How to install in a local server: 4-steps Tutorial
+
+If you wish to run Julgamento in a local server, a Linux computer (or Windows with [Windows Subsystem for Linux](https://docs.microsoft.com/pt-br/windows/wsl/install-win10)), `python3` and `virtualenv` are needed.
 
 1) The recommended way to download the repository is by cloning it. In a terminal, execute the following command:
 
