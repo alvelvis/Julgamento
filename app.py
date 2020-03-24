@@ -104,7 +104,8 @@ def cristianMarneffe():
 		return redirect(url_for("google.login"))
 
 	if not os.path.isfile(UPLOAD_FOLDER + f"/CM-{request.values.get('c')}/results_{request.values.get('tipo')}.json"):
-		os.system("python3 Cristian-Marneffe.py {} {}".format(
+		os.system(".julgamento/bin/python3 {}/Cristian-Marneffe.py {} {}".format(
+			JULGAMENTO_FOLDER,
 			conllu(request.values.get("c")).findGolden(), 
 			request.values.get("tipo"),
 			))
