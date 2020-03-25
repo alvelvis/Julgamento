@@ -26,6 +26,7 @@ import pickle
 from Restrictions import Restrictions , process_result, preprocessing
 import sys
 import json
+from config import JULGAMENTO_FOLDER
 
 
 # In[41]:
@@ -183,8 +184,8 @@ for ind, (group_name, df_group) in enumerate(relevant_pair_ngram_freq.items()):
 # In[56]:
 
 
-if not os.path.isdir("static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0]):
-    os.mkdir("static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0])
+if not os.path.isdir(JULGAMENTO_FOLDER + "/static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0]):
+    os.mkdir(JULGAMENTO_FOLDER + "/static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0])
 
 dicionario_marneffe = []
 
