@@ -258,11 +258,11 @@ if type_filter=='gramaticais':
                 file.write('{}\n'.format(sentence))
             file.write('<br>')
 
-    with open("static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0] + '/results_gramaticais.json', "w") as f:
+    with open(JULGAMENTO_FOLDER + "/static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0] + '/results_gramaticais.json', "w") as f:
         json.dump(dicionario_marneffe, f)
 
 elif type_filter=='lexicais':
-    html_file = "static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0] + '/results_lexicais.html'
+    html_file = JULGAMENTO_FOLDER + "/static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0] + '/results_lexicais.html'
     reverse = "<span style='font-size:25px;'>&#8678;</span>"
     no_reverse = "<span style='font-size:25px;'>&#8680;</span>"
     with open(html_file,'w+',encoding="utf-8") as file:
@@ -329,7 +329,7 @@ elif type_filter=='lexicais':
                 file.write('{}\n'.format(sentence))
             file.write('<br>')
 
-    with open("static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0] + '/results_lexicais.json', "w") as f:
+    with open(JULGAMENTO_FOLDER + "/static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0] + '/results_lexicais.json', "w") as f:
         json.dump(dicionario_marneffe, f)
 else:
     raise Exception('unknown filter type (gramaticais, lexicais): {}'.format(type_filter))
