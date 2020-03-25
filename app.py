@@ -104,7 +104,7 @@ def cristianMarneffe():
 		return redirect(url_for("google.login"))
 
 	if not os.path.isfile(UPLOAD_FOLDER + f"/CM-{request.values.get('c')}/results_{request.values.get('tipo')}.json"):
-		os.system(".julgamento/bin/python3 {}/Cristian-Marneffe.py {} {}".format(
+		os.system(JULGAMENTO_FOLDER + "/.julgamento/bin/python3 {}/Cristian-Marneffe.py {} {}".format(
 			JULGAMENTO_FOLDER,
 			conllu(request.values.get("c")).findGolden(), 
 			request.values.get("tipo"),
@@ -143,7 +143,7 @@ def getErrors():
 	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 		
-	html = renderErrors(c=request.values.get("c"), exc=request.values.get('exceptions').split("|") if request.values.get('exceptions') else "", fromZero=False)
+	html = renderErrors(c=request.values.get("c"), exc=request.values.get('exceptions').split("|") if request.values.get('exceptions') else "", fromZero=True)
 	return jsonify({
 		'html': html,
 		'success': True,
