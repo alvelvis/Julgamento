@@ -191,7 +191,7 @@ dicionario_marneffe = []
 
 #reverse if nn[2] else 
 if type_filter=='gramaticais':
-    html_file = "static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0] + '/results_gramaticais.html'
+    html_file = JULGAMENTO_FOLDER + "/static/uploads/CM-" + sys.argv[1].rsplit("/", 1)[1].rsplit(".conllu", 1)[0] + '/results_gramaticais.html'
     reverse = "<span style='font-size:25px;'>&#8678;</span>"
     no_reverse = "<span style='font-size:25px;'>&#8680;</span>"
     with open(html_file,'w+',encoding="utf-8") as file:
