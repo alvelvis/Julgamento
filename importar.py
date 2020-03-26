@@ -603,10 +603,10 @@ def checkCorpora():
             allCorpora.corpora.pop(conllu(corpus).golden())
             if conllu(corpus).system() in allCorpora.corpora:
                 allCorpora.corpora.pop(conllu(corpus).system())
-            corpusdb = db.session.query(models.Corpus).get(corpus).naked)
+            corpusdb = db.session.query(models.Corpus).get(conllu(corpus).naked)
             if corpusdb:
                 db.session.delete(corpusdb)
-			    db.session.commit()
+                db.session.commit()
             if os.path.isfile(conllu(corpus).findSystem()):
                 os.remove(conllu(corpus).findSystem())
             if os.path.isfile(conllu(corpus).findOriginal()):

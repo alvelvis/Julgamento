@@ -371,6 +371,10 @@ def upload(alert="", success=""):
 				os.remove(conllu(goldenFile).findSystem())
 			else:
 				success = f'"{systemFileName}" enviado com sucesso! Julgue o corpus na <a href="/corpus">página inicial</a>.'
+				corpusdb = db.session.query(models.Corpus).get(conllu(goldenFile).naked)
+				if corpusdb:
+					db.session.remove(corpusdb)
+					db.session.commit()
 				novoCorpus = models.Corpus(
 					name=conllu(goldenFile).naked,
 					date=str(datetime.datetime.now()),
