@@ -598,7 +598,7 @@ def checkCorpora():
     availableCorpora = []
     missingSystem = []
 
-    for corpus in allCorpora.corpora:
+    for corpus in list(allCorpora.corpora.keys()):
         if not os.path.isfile(conllu(corpus).findGolden()) and conllu(corpus).golden() in allCorpora.corpora:
             allCorpora.corpora.pop(conllu(corpus).golden())
             if conllu(corpus).system() in allCorpora.corpora:
