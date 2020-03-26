@@ -601,8 +601,16 @@ def checkCorpora():
     for corpus in allCorpora.corpora:
         if not os.path.isfile(conllu(corpus).findGolden()) and conllu(corpus).golden() in allCorpora.corpora:
             allCorpora.corpora.pop(conllu(corpus).golden())
-        if not os.path.isfile(conllu(corpus).findSystem()) and conllu(corpus).system() in allCorpora.corpora:
-            allCorpora.corpora.pop(conllu(corpus).system())
+            if conllu(corpus).system() in allCorpora.corpora:
+                allCorpora.corpora.pop(conllu(corpus).system())
+            corpusdb = db.session.query(models.Corpus).get(corpus).naked)
+            if corpusdb:
+                db.session.delete(corpusdb)
+			    db.session.commit()
+            if os.path.isfile(conllu(corpus).findSystem()):
+                os.remove(conllu(corpus).findSystem())
+            if os.path.isfile(conllu(corpus).findOriginal()):
+                os.remove(conllu(corpus).findOriginal())
         if not os.path.isfile(conllu(corpus).findOriginal()) and conllu(corpus).original() in allCorpora.corpora:
             allCorpora.corpora.pop(conllu(corpus).original())
 
