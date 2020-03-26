@@ -598,6 +598,14 @@ def checkCorpora():
     availableCorpora = []
     missingSystem = []
 
+    for corpus in allCorpora.corpora:
+        if not os.path.isfile(conllu(corpus).findGolden()) and conllu(corpus).golden() in allCorpora.corpora:
+            allCorpora.corpora.pop(conllu(corpus).golden())
+        if not os.path.isfile(conllu(corpus).findSystem()) and conllu(corpus).system() in allCorpora.corpora:
+            allCorpora.corpora.pop(conllu(corpus).system())
+        if not os.path.isfile(conllu(corpus).findOriginal()) and conllu(corpus).original() in allCorpora.corpora:
+            allCorpora.corpora.pop(conllu(corpus).original())
+
     if INTERROGATORIO:
         for x in os.listdir(COMCORHD_FOLDER):
             if x.endswith('.conllu') and os.path.isfile(f'{UPLOAD_FOLDER}/{conllu(x).system()}') and db.session.query(models.Corpus).get(conllu(x).naked):
