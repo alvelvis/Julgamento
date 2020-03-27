@@ -106,7 +106,7 @@ var translations = {
     },
     "Características do corpus": {
         "pt-BR": "Características do corpus",
-        "en-US": "Corpus' technical features"
+        "en-US": "Corpus technical features"
     },
     "Sentenças": {
         "pt-BR": "Sentenças",
@@ -262,7 +262,7 @@ var translations = {
     },
     "Características do corpus <span class=\"badge\">novidade</span>": {
         "pt-BR": "Características do corpus <span class=\"badge\">novidade</span>",
-        "en-US": "Corpus' technical features <span class=\"badge\">new</span>"
+        "en-US": "Corpus technical features <span class=\"badge\">new</span>"
     },
     "Modificações realizadas no corpus <span class=\"badge\">novidade</span>": {
         "pt-BR": "Modificações realizadas no corpus <span class=\"badge\">novidade</span>",
