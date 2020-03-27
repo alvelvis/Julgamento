@@ -15,7 +15,7 @@
                 <button type="button" title="Mostrar anotação sistema" sent_id="{{golden.sent_id or golden.id}}" class="systemButton translateTitle showAnnotation showSystemAnnotation btn btn-default"><i class="fa fa-laptop"></i>{% if divergence %} {{ divergence['system']['category'] }}{% endif %}</button>
             {% endif %}
             {% if goldenAndSystem %}
-                <button type="button" title="Editar golden e sistema ao mesmo tempo" sent_id="{{golden.sent_id or golden.id}}" class="editGoldenAndSystem translateTitle showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-share"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% endif %}</button>
+                <!--button type="button" title="Editar golden e sistema ao mesmo tempo" sent_id="{{golden.sent_id or golden.id}}" class="editGoldenAndSystem translateTitle showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-share"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% endif %}</button-->
             {% endif %}
             {% if divergence and system %}
             <!--button title="O sistema está certo! A coluna '{{col}}' do token '{{bold['word']}}' no arquivo golden será alterada para '{{ divergence['system']['category'] }}', e o token passará a apontar para '{{ divergence['system']['head']['word'] }}'" type="button" class="quickSendAnnotation btn btn-default"><span class='glyphicon glyphicon-flash'></span></button-->
