@@ -188,6 +188,9 @@ var translations = {
         "pt-BR": "Selecione um corpus",
         "en-US": "Select a corpus"
     },
+    "Selecione um corpus - Julgamento": {
+        "en-US": "Select a corpus - Julgamento"
+    },
     "Corpora prontos para julgamento": {
         "pt-BR": "Corpora prontos para julgamento",
         "en-US": "Corpora ready for judgement"
