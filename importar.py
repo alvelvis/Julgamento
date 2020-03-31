@@ -495,19 +495,14 @@ def caracteristicasCorpus(ud1, ud2):
         tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
         tabela_Geral += f"<tr><th class='translateHtml'>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
         tabela_Geral += f"<tr><th class='translateHtml'>Sistema</th><td>{n_Sentences_s}</td><td>{n_Tokens_s}</td><td>{len(dicionario_Lemas_s)}</td></tr>"
-        tabela_Geral += "</table>"
     else:
         tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
         tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
         tabela_Geral += f"<tr><th class='translateHtml'>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
-        tabela_Geral += "</table>"
-
     if documentos:
-        tabela_Geral += "<table style='margin:auto; display:block;'>"
-        tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th></tr>"
         for documento in documentos:
-            tabela_Geral += f"<tr><th class='translateHtml'>{documento}</th><td>{documentos[documento][0]}</td><td>{documentos[documento][1]}</td></tr>"
-        tabela_Geral += "</table>"
+            tabela_Geral += f"<tr><th class='translateHtml'>{documento}</th><td>{documentos[documento][0]}</td><td>{documentos[documento][1]}</td><td></td></tr>"
+    tabela_Geral += "</table>"
     tabela_Geral += "</div>"
 
     total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
