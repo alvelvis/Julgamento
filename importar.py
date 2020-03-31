@@ -500,7 +500,7 @@ def caracteristicasCorpus(ud1, ud2):
         tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
         tabela_Geral += f"<tr><th class='translateHtml'>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
     if documentos:
-        for documento in documentos:
+        for documento in sorted(documentos):
             tabela_Geral += f"<tr><th class='translateHtml'>{documento}</th><td>{documentos[documento][0]}</td><td>{documentos[documento][1]}</td><td></td></tr>"
     tabela_Geral += "</table>"
     tabela_Geral += "</div>"
