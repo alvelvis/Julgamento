@@ -463,13 +463,19 @@ def caracteristicasCorpus(ud1, ud2):
     n_Tokens = 0
     n_Sentences = len(golden.sentences)
     dicionario_Lemas = {}
+    documentos = {}
     for sentence in golden.sentences.values():
+        documento = sentence.sent_id.rsplit("-", 1)[0]
+        if not documento in documentos:
+            documentos[documento] = [0, 0]
+        documentos[documento][0] += 1
         for token in sentence.tokens:
             if not '-' in token.id:
                 if not token.lemma in dicionario_Lemas:
                     dicionario_Lemas[token.lemma] = 0
                 dicionario_Lemas[token.lemma] += 1
                 n_Tokens += 1
+                documentos[documento][1] += 1
 
     if system:
         n_Tokens_s = 0
@@ -496,6 +502,12 @@ def caracteristicasCorpus(ud1, ud2):
         tabela_Geral += f"<tr><th class='translateHtml'>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
         tabela_Geral += "</table>"
 
+    if documentos:
+        tabela_Geral += "<table style='margin:auto; display:block;'>"
+        tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th></tr>"
+        for documento in documentos:
+            tabela_Geral += f"<tr><th class='translateHtml'>{documento}</th><td>{documentos[documento][0]}</td><td>{documentos[documento][1]}</td></tr>"
+        tabela_Geral += "</table>"
     tabela_Geral += "</div>"
 
     total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
