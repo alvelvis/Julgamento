@@ -196,8 +196,8 @@ var translations = {
         "en-US": "Corpora ready for judgement"
     },
     "Material dourado pronto para julgamento <span class=\"badge\" style=\"background-color: red;\">novidade</span>": {
-        "pt-BR": "Material dourado pronto para julgamento <span class=\"badge\" style=\"background-color: red;\">novidade</span>",
-        "en-US": "Golden material ready for judgement <span class=\"badge\" style=\"background-color: red;\">new</span>"
+        "pt-BR": "Material dourado pronto para julgamento",
+        "en-US": "Golden material ready for judgement"
     },
     "Treinamentos em progresso": {
         "pt-BR": "Treinamentos em progresso",
@@ -264,12 +264,12 @@ var translations = {
         "en-US": "Table of contents"
     },
     "Características do corpus <span class=\"badge\">novidade</span>": {
-        "pt-BR": "Características do corpus <span class=\"badge\">novidade</span>",
-        "en-US": "Corpus technical features <span class=\"badge\">new</span>"
+        "pt-BR": "Características do corpus",
+        "en-US": "Corpus technical features"
     },
     "Modificações realizadas no corpus <span class=\"badge\">novidade</span>": {
-        "pt-BR": "Modificações realizadas no corpus <span class=\"badge\">novidade</span>",
-        "en-US": "Modifications made to the corpus <span class=\"badge\">new</span>"
+        "pt-BR": "Modificações realizadas no corpus",
+        "en-US": "Modifications made to the corpus"
     },
     "Acurácia das sentenças": {
         "pt-BR": "Acurácia das sentenças",
@@ -280,12 +280,12 @@ var translations = {
         "en-US": "Accuracy per morphosyntactic category"
     },
     "Cristian-Marneffe (lexicais) <span class=\"badge\" style=\"background-color: red;\">novidade</span>": {
-        "pt-BR": "Cristian-Marneffe (lexicais) <span class=\"badge\" style=\"background-color: red;\">novidade</span>",
-        "en-US": "Cristian-Marneffe (lexical) <span class=\"badge\" style=\"background-color: red;\">new</span>"
+        "pt-BR": "Cristian-Marneffe (lexicais)",
+        "en-US": "Cristian-Marneffe (lexical)"
     },
     "Cristian-Marneffe (gramaticais) <span class=\"badge\" style=\"background-color: red;\">novidade</span>": {
-        "pt-BR": "Cristian-Marneffe (gramaticais) <span class=\"badge\" style=\"background-color: red;\">novidade</span>",
-        "en-US": "Cristian-Marneffe (grammatical) <span class=\"badge\" style=\"background-color: red;\">new</span>"
+        "pt-BR": "Cristian-Marneffe (gramaticais)",
+        "en-US": "Cristian-Marneffe (grammatical)"
     },
     "Erros de validar_UD.py": {
         "pt-BR": "Erros de validar_UD.py",
