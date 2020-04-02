@@ -510,16 +510,16 @@ def caracteristicasCorpus(ud1, ud2):
     tabela_Geral += "</table>"
 
     if documentos_golden:
-        tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
+        tabela_Geral += "<br><table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
         tabela_Geral += "<tr><th class='translateHtml'>GOLDEN</th><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
         for documento in sorted(documentos_golden):
-            tabela_Geral += f"<tr><th class='translateHtml'>{documento}</th><td>{documentos_golden[documento][0]}</td><td>{documentos_golden[documento][1]}</td><td></td></tr>"
+            tabela_Geral += f"<tr><td>{documento}</td><td>{documentos_golden[documento][0]}</td><td>{documentos_golden[documento][1]}</td><td></td></tr>"
         tabela_Geral += "</table>"
         if system:
-            tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
+            tabela_Geral += "<br><table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
             tabela_Geral += "<tr><th class='translateHtml'>SISTEMA</th><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
             for documento in sorted(documentos_sistema):
-                tabela_Geral += f"<tr><th class='translateHtml'>{documento}</th><td>{documentos_sistema[documento][0]}</td><td>{documentos_sistema[documento][1]}</td><td></td></tr>"
+                tabela_Geral += f"<tr><td>{documento}</td><td>{documentos_sistema[documento][0]}</td><td>{documentos_sistema[documento][1]}</td><td></td></tr>"
             tabela_Geral += "</table>"
     
 
