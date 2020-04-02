@@ -195,7 +195,7 @@ var translations = {
         "pt-BR": "Corpora prontos para julgamento",
         "en-US": "Corpora ready for judgement"
     },
-    "Material dourado pronto para julgamento <span class=\"badge\" style=\"background-color: red;\">novidade</span>": {
+    "Material dourado pronto para julgamento": {
         "pt-BR": "Material dourado pronto para julgamento",
         "en-US": "Golden material ready for judgement"
     },
@@ -263,11 +263,11 @@ var translations = {
         "pt-BR": "Tabela de conteúdos",
         "en-US": "Table of contents"
     },
-    "Características do corpus <span class=\"badge\">novidade</span>": {
+    "Características do corpus": {
         "pt-BR": "Características do corpus",
         "en-US": "Corpus technical features"
     },
-    "Modificações realizadas no corpus <span class=\"badge\">novidade</span>": {
+    "Modificações realizadas no corpus": {
         "pt-BR": "Modificações realizadas no corpus",
         "en-US": "Modifications made to the corpus"
     },
@@ -279,11 +279,11 @@ var translations = {
         "pt-BR": "Acurácia por categoria morfossintática",
         "en-US": "Accuracy per morphosyntactic category"
     },
-    "Cristian-Marneffe (lexicais) <span class=\"badge\" style=\"background-color: red;\">novidade</span>": {
+    "Cristian-Marneffe (lexicais)": {
         "pt-BR": "Cristian-Marneffe (lexicais)",
         "en-US": "Cristian-Marneffe (lexical)"
     },
-    "Cristian-Marneffe (gramaticais) <span class=\"badge\" style=\"background-color: red;\">novidade</span>": {
+    "Cristian-Marneffe (gramaticais)": {
         "pt-BR": "Cristian-Marneffe (gramaticais)",
         "en-US": "Cristian-Marneffe (grammatical)"
     },

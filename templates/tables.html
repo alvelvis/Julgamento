@@ -17,14 +17,14 @@
     <div class="panel-body">
         <h3 class="translateHtml">Tabela de conteúdos</h3>
         <ul class="list-group">
-            <a href="#caracteristicas" name="caracteristicas" class="tables-toggle list-group-item translateHtml">Características do corpus <span class="badge" >novidade</span></a>
-            <a href="#modificacoes" name="modificacoes" class="tables-toggle list-group-item translateHtml">Modificações realizadas no corpus <span class="badge">novidade</span></a>
+            <a href="#caracteristicas" name="caracteristicas" class="tables-toggle list-group-item translateHtml">Características do corpus</a>
+            <a href="#modificacoes" name="modificacoes" class="tables-toggle list-group-item translateHtml">Modificações realizadas no corpus</a>
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#metrics" name="metrics" class="tables-toggle list-group-item translateHtml">Métricas do conll18_ud_eval.py</a>{% endif %}
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#sentAccuracy" name="sentAccuracy" class="tables-toggle list-group-item translateHtml">Acurácia das sentenças</a>{% endif %}
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSAccuracy" name="accuracy" class="tables-toggle list-group-item translateHtml">Acurácia por categoria morfossintática</a>{% endif %}
             <!--a href="#DEPRELAccuracy" name="accuracy" class="tables-toggle list-group-item translateHtml">Acurácia por DEPREL</a-->
-            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="lexicais" class="cristianMarneffeToggle list-group-item translateHtml">Cristian-Marneffe (lexicais) <span class="badge" style="background-color: red;">novidade</span></a>
-            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="gramaticais" class="cristianMarneffeToggle list-group-item translateHtml">Cristian-Marneffe (gramaticais) <span class="badge" style="background-color: red;">novidade</span></a>
+            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="lexicais" class="cristianMarneffeToggle list-group-item translateHtml">Cristian-Marneffe (lexicais)</a>
+            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="gramaticais" class="cristianMarneffeToggle list-group-item translateHtml">Cristian-Marneffe (gramaticais)</a>
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSMatrix" name="POSMatrix" class="tables-toggle list-group-item translateHtml">Matriz de confusão de UPOS</a>{% endif %}
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#DEPRELMatrix" name="DEPRELMatrix" class="tables-toggle list-group-item translateHtml">Matriz de confusão de DEPREL</a>{% endif %}
             <a href="#errorValidarUD" class="errorValidarUDToggle list-group-item translateHtml">Erros de validar_UD.py</a>
