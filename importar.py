@@ -463,19 +463,27 @@ def caracteristicasCorpus(ud1, ud2):
     n_Tokens = 0
     n_Sentences = len(golden.sentences)
     dicionario_Lemas = {}
-    documentos = {}
+    documentos_golden = {}
+    documentos_sistema = {}
     for sentence in golden.sentences.values():
         documento = sentence.sent_id.rsplit("-", 1)[0]
-        if not documento in documentos:
-            documentos[documento] = [0, 0]
-        documentos[documento][0] += 1
+        if not documento in documentos_golden:
+            documentos_golden[documento] = [0, 0]
+        documentos_golden[documento][0] += 1
         for token in sentence.tokens:
             if not '-' in token.id:
                 if not token.lemma in dicionario_Lemas:
                     dicionario_Lemas[token.lemma] = 0
                 dicionario_Lemas[token.lemma] += 1
                 n_Tokens += 1
-                documentos[documento][1] += 1
+                documentos_golden[documento][1] += 1
+    for sentence in system.sentences.values():
+        documento = sentence.sent_id.rsplit("-", 1)[0]
+        if not documento in documentos_sistema:
+            documentos_sistema[documento] = [0, 0]
+        documentos_sistema[documento][0] += 1
+        for token in sentence.tokens:
+                documentos_sistema[documento][1] += 1
 
     if system:
         n_Tokens_s = 0
@@ -489,7 +497,7 @@ def caracteristicasCorpus(ud1, ud2):
                     dicionario_Lemas_s[token.lemma] += 1
                     n_Tokens_s += 1
 
-    tabela_Geral = "<h3 class='translateHtml'>Características do corpus</h3><br><div class='col-lg-8 col-lg-offset-2'>"
+    tabela_Geral = "<h3 class='translateHtml'>Características do corpus</h3><br>"
     if system:
         tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
         tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
@@ -499,11 +507,21 @@ def caracteristicasCorpus(ud1, ud2):
         tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
         tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
         tabela_Geral += f"<tr><th class='translateHtml'>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
-    if documentos:
-        for documento in sorted(documentos):
-            tabela_Geral += f"<tr><th class='translateHtml'>{documento}</th><td>{documentos[documento][0]}</td><td>{documentos[documento][1]}</td><td></td></tr>"
     tabela_Geral += "</table>"
-    tabela_Geral += "</div>"
+
+    if documentos_golden:
+        tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
+        tabela_Geral += "<tr><th class='translateHtml'>GOLDEN</th><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
+        for documento in sorted(documentos_golden):
+            tabela_Geral += f"<tr><th class='translateHtml'>{documento}</th><td>{documentos_golden[documento][0]}</td><td>{documentos_golden[documento][1]}</td><td></td></tr>"
+        tabela_Geral += "</table>"
+        if system:
+            tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
+            tabela_Geral += "<tr><th class='translateHtml'>SISTEMA</th><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
+            for documento in sorted(documentos_sistema):
+                tabela_Geral += f"<tr><th class='translateHtml'>{documento}</th><td>{documentos_sistema[documento][0]}</td><td>{documentos_sistema[documento][1]}</td><td></td></tr>"
+            tabela_Geral += "</table>"
+    
 
     total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
     tabela_Geral += "<div style='margin-top:10px' class='col-lg-10 col-lg-offset-1'>"
