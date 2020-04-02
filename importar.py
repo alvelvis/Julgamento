@@ -477,25 +477,23 @@ def caracteristicasCorpus(ud1, ud2):
                 dicionario_Lemas[token.lemma] += 1
                 n_Tokens += 1
                 documentos_golden[documento][1] += 1
-    for sentence in system.sentences.values():
-        documento = sentence.sent_id.rsplit("-", 1)[0]
-        if not documento in documentos_sistema:
-            documentos_sistema[documento] = [0, 0]
-        documentos_sistema[documento][0] += 1
-        for token in sentence.tokens:
-                documentos_sistema[documento][1] += 1
 
     if system:
         n_Tokens_s = 0
         n_Sentences_s = len(system.sentences)
         dicionario_Lemas_s = {}
         for sentence in system.sentences.values():
+            documento = sentence.sent_id.rsplit("-", 1)[0]
+            if not documento in documentos_sistema:
+                documentos_sistema[documento] = [0, 0]
+            documentos_sistema[documento][0] += 1
             for token in sentence.tokens:
                 if not '-' in token.id:
                     if not token.lemma in dicionario_Lemas_s:
                         dicionario_Lemas_s[token.lemma] = 0
                     dicionario_Lemas_s[token.lemma] += 1
                     n_Tokens_s += 1
+                    documentos_sistema[documento][1] += 1
 
     tabela_Geral = "<h3 class='translateHtml'>Características do corpus</h3><br>"
     if system:
