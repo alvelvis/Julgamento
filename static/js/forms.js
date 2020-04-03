@@ -247,6 +247,9 @@ var translations = {
         "pt-BR": "sistema",
         "en-US": "system"
     },
+    "SISTEMA": {
+        "en-US": "SYSTEM"
+    },
     "Coluna:": {
         "pt-BR": "Coluna:",
         "en-US": "Column:"
