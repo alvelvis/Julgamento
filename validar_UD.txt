@@ -71,13 +71,13 @@ upos|erro: Este upos não pode ter deprel "det"
 upos != "DET" and deprel = "det"
 
 deprel|erro: DET deve ter deprel "det"
-upos = "DET" and deprel != "det"
+upos = "DET" and deprel != "det|fixed"
 
 deprel|erro: ADP deve ter deprel "case"
-upos = "ADP" and deprel != "(case|fixed)"
+upos = "ADP" and deprel != "case|fixed"
 
 deprel|erro: SCONJ deve ter deprel "mark"
-upos = "SCONJ" and deprel != "mark"
+upos = "SCONJ" and deprel != "mark|fixed"
 
 upos|erro: Este upos não pode ter deprel "mark"
 upos != "SCONJ" and deprel = "mark"
@@ -93,3 +93,10 @@ upos != "AUX" and deprel == "aux"
 
 deprel|erro: AUX deve ter deprel "aux" ou "cop"
 upos = "AUX" and deprel != "(aux|aux:pass|cop)"
+
+deprel|erro: advmod deve ser filho de ADV, VERB ou ADJ
+deprel = "advmod" and head_token.upos != "(ADV|VERB|ADJ)"
+
+deprel|erro: ADV deve ser advmod
+deprel = "advmod" and upos != "ADV"
+deprel != "advmod" and upos = "ADV"
