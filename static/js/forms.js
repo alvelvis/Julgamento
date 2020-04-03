@@ -125,12 +125,12 @@ var translations = {
         "en-US": "System"
     },
     "Lemas em Golden": {
-        "pt-BR": "Lemas em Golden",
-        "en-US": "Golden Lemmas"
+        "pt-BR": "LEMAS EM GOLDEN",
+        "en-US": "GOLDEN LEMMA"
     },
     "Lemas em Sistema": {
-        "pt-BR": "Lemas em Sistema",
-        "en-US": "System Lemmas"
+        "pt-BR": "LEMAS EM SISTEMA",
+        "en-US": "SYSTEM LEMMAS"
     },
     "Sentenças comparáveis": {
         "pt-BR": "Sentenças comparáveis",
