@@ -534,6 +534,9 @@ var translations = {
         'pt-BR': "Mostrar anotação sistema",
         "en-US": "Show system annotation"
     },
+    "Mostrar relação de tokens com id": {
+        "en-US": "Show tokens with their id"
+    },
     "Editar golden e sistema ao mesmo tempo": {
         'pt-BR': "Editar golden e sistema ao mesmo tempo",
         'en-US': "Edit golden and system at the same time"
@@ -788,6 +791,12 @@ function atualizar(){
                 atualizar();
             },
         });
+    });
+
+    $('.showTokenIds').unbind('click').click(function(){
+        $(this).parent().siblings('.tokenIds').slideToggle();
+        $(this).parent().siblings('.text').slideToggle();
+        $(this).toggleClass('btn-default').toggleClass('btn-success');
     });
 
     $('.showSystemAnnotation').unbind('click').click(function(){
