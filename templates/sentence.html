@@ -10,7 +10,7 @@
             {% endif %}
         </p>
         <p style="display:none" class="tokenIds">
-            {% for x in golden.tokens %} <span class='token' style='cursor:pointer' onclick='$(this).children(".id").toggle();'>{{x.word if not '-' in x.id | resub("<.*?>", "")}}<span class='id' style='display:none'><b>-{{x.id}}</b></span></span>{% endfor %}
+            {% for x in golden.tokens %} <span class='token' style='cursor:pointer' onclick='$(this).children(".id").toggle();'>{{x.word if not '-' in x.id | resub("<.*?>", "")}}<span class='id' style='display:none'><b>-{{x.id | resub("<.*?>", "")}}</b></span></span>{% endfor %}
         </p>
         <div class="btn-group" role="group">
             <button type="button" title="Mostrar anotação golden" sent_id="{{golden.sent_id or golden.id}}" class="goldenButton translateTitle showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-user"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% elif rel %} {{rel}}{% endif %}</button>
