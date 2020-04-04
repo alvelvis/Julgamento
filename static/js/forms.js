@@ -107,6 +107,9 @@ var translations = {
         "pt-BR": "DEPREL modificados",
         "en-US": "Modified DEPREL"
     },
+    "Corpora excluídos": {
+        "en-US": "Removed corpora"
+    },
     "Características do corpus": {
         "pt-BR": "Características do corpus",
         "en-US": "Corpus technical features"
@@ -268,14 +271,6 @@ var translations = {
     "Tabela de conteúdos": {
         "pt-BR": "Tabela de conteúdos",
         "en-US": "Table of contents"
-    },
-    "Características do corpus": {
-        "pt-BR": "Características do corpus",
-        "en-US": "Corpus technical features"
-    },
-    "Modificações realizadas no corpus": {
-        "pt-BR": "Modificações realizadas no corpus",
-        "en-US": "Modifications made to the corpus"
     },
     "Acurácia das sentenças": {
         "pt-BR": "Acurácia das sentenças",

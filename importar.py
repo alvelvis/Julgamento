@@ -213,7 +213,7 @@ class conllu:
 
     def __init__(self, corpus):
         if '/' in corpus: corpus = corpus.rsplit('/', 1)[1]
-        self.naked = corpus.split("_inProgress")[0].split("_meta")[0].split('_sistema')[0].split(".conllu")[0].split('_success')[0]
+        self.naked = corpus.split("_inProgress")[0].split("_meta")[0].split('_sistema')[0].split(".conllu")[0].split('_success')[0].split('_original')[0].split('_features.html')[0]
 
     def golden(self):
         return self.naked + ".conllu"
@@ -676,8 +676,8 @@ def checkCorpora():
     features = []
 
     for arquivo in os.listdir(UPLOAD_FOLDER):
-        if arquivo.endswith("_features.html"):
-            if arquivo.split("_features.html")[0] not in features:
+        if arquivo == conllu(arquivo).features():
+            if conllu(arquivo).naked not in features and conllu(arquivo).naked not in [conllu(x).naked for x in allCorpora.corpora]:
                 features.append(arquivo.split("_features.html")[0])
 
     return {
