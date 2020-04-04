@@ -135,9 +135,11 @@ def findCorpora(filtro, tipo):
         corpora = checkCorpora()['missingSystem']
     elif tipo == 'deleteGolden':
         corpora = checkCorpora()['missingSystem']
+    elif tipo == 'features':
+        corpora = checkCorpora()['withFeatures']
     filtro = filtro.split()
     for corpus in corpora:
-        if tipo not in ["deleteGolden", "onlyGolden"]:
+        if tipo not in ["deleteGolden", "onlyGolden", 'features']:
             sobre = corpus['sobre'] if 'sobre' in corpus else ""
             corpusNom = corpus['nome']
             corpusDate = corpus['data'] 
@@ -162,6 +164,8 @@ def findCorpora(filtro, tipo):
             elif tipo == 'onlyGolden':
                 if os.path.isfile(conllu(corpus).findOriginal()):
                     lista.append(f'<a href="/corpus?c={ corpus }" class="list-group-item"><strong>{ corpus }</strong></a>')
+            elif tipo == 'features':
+                lista.append(f'<a style="cursor:pointer" href="/static/uploads/{conllu(corpus).features()}" class="list-group-item"><strong>{ corpus }</strong></a>')
 
 
     return "\n".join(lista)
@@ -229,6 +233,9 @@ class conllu:
     def errors(self):
         return self.naked + "_errors"
 
+    def features(self):
+        return self.naked + "_features.html"
+
     def findGolden(self):
         if INTERROGATORIO and os.path.isfile(f'{COMCORHD_FOLDER}/{self.naked}.conllu'):
             return f'{COMCORHD_FOLDER}/{self.naked}.conllu'
@@ -239,9 +246,11 @@ class conllu:
         else:
             return UPLOAD_FOLDER + "/" + self.naked + ".conllu"
             
-
     def findOriginal(self):
         return UPLOAD_FOLDER + "/" + self.naked + "_original.conllu"
+
+    def findFeatures(self):
+        return UPLOAD_FOLDER + "/" + self.naked + "_features.html"
 
     def findSystem(self):
         return UPLOAD_FOLDER + "/" + self.naked + "_sistema.conllu"
@@ -380,83 +389,7 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
 
     return {'tables': tables, 'UAS': UAS}
 
-def modificacoes(c):
-    depois = allCorpora.corpora[conllu(c).golden()]
-    antes = allCorpora.corpora[conllu(c).original()]
-
-    html = "<h3 class='translateHtml'>Modificações realizadas no corpus</h3>"
-
-    lemas_diferentes = {}
-    upos_diferentes = {}
-    deprel_diferentes = {}
-    sentences_diferentes = []
-    text_diferentes = []
-    comparable_sentences = []
-    not_comparable_sentences = []
-    removed_sentences = []
-    for sentid, sentence in antes.sentences.items():
-        if not sentid in depois.sentences:
-            removed_sentences.append(sentid)
-            continue
-        if sentence.tokens_to_str() != depois.sentences[sentid].tokens_to_str():
-            sentences_diferentes.append(sentid)
-            if sentence.text != depois.sentences[sentid].text:
-                text_diferentes.append(sentid + "<br>" + sentence.text + "<depois>" + depois.sentences[sentid].text)
-        if len(sentence.tokens) != len(depois.sentences[sentid].tokens):
-            not_comparable_sentences.append(sentid)
-        else:
-            comparable_sentences.append(sentid)
-            for t, token in enumerate(sentence.tokens):
-                if token.lemma != depois.sentences[sentid].tokens[t].lemma:
-                    if not token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma in lemas_diferentes:
-                        lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma] = []
-                    lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
-                if token.upos != depois.sentences[sentid].tokens[t].upos:
-                    if not token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos in upos_diferentes:
-                        upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos] = []
-                    upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
-                if token.deprel != depois.sentences[sentid].tokens[t].deprel:
-                    if not token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel in deprel_diferentes:
-                        deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel] = []
-                    deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
-    
-    modificacoesCorpora.modificacoes[c] = {'lemma': lemas_diferentes, 'upos': upos_diferentes, 'deprel': deprel_diferentes}
-
-    sentences_iguais = [x for x in depois.sentences if x not in sentences_diferentes]
-    html += f"<br><h4><span class='translateHtml'>Sentenças modificadas</span> ({len(sentences_diferentes)})</h4><pre>{'; '.join(sentences_diferentes)}</pre>"
-    html += f"<br><h4><span class='translateHtml'>Sentenças não modificadas</span> ({len(sentences_iguais)})</h4><pre>{'; '.join(sentences_iguais)}</pre>"
-    html += f"<br><h4><span class='translateHtml'>Sentenças removidas</span> ({len(removed_sentences)})</h4><pre>{'; '.join(removed_sentences)}</pre>"
-    html += f"<br><h4><span class='translateHtml'>Sentenças com tokenização diferente</span> ({len(not_comparable_sentences)})</h4><pre>{'; '.join(not_comparable_sentences)}</pre>"
-
-    html += f"<br><h4><span class='translateHtml'>\"# text\" diferentes</span> ({len(text_diferentes)})</h4>"
-    html += "<table>"
-    for entrada in text_diferentes:
-        html += "<tr><th></th><th>{}</th></tr>".format(entrada.split("<br>")[0])
-        html += "<tr><th class='translateHtml'>ANTES</th><td>{}</td></tr>".format(entrada.split("<depois>")[0].split("<br>")[1])
-        html += "<tr><th class='translateHtml'>DEPOIS</th><td>{}</td></tr>".format(entrada.split("<depois>")[1])    
-    html += "</table>"
-
-    html += f"<br><h4><span class='translateHtml'>Lemas diferentes</span> ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
-    html += "<table>"
-    html += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
-    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=lemma'>" + str(len(lemas_diferentes[x])) + "</a></td></tr>" for x in sorted(lemas_diferentes, reverse=False, key=lambda y: (-len(lemas_diferentes[y]), y))])
-    html += "</table>"
-
-    html += f"<br><h4><span class='translateHtml'>UPOS diferentes</span> ({sum([len(upos_diferentes[x]) for x in upos_diferentes])})</h4>"
-    html += "<table>"
-    html += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
-    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=upos'>" + str(len(upos_diferentes[x])) + "</a></td></tr>" for x in sorted(upos_diferentes, reverse=False, key=lambda y: (-len(upos_diferentes[y]), y))])
-    html += "</table>"
-
-    html += f"<br><h4><span class='translateHtml'>DEPREL diferentes</span> ({sum([len(deprel_diferentes[x]) for x in deprel_diferentes])})</h4>"
-    html += "<table>"
-    html += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
-    html += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=deprel'>" + str(len(deprel_diferentes[x])) + "</a></td></tr>" for x in sorted(deprel_diferentes, reverse=False, key=lambda y: (-len(deprel_diferentes[y]), y))])
-    html += "</table>"
-
-    return html
-
-def caracteristicasCorpus(ud1, ud2):
+def caracteristicasCorpus(ud1, ud2=""):
     golden = allCorpora.corpora.get(conllu(ud1).golden())
     system = "" if not ud2 else allCorpora.corpora.get(conllu(ud2).system())
 
@@ -521,8 +454,9 @@ def caracteristicasCorpus(ud1, ud2):
             tabela_Geral += "</table>"
     
 
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".dist_lemas\").slideToggle();'><span class='translateHtml'>Distribuição de lemas</span> ({len(dicionario_Lemas)})</h4>"
     total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
-    tabela_Geral += "<div style='margin-top:10px' class='col-lg-10 col-lg-offset-1'>"
+    tabela_Geral += "<div style='margin-top:10px; display:none' class='dist_lemas'>"
     tabela_Geral += "<div class='col-lg-6'><table>"
     tabela_Geral += "<tr><th class='translateHtml'>Lemas em Golden</th><th>#</th><th>%</th></tr>"
     tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas[x]}</td><td>{str((dicionario_Lemas[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas, reverse=False, key=lambda y: (-dicionario_Lemas[y], y))])
@@ -537,6 +471,84 @@ def caracteristicasCorpus(ud1, ud2):
 
     tabela_Geral += "</div>"
 
+    c = ud1
+    depois = allCorpora.corpora[conllu(c).golden()]
+    antes = allCorpora.corpora[conllu(c).original()]
+
+    lemas_diferentes = {}
+    upos_diferentes = {}
+    deprel_diferentes = {}
+    sentences_diferentes = []
+    text_diferentes = []
+    comparable_sentences = []
+    not_comparable_sentences = []
+    removed_sentences = []
+    for sentid, sentence in antes.sentences.items():
+        if not sentid in depois.sentences:
+            removed_sentences.append(sentid)
+            continue
+        if sentence.tokens_to_str() != depois.sentences[sentid].tokens_to_str():
+            sentences_diferentes.append(sentid)
+            if sentence.text != depois.sentences[sentid].text:
+                text_diferentes.append(sentid + "<br>" + sentence.text + "<depois>" + depois.sentences[sentid].text)
+        if len(sentence.tokens) != len(depois.sentences[sentid].tokens):
+            not_comparable_sentences.append(sentid)
+        else:
+            comparable_sentences.append(sentid)
+            for t, token in enumerate(sentence.tokens):
+                if token.lemma != depois.sentences[sentid].tokens[t].lemma:
+                    if not token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma in lemas_diferentes:
+                        lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma] = []
+                    lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+                if token.upos != depois.sentences[sentid].tokens[t].upos:
+                    if not token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos in upos_diferentes:
+                        upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos] = []
+                    upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+                if token.deprel != depois.sentences[sentid].tokens[t].deprel:
+                    if not token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel in deprel_diferentes:
+                        deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel] = []
+                    deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+    
+    modificacoesCorpora.modificacoes[c] = {'lemma': lemas_diferentes, 'upos': upos_diferentes, 'deprel': deprel_diferentes}
+
+    sentences_iguais = [x for x in depois.sentences if x not in sentences_diferentes]
+    tabela_Geral += f"<br><h4><span class='translateHtml'>Sentenças modificadas</span> ({len(sentences_diferentes)})</h4><pre>{'; '.join(sentences_diferentes)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml'>Sentenças não modificadas</span> ({len(sentences_iguais)})</h4><pre>{'; '.join(sentences_iguais)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml'>Sentenças removidas</span> ({len(removed_sentences)})</h4><pre>{'; '.join(removed_sentences)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml'>Sentenças com tokenização diferente</span> ({len(not_comparable_sentences)})</h4><pre>{'; '.join(not_comparable_sentences)}</pre>"
+
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_text\").slideToggle();'><span class='translateHtml'>\"# text\" modificados</span> ({len(text_diferentes)})</h4>"
+    tabela_Geral += "<table class='different_text' style='display:none;'>"
+    for entrada in text_diferentes:
+        tabela_Geral += "<tr><th></th><th>{}</th></tr>".format(entrada.split("<br>")[0])
+        tabela_Geral += "<tr><th class='translateHtml'>ANTES</th><td>{}</td></tr>".format(entrada.split("<depois>")[0].split("<br>")[1])
+        tabela_Geral += "<tr><th class='translateHtml'>DEPOIS</th><td>{}</td></tr>".format(entrada.split("<depois>")[1])    
+    tabela_Geral += "</table>"
+
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_lemma\").slideToggle();'><span class='translateHtml'>Lemas modificados</span> ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
+    tabela_Geral += "<table class='different_lemma' style='display:none'>"
+    tabela_Geral += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
+    tabela_Geral += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=lemma'>" + str(len(lemas_diferentes[x])) + "</a></td></tr>" for x in sorted(lemas_diferentes, reverse=False, key=lambda y: (-len(lemas_diferentes[y]), y))])
+    tabela_Geral += "</table>"
+
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_upos\").slideToggle();'><span class='translateHtml'>UPOS modificados</span> ({sum([len(upos_diferentes[x]) for x in upos_diferentes])})</h4>"
+    tabela_Geral += "<table style='display:none;' class='different_upos'>"
+    tabela_Geral += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
+    tabela_Geral += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=upos'>" + str(len(upos_diferentes[x])) + "</a></td></tr>" for x in sorted(upos_diferentes, reverse=False, key=lambda y: (-len(upos_diferentes[y]), y))])
+    tabela_Geral += "</table>"
+
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_deprel\").slideToggle();'><span class='translateHtml'>DEPREL modificados</span> ({sum([len(deprel_diferentes[x]) for x in deprel_diferentes])})</h4>"
+    tabela_Geral += "<table class='different_deprel' style='display:none'>"
+    tabela_Geral += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
+    tabela_Geral += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=deprel'>" + str(len(deprel_diferentes[x])) + "</a></td></tr>" for x in sorted(deprel_diferentes, reverse=False, key=lambda y: (-len(deprel_diferentes[y]), y))])
+    tabela_Geral += "</table>"
+
+    with open(conllu(ud1).findFeatures(), "w") as f:
+        f.write(render_template('caracteristicas.html',
+            tabela_Geral=tabela_Geral,
+            corpus=conllu(ud1).naked,
+            user="")
+            )
     return tabela_Geral
 
 def sentAccuracy(ud1, ud2):
@@ -661,6 +673,12 @@ def checkCorpora():
     
     inProgress = [{'nome': conllu(x).naked, 'data': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(conllu(x).findInProgress())))} for x in os.listdir(UPLOAD_FOLDER) if x.endswith('_inProgress')]
     success = [{'nome': conllu(x).naked, 'data': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(conllu(x).findSuccess())))} for x in os.listdir(UPLOAD_FOLDER) if x.endswith('_success')]
+    features = []
+
+    for arquivo in os.listdir(UPLOAD_FOLDER):
+        if arquivo.endswith("_features.html"):
+            if arquivo.split("_features.html")[0] not in features:
+                features.append(arquivo.split("_features.html")[0])
 
     return {
         'available': sorted(availableCorpora, key=lambda x: x['data'], reverse=True),
@@ -668,4 +686,5 @@ def checkCorpora():
         'onlyGolden': sorted(missingSystem),
         'inProgress': sorted(inProgress, key=lambda x: x['data'], reverse=True),
         'success': sorted(success, key=lambda x: x['data'], reverse=True),
+        'withFeatures': sorted(features),
         }

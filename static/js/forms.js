@@ -15,6 +15,9 @@ var translations = {
         "pt-BR": "Sentenças com UPOS e DEPREL corretas",
         "en-US": "Sentences with correct UPOS and DEPREL"
     },
+    "Distribuição de lemas": {
+        "en-US": "Lemma distribution"
+    },
     "Acurácia por UPOS": {
         "pt-BR": "Acurácia por UPOS",
         "en-US": "UPOS accuracy"
@@ -81,9 +84,9 @@ var translations = {
     "Sentenças com tokenização diferente": {
         "en-US": "Sentences with different tokenization"
     },
-    "Lemas diferentes": {
-        "pt-BR": "Lemas diferentes",
-        "en-US": "Different lemmas"
+    "Lemas modificados": {
+        "pt-BR": "Lemas modificados",
+        "en-US": "Modified lemmas"
     },
     "ANTES": {
         "pt-BR": "ANTES",
@@ -93,16 +96,16 @@ var translations = {
         "pt-BR": "DEPOIS",
         "en-US": "AFTER"
     },
-    "UPOS diferentes": {
-        "pt-BR": "UPOS diferentes",
-        "en-US": "Different UPOS"
+    "UPOS modificados": {
+        "pt-BR": "UPOS modificados",
+        "en-US": "Modified UPOS"
     },
-    '"# text" diferentes': {
-        'en-US': 'Different #text'
+    '"# text" modificados': {
+        'en-US': 'Modified #text'
     },
-    "DEPREL diferentes": {
-        "pt-BR": "DEPREL diferentes",
-        "en-US": "Different DEPREL"
+    "DEPREL modificados": {
+        "pt-BR": "DEPREL modificados",
+        "en-US": "Modified DEPREL"
     },
     "Características do corpus": {
         "pt-BR": "Características do corpus",
@@ -1057,6 +1060,21 @@ $(document).ready(function(){
             },
             success: function(data){
                 $('.deleteGoldenCorpora').html(data['html']);
+            },
+        }); 
+    });
+
+    
+    $('.filterCorporaFeatures').keyup(function(){
+        $.ajax({
+            url:"/api/filterCorpora",
+            method:"POST",
+            data: {
+                filtro: $('.filterCorporaFeatures').val(),
+                tipo: 'features',
+            },
+            success: function(data){
+                $('.seeCorporaFeatures').html(data['html']);
             },
         }); 
     });

@@ -18,7 +18,6 @@
         <h3 class="translateHtml">Tabela de conteúdos</h3>
         <ul class="list-group">
             <a href="#caracteristicas" name="caracteristicas" class="tables-toggle list-group-item translateHtml">Características do corpus</a>
-            <a href="#modificacoes" name="modificacoes" class="tables-toggle list-group-item translateHtml">Modificações realizadas no corpus</a>
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#metrics" name="metrics" class="tables-toggle list-group-item translateHtml">Métricas do conll18_ud_eval.py</a>{% endif %}
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#sentAccuracy" name="sentAccuracy" class="tables-toggle list-group-item translateHtml">Acurácia das sentenças</a>{% endif %}
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSAccuracy" name="accuracy" class="tables-toggle list-group-item translateHtml">Acurácia por categoria morfossintática</a>{% endif %}
