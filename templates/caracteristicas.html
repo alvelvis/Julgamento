@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}Características de {{corpus}}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{{tabela_Geral|safe}}
+{% endblock %}
