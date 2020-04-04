@@ -512,10 +512,10 @@ def caracteristicasCorpus(ud1, ud2=""):
     modificacoesCorpora.modificacoes[c] = {'lemma': lemas_diferentes, 'upos': upos_diferentes, 'deprel': deprel_diferentes}
 
     sentences_iguais = [x for x in depois.sentences if x not in sentences_diferentes]
-    tabela_Geral += f"<br><h4><span class='translateHtml'>Sentenças modificadas</span> ({len(sentences_diferentes)})</h4><pre>{'; '.join(sentences_diferentes)}</pre>"
-    tabela_Geral += f"<br><h4><span class='translateHtml'>Sentenças não modificadas</span> ({len(sentences_iguais)})</h4><pre>{'; '.join(sentences_iguais)}</pre>"
-    tabela_Geral += f"<br><h4><span class='translateHtml'>Sentenças removidas</span> ({len(removed_sentences)})</h4><pre>{'; '.join(removed_sentences)}</pre>"
-    tabela_Geral += f"<br><h4><span class='translateHtml'>Sentenças com tokenização diferente</span> ({len(not_comparable_sentences)})</h4><pre>{'; '.join(not_comparable_sentences)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".modified_sentences\").slideToggle();'>Sentenças modificadas</span> ({len(sentences_diferentes)})</h4><pre class='modified_sentences' style='display:none;'>{'; '.join(sentences_diferentes)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".unmodified_sentences\").slideToggle();'>Sentenças não modificadas</span> ({len(sentences_iguais)})</h4><pre class='unmodified_sentences' style='display:none'>{'; '.join(sentences_iguais)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".removed_sentences\").slideToggle();'>Sentenças removidas</span> ({len(removed_sentences)})</h4><pre class='removed_sentences' style='display:none'>{'; '.join(removed_sentences)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".different_tokenization\").slideToggle();'>Sentenças com tokenização diferente</span> ({len(not_comparable_sentences)})</h4><pre class='different_tokenization' style='display:none'>{'; '.join(not_comparable_sentences)}</pre>"
 
     tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_text\").slideToggle();'><span class='translateHtml'>\"# text\" modificados</span> ({len(text_diferentes)})</h4>"
     tabela_Geral += "<table class='different_text' style='display:none;'>"
