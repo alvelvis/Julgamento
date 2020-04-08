@@ -212,7 +212,7 @@ def main(arquivoUD, criterio, parametros, limit=0, sent_id="", fastSearch=False,
 				output.append(qualquercoisa[a])
 
 	#Python
-	start = time.time()
+
 	if criterio == 5:
 		pesquisa = parametros
 
@@ -274,7 +274,7 @@ def main(arquivoUD, criterio, parametros, limit=0, sent_id="", fastSearch=False,
 			sys.stderr.write("\ncorpus.build: " + str(time.time() - start))
 		else:
 			corpus = arquivoUD
-
+		start = time.time()
 		casos = []
 		for sentence in corpus.sentences.values():
 			if limit and limit == len(output):
