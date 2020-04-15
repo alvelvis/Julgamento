@@ -354,11 +354,15 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
             for t, token in enumerate(sentence.tokens):
                 if not token.col[coluna.lower()] in dicionario:
                     dicionario[token.col[coluna.lower()]] = [0, 0, 0]
-                    if not token.col[coluna.lower()] in UAS: UAS[token.col[coluna.lower()]] = dict()
+                    if not token.col[coluna.lower()] in UAS:
+                        UAS[token.col[coluna.lower()]] = dict()
                 dicionario[token.col[coluna.lower()]][0] += 1
                 if coluna == "DEPREL" and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
                     dicionario[token.col[coluna.lower()]][2] += 1
                 if len(system.sentences[sentid].tokens) > t and ((coluna == "DEPREL" and system.sentences[sentid].tokens[t].col['dephead'] == token.col['dephead']) or (coluna == "UPOS")) and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
+                    sys.stderr.write(coluna.lower())
+                    sys.stderr.write(token.col[coluna.lower()])
+                    sys.stderr.write(str(dicionario))
                     sys.stderr.write(dicionario[token.col[coluna.lower()]])
                     dicionario[token.col[coluna.lower()]][1] += 1
                 elif system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
