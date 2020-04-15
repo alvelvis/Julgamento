@@ -356,14 +356,12 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
                     dicionario[token.col[coluna.lower()]] = [0, 0, 0]
                     if not token.col[coluna.lower()] in UAS:
                         UAS[token.col[coluna.lower()]] = dict()
+                sys.stderr.write(coluna.lower())
+                sys.stderr.write(dicionario[token.col[coluna.lower()]])
                 dicionario[token.col[coluna.lower()]][0] += 1
                 if coluna == "DEPREL" and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
                     dicionario[token.col[coluna.lower()]][2] += 1
                 if ((coluna == "DEPREL" and system.sentences[sentid].tokens[t].col['dephead'] == token.col['dephead']) or (coluna == "UPOS")) and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
-                    sys.stderr.write(coluna.lower())
-                    sys.stderr.write(token.col[coluna.lower()])
-                    sys.stderr.write(str(dicionario))
-                    sys.stderr.write(dicionario[token.col[coluna.lower()]])
                     dicionario[token.col[coluna.lower()]][1] += 1
                 elif system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
                     tok_golden = token.head_token.upos
