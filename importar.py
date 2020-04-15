@@ -350,25 +350,26 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     dicionario = {}
     UAS = dict()
     for sentid, sentence in golden.sentences.items():
-        for t, token in enumerate(sentence.tokens):
-            if not token.col[coluna.lower()] in dicionario:
-                dicionario[token.col[coluna.lower()]] = [0, 0, 0]
-                if not token.col[coluna.lower()] in UAS: UAS[token.col[coluna.lower()]] = dict()
-            dicionario[token.col[coluna.lower()]][0] += 1
-            if coluna == "DEPREL" and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
-                dicionario[token.col[coluna.lower()]][2] += 1
-            if len(system.sentences[sentid].tokens) > t and ((coluna == "DEPREL" and system.sentences[sentid].tokens[t].col['dephead'] == token.col['dephead']) or (coluna == "UPOS")) and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
-                dicionario[token.col[coluna.lower()]][1] += 1
-            elif system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
-                tok_golden = token.head_token.upos
-                tok_system = system.sentences[sentid].tokens[t].head_token.upos
-                tok_golden += "_L" if int(token.head_token.id) < int(token.id) else "_R"
-                tok_system += "_L" if int(system.sentences[sentid].tokens[t].head_token.id) < int(system.sentences[sentid].tokens[t].id) else "_R"
-                if tok_golden + "/" + tok_system in UAS[token.col[coluna.lower()]]:
-                    UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system][0] += 1
-                else:
-                    UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system] = [1, []]
-                UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system][1].append([sentid, t])
+        if sentid in system.sentences and len(golden.sentences[sentid].tokens) == len(system.sentences[sentid].tokens):
+            for t, token in enumerate(sentence.tokens):
+                if not token.col[coluna.lower()] in dicionario:
+                    dicionario[token.col[coluna.lower()]] = [0, 0, 0]
+                    if not token.col[coluna.lower()] in UAS: UAS[token.col[coluna.lower()]] = dict()
+                dicionario[token.col[coluna.lower()]][0] += 1
+                if coluna == "DEPREL" and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
+                    dicionario[token.col[coluna.lower()]][2] += 1
+                if len(system.sentences[sentid].tokens) > t and ((coluna == "DEPREL" and system.sentences[sentid].tokens[t].col['dephead'] == token.col['dephead']) or (coluna == "UPOS")) and system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
+                    dicionario[token.col[coluna.lower()]][1] += 1
+                elif system.sentences[sentid].tokens[t].col[coluna.lower()] == token.col[coluna.lower()]:
+                    tok_golden = token.head_token.upos
+                    tok_system = system.sentences[sentid].tokens[t].head_token.upos
+                    tok_golden += "_L" if int(token.head_token.id) < int(token.id) else "_R"
+                    tok_system += "_L" if int(system.sentences[sentid].tokens[t].head_token.id) < int(system.sentences[sentid].tokens[t].id) else "_R"
+                    if tok_golden + "/" + tok_system in UAS[token.col[coluna.lower()]]:
+                        UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system][0] += 1
+                    else:
+                        UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system] = [1, []]
+                    UAS[token.col[coluna.lower()]][tok_golden + "/" + tok_system][1].append([sentid, t])
 
 
     coluna1 = ""
