@@ -177,6 +177,7 @@ def getErrorsValidarUD():
 						c=request.values.get("c"),
 						t=value['t'],
 						bold={'word': value['sentence'].tokens[value['t']].word, 'color': 'black'},
+						rel=value['sentence'].tokens[value['t']].col[value['attribute']],
 						goldenAndSystem=True if conllu(request.values.get("c")).system() in allCorpora.corpora else False,
 					) + "</div>"
 			elif value['sent_id']:

@@ -473,7 +473,7 @@ def caracteristicasCorpus(ud1, ud2=""):
 
     tabela_Geral += "</div>"
 
-    c = ud1
+    c = conllu(ud1).naked
     depois = allCorpora.corpora[conllu(c).golden()]
     antes = allCorpora.corpora[conllu(c).original()]
 
