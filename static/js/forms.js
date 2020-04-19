@@ -34,6 +34,9 @@ var translations = {
         "pt-BR": "Matriz de confusão de DEPREL",
         "en-US": "DEPREL confusion matrix"
     },
+    "Mostrar todos os sintagmas": {
+        'en-US': "Show all phrases"
+    },
     " -- escolha um ramo -- ": {
         "pt-BR": " -- escolha um ramo -- ",
         "en-US": " -- choose a branch -- "
@@ -792,8 +795,8 @@ function atualizar(){
     });
 
     $('.showTokenIds').unbind('click').click(function(){
-        $(this).parent().siblings('.tokenIds').slideToggle();
-        $(this).parent().siblings('.text').slideToggle();
+        $(this).parent().siblings('.header').children('.tokenIds').slideToggle();
+        $(this).parent().siblings('.header').children('.text').slideToggle();
         $(this).toggleClass('btn-default').toggleClass('btn-success');
     });
 
@@ -814,6 +817,23 @@ function atualizar(){
                 $button.parents('.panel-body').find('.annotationSystem').show();
                 atualizar();
             },
+        });
+    });
+
+    $('.showPhrases').unbind('click').click(function(){
+        $button = $(this);
+        $.ajax({
+            url: "/api/getPhrases",
+            method: "POST",
+            data: {
+                sent_id: $button.attr('sent_id'),
+                c: $("#c").val()
+            },
+            success: function(data){
+                $button.parent().siblings('.header').children('.phrases').html(data['html']);
+                $button.parent().siblings('.header').children('.phrases').slideToggle();
+                $button.toggleClass('btn-default').toggleClass('btn-success');
+            }
         });
     });
     

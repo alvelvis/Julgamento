@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
 from flask_login import logout_user, LoginManager, current_user, login_required
 from jinja2 import Template, escape, Markup, Environment
+from interrogar_UD import getDistribution
 import datetime
 import validar_UD, functions
 from functions import cleanEstruturaUD
@@ -42,6 +43,18 @@ class Modificacoes:
 
 allCorpora = Corpora()
 modificacoesCorpora = Modificacoes()
+
+@app.route("/api/getPhrases", methods=["POST"])
+def getPhrases():
+	if GOOGLE_LOGIN and not google.authorized:
+		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
+
+	dist = getDistribution(allCorpora.corpora[conllu(request.values.get("c")).golden()], parametros='word = ".*" and sent_id = "' + request.values.get("sent_id") + '"', coluna="children")
+
+	return jsonify({
+		'html': "- " + "<br>- ".join(dist["all_children"]),
+		'success': True
+	})
 
 @app.route("/api/changeAbout", methods="POST".split("|"))
 def changeAbout():
@@ -599,7 +612,8 @@ def getAnnotation():
 		'annotationUd1': html1,
 		'annotationUd2': html2,
 		'success': True,
-	})	
+	})
+
 
 @app.route("/corpus")
 def corpus():
