@@ -37,7 +37,7 @@
         </div>
     </div>
     <form class="getAnnotation">
-        <input type=hidden name="c" value="{{c}}">
+        <input type=hidden name="c" id="c" value="{{c}}">
         <input type=hidden name="sent_id" value="{{golden.sent_id or golden.id}}">
         <input type=hidden name="ud" class="ud" value="">
         {% if t %}<input type=hidden name="bold" class="bold" value="{{t}}">{% endif %}
