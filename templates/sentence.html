@@ -13,7 +13,7 @@
             <p style="display:none" class="tokenIds">
                 {% for x in golden.tokens %} <span class='token' style='cursor:pointer' onclick='$(this).children(".id").toggle();'>{{re.sub("<.*?>", "", x.word) if not '-' in x.id}}<span class='id' style='display:none'><b>-{{re.sub("<.*?>", "", x.id)}}</b></span></span>{% endfor %}
             </p>
-            <p style="display:none; max-height:30vh; overflow-y:auto;" class="phrases">
+            <p style="display:none; max-height:20vh; overflow-y:auto;" class="phrases">
             </p>
         </div>
         <div class="btn-group" role="group">
