@@ -619,7 +619,7 @@ def gitUpdate():
 	if GOOGLE_LOGIN and not google.authorized:
 		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
 	
-	os.system("git pull")
+	os.system(f"cd {JULGAMENTO_FOLDER}; git pull")
 	print("ok")
 
 @app.route("/corpus")
