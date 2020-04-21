@@ -614,6 +614,12 @@ def getAnnotation():
 		'success': True,
 	})
 
+@app.route("/git-update")
+def corpus():
+	if GOOGLE_LOGIN and not google.authorized:
+		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
+	
+	os.system("git pull")
 
 @app.route("/corpus")
 def corpus():
