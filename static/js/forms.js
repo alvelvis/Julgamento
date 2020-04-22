@@ -104,7 +104,13 @@ var translations = {
         "en-US": "Modified UPOS"
     },
     '"# text" modificados': {
-        'en-US': 'Modified #text'
+        'en-US': 'Modified "# text"'
+    },
+    'Tokens modificados': {
+        'en-US': 'Modified tokens'
+    },
+    'Tokens modificados por sentença modificada': {
+        'en-US': 'Modified tokens per modified sentence'
     },
     "DEPREL modificados": {
         "pt-BR": "DEPREL modificados",

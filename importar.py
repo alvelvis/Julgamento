@@ -456,23 +456,6 @@ def caracteristicasCorpus(ud1, ud2=""):
             tabela_Geral += "</table>"
     
 
-    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".dist_lemas\").slideToggle();'><span class='translateHtml'>Distribuição de lemas</span> ({len(dicionario_Lemas)})</h4>"
-    total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
-    tabela_Geral += "<div style='margin-top:10px; display:none' class='dist_lemas'>"
-    tabela_Geral += "<div class='col-lg-6'><table>"
-    tabela_Geral += "<tr><th class='translateHtml'>Lemas em Golden</th><th>#</th><th>%</th></tr>"
-    tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas[x]}</td><td>{str((dicionario_Lemas[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas, reverse=False, key=lambda y: (-dicionario_Lemas[y], y))])
-    tabela_Geral += "</table></div>"
-
-    if system:
-        total_lemas = sum([dicionario_Lemas_s[y] for y in dicionario_Lemas_s])
-        tabela_Geral += "<div class='col-lg-6'><table>"
-        tabela_Geral += "<tr><th class='translateHtml'>Lemas em Sistema</th><th>#</th><th>%</th></tr>"
-        tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas_s[x]}</td><td>{str((dicionario_Lemas_s[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas_s, reverse=False, key=lambda y: (-dicionario_Lemas_s[y], y))])
-        tabela_Geral += "</table></div>"
-
-    tabela_Geral += "</div>"
-
     c = conllu(ud1).naked
     depois = allCorpora.corpora[conllu(c).golden()]
     antes = allCorpora.corpora[conllu(c).original()]
@@ -485,6 +468,7 @@ def caracteristicasCorpus(ud1, ud2=""):
     comparable_sentences = []
     not_comparable_sentences = []
     removed_sentences = []
+    modified_tokens = []
     for sentid, sentence in antes.sentences.items():
         if not sentid in depois.sentences:
             removed_sentences.append(sentid)
@@ -498,6 +482,8 @@ def caracteristicasCorpus(ud1, ud2=""):
         else:
             comparable_sentences.append(sentid)
             for t, token in enumerate(sentence.tokens):
+                if token.to_str() != depois.sentences[sentid].tokens[t].to_str():
+                    modified_tokens.append(1)
                 if token.lemma != depois.sentences[sentid].tokens[t].lemma:
                     if not token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma in lemas_diferentes:
                         lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma] = []
@@ -514,8 +500,8 @@ def caracteristicasCorpus(ud1, ud2=""):
     modificacoesCorpora.modificacoes[c] = {'lemma': lemas_diferentes, 'upos': upos_diferentes, 'deprel': deprel_diferentes}
 
     sentences_iguais = [x for x in depois.sentences if x not in sentences_diferentes]
-    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".modified_sentences\").slideToggle();'>Sentenças modificadas</span> ({len(sentences_diferentes)})</h4><pre class='modified_sentences' style='display:none;'>{'; '.join(sentences_diferentes)}</pre>"
-    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".unmodified_sentences\").slideToggle();'>Sentenças não modificadas</span> ({len(sentences_iguais)})</h4><pre class='unmodified_sentences' style='display:none'>{'; '.join(sentences_iguais)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".modified_sentences\").slideToggle();'>Sentenças modificadas</span> ({len(sentences_diferentes)} / {round((len(sentences_diferentes)/n_Sentences)*100, 2)}%)</h4><pre class='modified_sentences' style='display:none;'>{'; '.join(sentences_diferentes)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".unmodified_sentences\").slideToggle();'>Sentenças não modificadas</span> ({len(sentences_iguais)} / {round((len(sentences_iguais)/n_Sentences)*100, 2)}%)</h4><pre class='unmodified_sentences' style='display:none'>{'; '.join(sentences_iguais)}</pre>"
     tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".removed_sentences\").slideToggle();'>Sentenças removidas</span> ({len(removed_sentences)})</h4><pre class='removed_sentences' style='display:none'>{'; '.join(removed_sentences)}</pre>"
     tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".different_tokenization\").slideToggle();'>Sentenças com tokenização diferente</span> ({len(not_comparable_sentences)})</h4><pre class='different_tokenization' style='display:none'>{'; '.join(not_comparable_sentences)}</pre>"
 
@@ -526,6 +512,26 @@ def caracteristicasCorpus(ud1, ud2=""):
         tabela_Geral += "<tr><th class='translateHtml'>ANTES</th><td>{}</td></tr>".format(entrada.split("<depois>")[0].split("<br>")[1])
         tabela_Geral += "<tr><th class='translateHtml'>DEPOIS</th><td>{}</td></tr>".format(entrada.split("<depois>")[1])    
     tabela_Geral += "</table>"
+
+    tabela_Geral += f"<br><h4><span class='translateHtml'>Tokens modificados</span>: {len(modified_tokens)} / {round((len(modified_tokens)/n_Tokens)*100, 2)}%</h4>"
+    tabela_Geral += f"<br><h4><span class='translateHtml'>Tokens modificados por sentença modificada</span>: {len(modified_tokens)/len(sentences_diferentes)}</h4>"
+
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".dist_lemas\").slideToggle();'><span class='translateHtml'>Distribuição de lemas</span> ({len(dicionario_Lemas)})</h4>"
+    total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
+    tabela_Geral += "<div style='margin-top:10px; display:none' class='dist_lemas'>"
+    tabela_Geral += "<div class='col-lg-6'><table>"
+    tabela_Geral += "<tr><th class='translateHtml'>Lemas em Golden</th><th>#</th><th>%</th></tr>"
+    tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas[x]}</td><td>{str((dicionario_Lemas[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas, reverse=False, key=lambda y: (-dicionario_Lemas[y], y))])
+    tabela_Geral += "</table></div>"
+
+    if system:
+        total_lemas = sum([dicionario_Lemas_s[y] for y in dicionario_Lemas_s])
+        tabela_Geral += "<div class='col-lg-6'><table>"
+        tabela_Geral += "<tr><th class='translateHtml'>Lemas em Sistema</th><th>#</th><th>%</th></tr>"
+        tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas_s[x]}</td><td>{str((dicionario_Lemas_s[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas_s, reverse=False, key=lambda y: (-dicionario_Lemas_s[y], y))])
+        tabela_Geral += "</table></div>"
+
+    tabela_Geral += "</div>"
 
     tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_lemma\").slideToggle();'><span class='translateHtml'>Lemas modificados</span> ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
     tabela_Geral += "<table class='different_lemma' style='display:none'>"
