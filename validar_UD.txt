@@ -16,7 +16,7 @@ dephead != "\d+"
 id|erro: 5 - ID inválido
 id != "[0-9\-]+"
 
-erro: 6 - Alguma anotação está vazia (sem underline)
+word|erro: 6 - Alguma anotação está vazia (sem underline)
 id == ""
 word == ""
 lemma == ""
