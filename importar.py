@@ -500,12 +500,12 @@ def caracteristicasCorpus(ud1, ud2=""):
     modificacoesCorpora.modificacoes[c] = {'lemma': lemas_diferentes, 'upos': upos_diferentes, 'deprel': deprel_diferentes}
 
     sentences_iguais = [x for x in depois.sentences if x not in sentences_diferentes]
-    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".modified_sentences\").slideToggle();'>Sentenças modificadas</span> ({len(sentences_diferentes)} / {round((len(sentences_diferentes)/n_Sentences)*100, 2)}%)</h4><pre class='modified_sentences' style='display:none;'>{'; '.join(sentences_diferentes)}</pre>"
-    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".unmodified_sentences\").slideToggle();'>Sentenças não modificadas</span> ({len(sentences_iguais)} / {round((len(sentences_iguais)/n_Sentences)*100, 2)}%)</h4><pre class='unmodified_sentences' style='display:none'>{'; '.join(sentences_iguais)}</pre>"
-    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".removed_sentences\").slideToggle();'>Sentenças removidas</span> ({len(removed_sentences)})</h4><pre class='removed_sentences' style='display:none'>{'; '.join(removed_sentences)}</pre>"
-    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".different_tokenization\").slideToggle();'>Sentenças com tokenização diferente</span> ({len(not_comparable_sentences)})</h4><pre class='different_tokenization' style='display:none'>{'; '.join(not_comparable_sentences)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".modified_sentences\").slideToggle();'>Sentenças modificadas</span>: {len(sentences_diferentes)} / {round((len(sentences_diferentes)/n_Sentences)*100, 2)}%</h4><pre class='modified_sentences' style='display:none;'>{'; '.join(sentences_diferentes)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".unmodified_sentences\").slideToggle();'>Sentenças não modificadas</span>: {len(sentences_iguais)} / {round((len(sentences_iguais)/n_Sentences)*100, 2)}%</h4><pre class='unmodified_sentences' style='display:none'>{'; '.join(sentences_iguais)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".removed_sentences\").slideToggle();'>Sentenças removidas</span>: {len(removed_sentences)}</h4><pre class='removed_sentences' style='display:none'>{'; '.join(removed_sentences)}</pre>"
+    tabela_Geral += f"<br><h4><span class='translateHtml' style='cursor:pointer;' onclick='$(\".different_tokenization\").slideToggle();'>Sentenças com tokenização diferente</span>: {len(not_comparable_sentences)}</h4><pre class='different_tokenization' style='display:none'>{'; '.join(not_comparable_sentences)}</pre>"
 
-    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_text\").slideToggle();'><span class='translateHtml'>\"# text\" modificados</span> ({len(text_diferentes)})</h4>"
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_text\").slideToggle();'><span class='translateHtml'>\"# text\" modificados</span>: {len(text_diferentes)}</h4>"
     tabela_Geral += "<table class='different_text' style='display:none;'>"
     for entrada in text_diferentes:
         tabela_Geral += "<tr><th></th><th>{}</th></tr>".format(entrada.split("<br>")[0])
@@ -516,7 +516,7 @@ def caracteristicasCorpus(ud1, ud2=""):
     tabela_Geral += f"<br><h4><span class='translateHtml'>Tokens modificados</span>: {len(modified_tokens)} / {round((len(modified_tokens)/n_Tokens)*100, 2)}%</h4>"
     tabela_Geral += f"<br><h4><span class='translateHtml'>Tokens modificados por sentença modificada</span>: {len(modified_tokens)/len(sentences_diferentes)}</h4>"
 
-    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".dist_lemas\").slideToggle();'><span class='translateHtml'>Distribuição de lemas</span> ({len(dicionario_Lemas)})</h4>"
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".dist_lemas\").slideToggle();'><span class='translateHtml'>Distribuição de lemas</span>: {len(dicionario_Lemas)}</h4>"
     total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
     tabela_Geral += "<div style='margin-top:10px; display:none' class='dist_lemas'>"
     tabela_Geral += "<div class='col-lg-6'><table>"
@@ -533,19 +533,19 @@ def caracteristicasCorpus(ud1, ud2=""):
 
     tabela_Geral += "</div>"
 
-    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_lemma\").slideToggle();'><span class='translateHtml'>Lemas modificados</span> ({sum([len(lemas_diferentes[x]) for x in lemas_diferentes])})</h4>"
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_lemma\").slideToggle();'><span class='translateHtml'>Lemas modificados</span>: {sum([len(lemas_diferentes[x]) for x in lemas_diferentes])}</h4>"
     tabela_Geral += "<table class='different_lemma' style='display:none'>"
     tabela_Geral += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
     tabela_Geral += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=lemma'>" + str(len(lemas_diferentes[x])) + "</a></td></tr>" for x in sorted(lemas_diferentes, reverse=False, key=lambda y: (-len(lemas_diferentes[y]), y))])
     tabela_Geral += "</table>"
 
-    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_upos\").slideToggle();'><span class='translateHtml'>UPOS modificados</span> ({sum([len(upos_diferentes[x]) for x in upos_diferentes])})</h4>"
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_upos\").slideToggle();'><span class='translateHtml'>UPOS modificados</span>: {sum([len(upos_diferentes[x]) for x in upos_diferentes])}</h4>"
     tabela_Geral += "<table style='display:none;' class='different_upos'>"
     tabela_Geral += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
     tabela_Geral += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=upos'>" + str(len(upos_diferentes[x])) + "</a></td></tr>" for x in sorted(upos_diferentes, reverse=False, key=lambda y: (-len(upos_diferentes[y]), y))])
     tabela_Geral += "</table>"
 
-    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_deprel\").slideToggle();'><span class='translateHtml'>DEPREL modificados</span> ({sum([len(deprel_diferentes[x]) for x in deprel_diferentes])})</h4>"
+    tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".different_deprel\").slideToggle();'><span class='translateHtml'>DEPREL modificados</span>: {sum([len(deprel_diferentes[x]) for x in deprel_diferentes])}</h4>"
     tabela_Geral += "<table class='different_deprel' style='display:none'>"
     tabela_Geral += "<tr><th class='translateHtml'>ANTES</th><th class='translateHtml'>DEPOIS</th><th>#</th></tr>"
     tabela_Geral += "".join(["<tr><td>" + x.split("<depois>")[0] + "</td><td>" + x.split("<depois>")[1] + f"</td><td class='matrixTd'><a href='/corpus?c={c}&antes={x.split('<depois>')[0]}&depois={x.split('<depois>')[1]}&mod=deprel'>" + str(len(deprel_diferentes[x])) + "</a></td></tr>" for x in sorted(deprel_diferentes, reverse=False, key=lambda y: (-len(deprel_diferentes[y]), y))])
