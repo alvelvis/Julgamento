@@ -514,7 +514,7 @@ def caracteristicasCorpus(ud1, ud2=""):
     tabela_Geral += "</table>"
 
     tabela_Geral += f"<br><h4><span class='translateHtml'>Tokens modificados</span>: {len(modified_tokens)} / {round((len(modified_tokens)/n_Tokens)*100, 2)}%</h4>"
-    tabela_Geral += f"<br><h4><span class='translateHtml'>Tokens modificados por sentença modificada</span>: {len(modified_tokens)/len(sentences_diferentes)}</h4>"
+    tabela_Geral += f"<br><h4><span class='translateHtml'>Tokens modificados por sentença modificada</span>: {len(modified_tokens)/len(sentences_diferentes) if len(sentences_diferentes) else '0'}</h4>"
 
     tabela_Geral += f"<br><h4 style='cursor:pointer;' onclick='$(\".dist_lemas\").slideToggle();'><span class='translateHtml'>Distribuição de lemas</span>: {len(dicionario_Lemas)}</h4>"
     total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
