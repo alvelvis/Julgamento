@@ -169,13 +169,8 @@ def getErrorsValidarUD():
 		return redirect(url_for("google.login"))
 	
 	html = ""
-	if os.path.isfile(conllu(request.values.get("c")).findErrorsValidarUD()):
-		with open(conllu(request.values.get("c")).findErrorsValidarUD(), "rb") as f:
-			errors = pickle.loads(f.read())
-	else:
-		errors = validar_UD.validate(allCorpora.corpora[conllu(request.values.get("c")).golden()], errorList=VALIDAR_UD, noMissingToken=True)
-		with open(conllu(request.values.get("c")).findErrorsValidarUD(), "wb") as f:
-			f.write(pickle.dumps(errors))
+
+	errors = validar_UD.validate(allCorpora.corpora[conllu(request.values.get("c")).golden()], errorList=VALIDAR_UD, noMissingToken=True)
 
 	if not errors:
 		html = "<div class='alert alert-warning translateHtml' role='alert'>Não foram encontrados erros de validação.</div>"
