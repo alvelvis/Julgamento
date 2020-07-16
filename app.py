@@ -190,7 +190,7 @@ def getErrorsValidarUD():
 						c=request.values.get("c"),
 						t=value['t'],
 						bold={'word': value['sentence'].tokens[value['t']].word, 'color': 'black'},
-						rel=value['sentence'].tokens[value['t']].col[value['attribute']],
+						rel=value['sentence'].tokens[value['t']].__dict__[value['attribute']],
 						goldenAndSystem=True if conllu(request.values.get("c")).system() in allCorpora.corpora else False,
 					) + "</div>"
 			elif value['sent_id']:
@@ -475,8 +475,8 @@ def getCatSents():
 			boldCol=f'{request.values.get("coluna").lower()}<coluna>{sentence[1]}',
 			t=sentence[1],
 			divergence={
-				'system': {'category': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].col[request.values.get('coluna').lower()], 'head': {'id': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.id, 'word': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.word}},
-				'golden': {'category': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].col[request.values.get('coluna').lower()], 'head': {'id': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.id, 'word': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.word}},
+				'system': {'category': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].__dict__[request.values.get('coluna').lower()], 'head': {'id': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.id, 'word': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.word}},
+				'golden': {'category': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].__dict__[request.values.get('coluna').lower()], 'head': {'id': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.id, 'word': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.word}},
 			},
 		) + '</div>'
 
@@ -531,7 +531,7 @@ def sendAnnotation():
 						attention += [f'<div class="alert alert-warning translateHtml" role="alert">Atenção: {error}</div><ul>']
 						for value in errors[error]:
 							if value['sentence']:
-								attention += ["<li>" + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].id) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].word) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].col[value['attribute']]) + "</li>"]
+								attention += ["<li>" + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].id) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].word) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].__dict__[value['attribute']]) + "</li>"]
 						attention += ["</ul>"]
 			
 		attention = "\n".join(attention)
