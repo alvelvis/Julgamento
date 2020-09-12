@@ -24,6 +24,10 @@ If you wish to run Julgamento in a local server, a Linux computer (or Windows wi
 
 	$ sh install_julgamento.sh
 	
+In case you don't have `virtualenv` installed, run the following command to install it:
+
+	$ sudo apt install python3-virtualenv
+	
 4) Then, whenever you intend to run Julgamento locally, run the command below and it will also auto-update when necessary if you cloned the repo using Git:
 
 	$ sh run_julgamento.sh
