@@ -128,7 +128,7 @@ def cristianMarneffe():
 
 	html = ""
 	if not results:
-		html += f"<div class='alert alert-warning translateHtml' role='alert'>Não foram encontradas inconsistências do tipo Cristian-Marneffe.</div>"
+		html += f"<div class='alert alert-warning translateHtml' role='alert'>Não foram encontrados n-grams inconsistentes.</div>"
 	else:
 		for i, exemplo in enumerate(results):
 			html += f"<div class='alert alert-warning' role='alert'>{i+1} / {len(results)} - {exemplo['exemplo']}</div>"

@@ -22,8 +22,8 @@
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#sentAccuracy" name="sentAccuracy" class="tables-toggle list-group-item translateHtml">Acurácia das sentenças</a>{% endif %}
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSAccuracy" name="accuracy" class="tables-toggle list-group-item translateHtml">Acurácia por categoria morfossintática</a>{% endif %}
             <!--a href="#DEPRELAccuracy" name="accuracy" class="tables-toggle list-group-item translateHtml">Acurácia por DEPREL</a-->
-            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="lexicais" class="cristianMarneffeToggle list-group-item translateHtml">Cristian-Marneffe (lexicais)</a>
-            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="gramaticais" class="cristianMarneffeToggle list-group-item translateHtml">Cristian-Marneffe (gramaticais)</a>
+            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="lexicais" class="cristianMarneffeToggle list-group-item translateHtml">N-grams inconsistentes (lexicais)</a>
+            <a href="#cristianMarneffe" name="cristianMarneffe" tipo="gramaticais" class="cristianMarneffeToggle list-group-item translateHtml">N-grams inconsistentes (gramaticais)</a>
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSMatrix" name="POSMatrix" class="tables-toggle list-group-item translateHtml">Matriz de confusão de UPOS</a>{% endif %}
             {% if conllu(c).system() in allCorpora.corpora %}<a href="#DEPRELMatrix" name="DEPRELMatrix" class="tables-toggle list-group-item translateHtml">Matriz de confusão de DEPREL</a>{% endif %}
             <a href="#errorValidarUD" class="errorValidarUDToggle list-group-item translateHtml">Erros de validar_UD.py</a>
