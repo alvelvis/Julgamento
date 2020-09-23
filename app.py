@@ -210,8 +210,9 @@ def filterCorpora():
 def deleteGolden():
 	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
-	caracteristicasCorpus(request.values.get("c"))
-	os.remove(conllu(request.values.get("c")).findGolden())
+	if os.path.isfile(conllu(request.values.get("c")).findGolden()):
+		caracteristicasCorpus(request.values.get("c"))
+		os.remove(conllu(request.values.get("c")).findGolden())
 	if os.path.isfile(conllu(request.values.get("c")).findOriginal()):
 		os.remove(conllu(request.values.get("c")).findOriginal())
 	return render_template(
@@ -229,9 +230,9 @@ def cancelTrain():
 		os.system('killall udpipe-1.2.0')
 		return redirect("/log?c=" + request.args.get('c'))
 	else:
-		caracteristicasCorpus(request.values.get("c"))
 		if request.args.get('golden') == 'true':
 			if os.path.isfile(conllu(request.args.get("c")).findGolden()):
+				caracteristicasCorpus(request.values.get("c"))
 				os.remove(conllu(request.args.get("c")).findGolden())
 			if os.path.isfile(conllu(request.args.get("c")).findOriginal()):
 				os.remove(conllu(request.args.get("c")).findOriginal())
