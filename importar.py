@@ -393,6 +393,8 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
 
 def caracteristicasCorpus(ud1, ud2=""):
     golden = allCorpora.corpora.get(conllu(ud1).golden())
+    if not golden:
+        return None
     system = "" if not ud2 else allCorpora.corpora.get(conllu(ud2).system())
 
     n_Tokens = 0
