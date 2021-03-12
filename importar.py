@@ -686,7 +686,7 @@ def checkCorpora():
                 availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).golden() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).golden()], str) else 0}]
 
     for x in os.listdir(UPLOAD_FOLDER):
-        if x.endswith('.conllu') and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(conllu(x).naked == k['nome'] for k in availableCorpora):
+        if x.endswith('.conllu') and not x.endswith("_sistema.conllu") and not x.endswith("_original.conllu") and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(conllu(x).naked == k['nome'] for k in availableCorpora):
             if not db.session.query(models.Corpus).get(conllu(x).naked):
                 addDatabase(x)
             loadCorpus.submit(conllu(x).naked)
