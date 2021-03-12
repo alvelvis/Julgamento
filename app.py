@@ -334,6 +334,7 @@ def getTables():
 
 	elif table == 'cristianMarneffe':
 		return ""
+	
 
 @app.route('/upload', methods="GET|POST".split("|"))
 def upload(alert="", success=""):
@@ -377,22 +378,7 @@ def upload(alert="", success=""):
 				os.remove(conllu(goldenFile).findSystem())
 			else:
 				success = f'"{systemFileName}" enviado com sucesso! Julgue o corpus na <a href="/corpus">página inicial</a>.'
-				corpusdb = db.session.query(models.Corpus).get(conllu(goldenFile).naked)
-				if corpusdb:
-					db.session.remove(corpusdb)
-					db.session.commit()
-				novoCorpus = models.Corpus(
-					name=conllu(goldenFile).naked,
-					date=str(datetime.datetime.now()),
-					sentences=0,
-					about=request.values.get('sysAbout') if request.values.get('sysAbout') else ">",
-					partitions="",
-					author=google.get('/oauth2/v2/userinfo').json()['email'] if GOOGLE_LOGIN else "",
-					goldenAlias='Golden',
-					systemAlias='Sistema'
-				)
-				db.session.add(novoCorpus)
-				db.session.commit()
+				addDatabase(goldenFile)
 			#loadCorpus.submit(goldenFile)
 
 		else:

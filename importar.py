@@ -639,6 +639,24 @@ def loadCorpus(x):
             if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
                 allCorpora.corpora[conllu(x).system()] = corpusSystem
 
+def addDatabase(golden):
+    corpusdb = db.session.query(models.Corpus).get(conllu(golden).naked)
+    if corpusdb:
+        db.session.remove(corpusdb)
+        db.session.commit()
+    novoCorpus = models.Corpus(
+        name=conllu(golden).naked,
+        date=str(datetime.datetime.now()),
+        sentences=0,
+        about=request.values.get('sysAbout') if request.values.get('sysAbout') else ">",
+        partitions="",
+        author=google.get('/oauth2/v2/userinfo').json()['email'] if GOOGLE_LOGIN else "",
+        goldenAlias='Golden',
+        systemAlias='Sistema'
+    )
+    db.session.add(novoCorpus)
+    db.session.commit()
+
 def checkCorpora():
     availableCorpora = []
     missingSystem = []
@@ -661,12 +679,16 @@ def checkCorpora():
 
     if INTERROGATORIO:
         for x in os.listdir(COMCORHD_FOLDER):
-            if x.endswith('.conllu') and os.path.isfile(f'{UPLOAD_FOLDER}/{conllu(x).system()}') and db.session.query(models.Corpus).get(conllu(x).naked):
+            if x.endswith('.conllu') and os.path.isfile(f'{UPLOAD_FOLDER}/{conllu(x).system()}'):
+                if not db.session.query(models.Corpus).get(conllu(x).naked):
+                    app.addDatabase(x)
                 loadCorpus.submit(conllu(x).naked)
                 availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).golden() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).golden()], str) else 0}]
 
     for x in os.listdir(UPLOAD_FOLDER):
-        if x.endswith('.conllu') and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(conllu(x).naked == k['nome'] for k in availableCorpora) and db.session.query(models.Corpus).get(conllu(x).naked):
+        if x.endswith('.conllu') and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(conllu(x).naked == k['nome'] for k in availableCorpora):
+            if not db.session.query(models.Corpus).get(conllu(x).naked):
+                addDatabase(x)
             loadCorpus.submit(conllu(x).naked)
             availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).system() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).system()], str) else 0}]
 
