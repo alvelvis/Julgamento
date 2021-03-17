@@ -1,8 +1,8 @@
 if [ ! -d .julgamento ]; then
-    if ! virtualenv .julgamento -p python3.6; then
+    if ! virtualenv .julgamento -p python3; then
         sudo apt update
         sudo apt install virtualenv
-        virtualenv .julgamento -p python3.6
+        virtualenv .julgamento -p python3
     fi
 fi
 
