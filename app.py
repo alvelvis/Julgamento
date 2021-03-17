@@ -1,4 +1,4 @@
-import config, sys, re, estrutura_ud, html, os, subprocess, time, shutil, pickle, psutil, threading
+import config, sys, re, estrutura_ud, html, os, subprocess, time, shutil, pickle, threading
 import pandas as pd
 from flask import Flask, redirect, url_for, session, request, make_response, render_template, jsonify
 from flask_dance.contrib.google import make_google_blueprint, google
@@ -732,7 +732,6 @@ app.jinja_env.globals.update(upload_folder=UPLOAD_FOLDER)
 app.jinja_env.globals.update(checkCorpora=checkCorpora)
 app.jinja_env.globals.update(checkRepo=checkRepo)
 app.jinja_env.globals.update(prettyDate=prettyDate)
-app.jinja_env.globals.update(listProcess=[x.name() for x in psutil.process_iter()])
 app.jinja_env.globals.update(findCorpora=findCorpora)
 app.jinja_env.globals.update(allCorpora=allCorpora)
 app.jinja_env.globals.update(isinstance=isinstance)
