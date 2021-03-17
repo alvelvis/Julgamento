@@ -35,6 +35,28 @@ class Token:
 	def to_str(self):
 		return self.separator.join([self.id, self.word, self.lemma, self.upos, self.xpos, self.feats, self.dephead, self.deprel, self.deps, self.misc])
 
+	def build(self, txt):
+		coluna = txt.split(self.separator)
+		self.id = coluna[0]
+		self.word = coluna[1]
+		self.lemma = coluna[2]
+		self.upos = coluna[3]
+		self.xpos = coluna[4]
+		self.feats = coluna[5]
+		self.dephead = coluna[6]
+		self.deprel = coluna[7]
+		self.deps = coluna[8]
+		self.sema = coluna[8]
+		self.misc = coluna[9]
+		if self.feats != "_":
+			for feat in self.feats.split("|"):
+				if '=' in feat:
+					self.__dict__[feat.split("=")[0].lower()] = feat.split("=")[1]
+		if self.misc != "_":
+			for misc in self.misc.split("|"):
+				if '=' in misc:
+					self.__dict__[misc.split("=")[0].lower()] = misc.split("=")[1]
+
 
 class Sentence:
 
@@ -79,25 +101,11 @@ class Sentence:
 				if not linha.startswith("# ") and "\t" in linha:
 					tok = Token()
 					tok.string = linha
-					coluna = linha.split("\t")
-					tok.id = coluna[0]
-					tok.word = coluna[1]
-					tok.lemma = coluna[2]
-					tok.upos = coluna[3]
-					tok.xpos = coluna[4]
-					tok.feats = coluna[5]
-					tok.dephead = coluna[6]
-					tok.deprel = coluna[7]
-					tok.deps = coluna[8]
-					tok.misc = coluna[9]
-					if tok.feats != "_":
-						for feat in tok.feats.split("|"):
-							if '=' in feat:
-								tok.__dict__[feat.split("=")[0].lower()] = feat.split("=")[1]
-					if tok.misc != "_":
-						for misc in tok.misc.split("|"):
-							if '=' in misc:
-								tok.__dict__[misc.split("=")[0].lower()] = misc.split("=")[1]
+					tok.build(linha)
+					if self.recursivo:
+						tok.head_token = self.default_token
+						tok.previous_token = self.default_token
+						tok.next_token = self.default_token
 					self.map_token_id[tok.id if not '<' in tok.id else re.sub(r"<.*?>", "", tok.id)] = n_token
 					self.tokens.append(tok)
 					n_token += 1
@@ -194,6 +202,8 @@ class Corpus:
 						else:
 							if not self.any_of_keywords or any(re.search(y, sentence) for y in self.any_of_keywords):
 								self.build([sentence])
+							elif self.any_of_keywords and "# sent_id = " in sentence:
+								self.sentences_not_built[sentence.split("# sent_id = ")[1].split("\n")[0]] = sentence.strip()
 						sentence = ""
 			else:
 				self.build(f.read())
