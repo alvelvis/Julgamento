@@ -681,7 +681,7 @@ def checkCorpora():
         for x in os.listdir(COMCORHD_FOLDER):
             if x.endswith('.conllu') and os.path.isfile(f'{UPLOAD_FOLDER}/{conllu(x).system()}'):
                 if not db.session.query(models.Corpus).get(conllu(x).naked):
-                    app.addDatabase(x)
+                    addDatabase(x)
                 loadCorpus.submit(conllu(x).naked)
                 availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).golden() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).golden()], str) else 0}]
 
