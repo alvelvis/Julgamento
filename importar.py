@@ -5,7 +5,7 @@ import os, estrutura_ud, estrutura_dados, confusao, re, time, datetime, validar_
 import models, pickle
 from app import db, app, executor, allCorpora, modificacoesCorpora
 from localtime import localtime
-import sys
+import sys, shutil
 
 INTERROGATORIO = False
 if os.path.isdir(JULGAMENTO_FOLDER.rsplit('/', 1)[0] + "/Interrogat-rio"):
@@ -617,27 +617,28 @@ def resub(s, a, b):
 
 @executor.job
 def loadCorpus(x):
-    if os.path.isfile(conllu(x).findOriginal()):
-        if not conllu(x).golden() in allCorpora.corpora or not conllu(x).system() in allCorpora.corpora or (conllu(x).golden() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).golden()], str)) or (conllu(x).system() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).system()], str)):    
-            corpusGolden, corpusSystem, corpusOriginal = estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True)
-            if not conllu(x).golden() in allCorpora.corpora:
-                corpusGolden.load(conllu(x).findGolden())
-                corpusOriginal.load(conllu(x).findOriginal())
-                if GOOGLE_LOGIN:
-                    renderErrors(c=x, texto="", fromZero=True)
-                    with open(conllu(x).findErrorsValidarUD(), "wb") as f:
-                        f.write(pickle.dumps(validar_UD.validate(
-                            conllu=corpusGolden,
-                            errorList=VALIDAR_UD,
-                            ))
-                        )
-            if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
-                corpusSystem.load(conllu(x).findSystem())
-            if not conllu(x).golden() in allCorpora.corpora:
-                allCorpora.corpora[conllu(x).golden()] = corpusGolden
-                allCorpora.corpora[conllu(x).original()] = corpusOriginal
-            if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
-                allCorpora.corpora[conllu(x).system()] = corpusSystem
+    if not os.path.isfile(conllu(x).findOriginal()):
+        shutil.copyfile(conllu(x).findGolden(), conllu(x).findOriginal())
+    if not conllu(x).golden() in allCorpora.corpora or not conllu(x).system() in allCorpora.corpora or (conllu(x).golden() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).golden()], str)) or (conllu(x).system() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).system()], str)):    
+        corpusGolden, corpusSystem, corpusOriginal = estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True)
+        if not conllu(x).golden() in allCorpora.corpora:
+            corpusGolden.load(conllu(x).findGolden())
+            corpusOriginal.load(conllu(x).findOriginal())
+            if GOOGLE_LOGIN:
+                renderErrors(c=x, texto="", fromZero=True)
+                with open(conllu(x).findErrorsValidarUD(), "wb") as f:
+                    f.write(pickle.dumps(validar_UD.validate(
+                        conllu=corpusGolden,
+                        errorList=VALIDAR_UD,
+                        ))
+                    )
+        if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
+            corpusSystem.load(conllu(x).findSystem())
+        if not conllu(x).golden() in allCorpora.corpora:
+            allCorpora.corpora[conllu(x).golden()] = corpusGolden
+            allCorpora.corpora[conllu(x).original()] = corpusOriginal
+        if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
+            allCorpora.corpora[conllu(x).system()] = corpusSystem
 
 def addDatabase(golden):
     corpusdb = db.session.query(models.Corpus).get(conllu(golden).naked)
