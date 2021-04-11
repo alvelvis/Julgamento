@@ -806,6 +806,10 @@ function atualizar(){
         $(this).toggleClass('btn-default').toggleClass('btn-success');
     });
 
+    $('.token').unbind('mouseenter').on('mouseenter', function(){
+        $(this).parent().children('#token_id').html($(this).attr('token_id'))
+    })
+
     $('.showSystemAnnotation').unbind('click').click(function(){
         //loadingScreen();
         $button = $(this);
