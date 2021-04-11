@@ -37,8 +37,9 @@ def get_list(conllu1, conllu2, coluna):
 						solitarios.append(sentid + ': ' + sentence.text)
 					else:
 						for t, token in enumerate(sentence.tokens):
-							lista_coluna1.append(token.__dict__[feats[coluna].lower()])
-							lista_coluna2.append(conllu2.sentences[sentid].tokens[t].__dict__[feats[coluna].lower()])
+							if not '-' in token.id:
+								lista_coluna1.append(token.__dict__[feats[coluna].lower()])
+								lista_coluna2.append(conllu2.sentences[sentid].tokens[t].__dict__[feats[coluna].lower()])
 
 		return {'matriz_1': lista_coluna1, 'matriz_2': lista_coluna2, 'solitários_1': solitarios}
 

@@ -44,7 +44,7 @@ def getDistribution(arquivoUD, parametros, coluna="lemma", filtros=[], sent_id="
 		if re.search(r"^\d+\s", parametros):
 			criterio = int(parametros.split(" ", 1)[0])
 			parametros = parametros.split(" ", 1)[1]
-		elif len(parametros.split('"')) > 2:
+		elif len(parametros.split('"')) > 2 or any(x in parametros for x in ["==", " = "]):
 			criterio = 5
 		else:
 			criterio = 1
@@ -245,7 +245,7 @@ def main(arquivoUD, criterio, parametros, limit=0, sent_id="", fastSearch=False,
 						if any(_colunas[w-1] == x for x in k.split("|")) and _token.dephead == token.id:
 							descarta = True
 					if not descarta:
-						output.append(re.sub(r"\b" + re.escape(token.word) + r"\b", "<b>" + re.escape(token.word) + "</b>", sentence.to_str()))
+						output.append(re.sub(r"\b" + re.escape(token.word) + r"\b", "<b>" + token.word + "</b>", sentence.to_str()))
 						casos += 1
 					
 	#Regex Independentes

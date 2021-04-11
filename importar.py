@@ -7,6 +7,8 @@ from app import db, app, executor, allCorpora, modificacoesCorpora
 from localtime import localtime
 import sys, shutil
 
+MAX_FILE_SIZE = 50
+
 INTERROGATORIO = False
 if os.path.isdir(JULGAMENTO_FOLDER.rsplit('/', 1)[0] + "/Interrogat-rio"):
     globals()['INTERROGATORIO'] = True
@@ -621,23 +623,24 @@ def loadCorpus(x):
         shutil.copyfile(conllu(x).findGolden(), conllu(x).findOriginal())
     if not conllu(x).golden() in allCorpora.corpora or not conllu(x).system() in allCorpora.corpora or (conllu(x).golden() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).golden()], str)) or (conllu(x).system() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).system()], str)):    
         corpusGolden, corpusSystem, corpusOriginal = estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True)
+        #if not conllu(x).golden() in allCorpora.corpora:
+            #if GOOGLE_LOGIN:
+                #renderErrors(c=x, texto="", fromZero=True)
+                #with open(conllu(x).findErrorsValidarUD(), "wb") as f:
+                    #f.write(pickle.dumps(validar_UD.validate(
+                        #conllu=corpusGolden,
+                        #errorList=VALIDAR_UD,
+                        #))
+                    #)
         if not conllu(x).golden() in allCorpora.corpora:
+            sys.stderr.write("\n>>>>>>>>>>>>>> loading {}...".format(x))
             corpusGolden.load(conllu(x).findGolden())
             corpusOriginal.load(conllu(x).findOriginal())
-            if GOOGLE_LOGIN:
-                renderErrors(c=x, texto="", fromZero=True)
-                with open(conllu(x).findErrorsValidarUD(), "wb") as f:
-                    f.write(pickle.dumps(validar_UD.validate(
-                        conllu=corpusGolden,
-                        errorList=VALIDAR_UD,
-                        ))
-                    )
-        if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
-            corpusSystem.load(conllu(x).findSystem())
-        if not conllu(x).golden() in allCorpora.corpora:
             allCorpora.corpora[conllu(x).golden()] = corpusGolden
             allCorpora.corpora[conllu(x).original()] = corpusOriginal
         if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
+            sys.stderr.write("\n>>>>>>>>>>>>>> loading system {}...".format(x))
+            corpusSystem.load(conllu(x).findSystem())
             allCorpora.corpora[conllu(x).system()] = corpusSystem
 
 def addDatabase(golden):
@@ -680,29 +683,33 @@ def checkCorpora():
 
     if INTERROGATORIO:
         for x in os.listdir(COMCORHD_FOLDER):
-            if x.endswith('.conllu') and os.path.isfile(f'{UPLOAD_FOLDER}/{conllu(x).system()}'):
+            if os.path.getsize("{}/{}".format(COMCORHD_FOLDER, x))/1024/1000 < MAX_FILE_SIZE:
+                if x.endswith('.conllu') and os.path.isfile(f'{UPLOAD_FOLDER}/{conllu(x).system()}'):
+                    if not db.session.query(models.Corpus).get(conllu(x).naked):
+                        addDatabase(x)
+                    loadCorpus.submit(conllu(x).naked)
+                    availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).golden() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).golden()], str) else 0}]
+
+    for x in os.listdir(UPLOAD_FOLDER):
+        if os.path.getsize("{}/{}".format(UPLOAD_FOLDER, x))/1024/1000 < MAX_FILE_SIZE:
+            if x.endswith('.conllu') and not x.endswith("_sistema.conllu") and not x.endswith("_original.conllu") and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(conllu(x).naked == k['nome'] for k in availableCorpora):
                 if not db.session.query(models.Corpus).get(conllu(x).naked):
                     addDatabase(x)
                 loadCorpus.submit(conllu(x).naked)
-                availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).golden() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).golden()], str) else 0}]
-
-    for x in os.listdir(UPLOAD_FOLDER):
-        if x.endswith('.conllu') and not x.endswith("_sistema.conllu") and not x.endswith("_original.conllu") and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(conllu(x).naked == k['nome'] for k in availableCorpora):
-            if not db.session.query(models.Corpus).get(conllu(x).naked):
-                addDatabase(x)
-            loadCorpus.submit(conllu(x).naked)
-            availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).system() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).system()], str) else 0}]
+                availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).system() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).system()], str) else 0}]
 
     if INTERROGATORIO:
         for x in os.listdir(COMCORHD_FOLDER):
-            if x.endswith('.conllu') and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}"):
-                loadCorpus.submit(conllu(x).naked)
-                missingSystem += [conllu(x).naked]
+            if os.path.getsize("{}/{}".format(COMCORHD_FOLDER, x))/1024/1000 < MAX_FILE_SIZE:
+                if x.endswith('.conllu') and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}"):
+                    loadCorpus.submit(conllu(x).naked)
+                    missingSystem += [conllu(x).naked]
 
     for x in os.listdir(UPLOAD_FOLDER):
-        if x.endswith('.conllu') and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}") and not conllu(x).naked in missingSystem:
-            loadCorpus.submit(conllu(x).naked)
-            missingSystem += [conllu(x).naked]
+        if os.path.getsize("{}/{}".format(UPLOAD_FOLDER, x))/1024/1000 < MAX_FILE_SIZE:
+            if x.endswith('.conllu') and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}") and not conllu(x).naked in missingSystem:
+                loadCorpus.submit(conllu(x).naked)
+                missingSystem += [conllu(x).naked]
     
     inProgress = [{'nome': conllu(x).naked, 'data': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(conllu(x).findInProgress())))} for x in os.listdir(UPLOAD_FOLDER) if x.endswith('_inProgress')]
     success = [{'nome': conllu(x).naked, 'data': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(conllu(x).findSuccess())))} for x in os.listdir(UPLOAD_FOLDER) if x.endswith('_success')]

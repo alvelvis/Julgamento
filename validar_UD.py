@@ -71,6 +71,7 @@ def validate(conllu, sent_id = None, errorList = "validar_UD.txt", noMissingToke
                 continue
 
             parameters = error.strip()
+            sys.stderr.write("\n{}".format(parameters))
             for sentString in interrogar_UD.main(corpus, 5, parameters, 0, sent_id, separate=True)['output']:
                 if not comment in errorDictionary:
                     errorDictionary[comment] = []
