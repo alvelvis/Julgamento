@@ -619,7 +619,7 @@ def resub(s, a, b):
 
 @executor.job
 def loadCorpus(x):
-    if not os.path.isfile(conllu(x).findOriginal()):
+    if os.path.isfile(conllu(x).findGolden()) and not os.path.isfile(conllu(x).findOriginal()):
         shutil.copyfile(conllu(x).findGolden(), conllu(x).findOriginal())
     if not conllu(x).golden() in allCorpora.corpora or not conllu(x).system() in allCorpora.corpora or (conllu(x).golden() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).golden()], str)) or (conllu(x).system() in allCorpora.corpora and isinstance(allCorpora.corpora[conllu(x).system()], str)):    
         corpusGolden, corpusSystem, corpusOriginal = estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True), estrutura_ud.Corpus(recursivo=True)
