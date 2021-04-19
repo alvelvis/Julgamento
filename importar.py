@@ -638,10 +638,12 @@ def loadCorpus(x):
             corpusOriginal.load(conllu(x).findOriginal())
             allCorpora.corpora[conllu(x).golden()] = corpusGolden
             allCorpora.corpora[conllu(x).original()] = corpusOriginal
+            sys.stderr.write(" ok <<<<<<<<")
         if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
             sys.stderr.write("\n>>>>>>>>>>>>>> loading system {}...".format(x))
             corpusSystem.load(conllu(x).findSystem())
             allCorpora.corpora[conllu(x).system()] = corpusSystem
+            sys.stderr.write(" ok <<<<<<<<")
 
 def addDatabase(golden):
     corpusdb = db.session.query(models.Corpus).get(conllu(golden).naked)
