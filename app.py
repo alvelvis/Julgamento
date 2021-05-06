@@ -14,6 +14,7 @@ from functions import cleanEstruturaUD
 from flask_executor import Executor
 from subprocess import Popen
 import json
+from flask_socketio import SocketIO, emit
 
 def tracefunc(frame, event, arg, indent=[0]):
       if event == "call":
@@ -42,6 +43,8 @@ blueprint = make_google_blueprint(
 )
 app.register_blueprint(blueprint, url_prefix="/login")
 login_manager = LoginManager(app)
+socketio = SocketIO(app, logge=True)
+clients = 0
 
 class Corpora:
 
@@ -55,6 +58,20 @@ class Modificacoes:
 
 allCorpora = Corpora()
 modificacoesCorpora = Modificacoes()
+
+@socketio.on("connect", namespace="/socket")
+def connect():
+	# global variable as it needs to be shared
+	global clients
+	clients += 1
+	# emits a message with the user count anytime someone connects
+	sys.stderr.write('\n>>>>>>>>>>>> users connected: {}'.format(clients))
+
+@socketio.on("disconnect", namespace="/socket")
+def disconnect():
+	global clients
+	clients -= 1
+	sys.stderr.write('\n>>>>>>>>>>>> users connected: {}'.format(clients))
 
 @app.route("/api/getPhrases", methods=["POST"])
 def getPhrases():
@@ -95,7 +112,6 @@ def refreshTables():
 	#allCorpora.corpora[] = ""
 	if conllu(request.values.get("c")).system() in allCorpora.corpora:
 		allCorpora.corpora.pop(conllu(request.values.get("c")).system())
-	checkCorpora()
 	if os.path.isdir(UPLOAD_FOLDER + "/CM-" + request.values.get("c")):
 		shutil.rmtree(UPLOAD_FOLDER + "/CM-" + request.values.get("c") + "/", ignore_errors=True)
 	if os.path.isfile(conllu(request.values.get("c")).findErrorsValidarUD()):
@@ -392,7 +408,8 @@ def upload(alert="", success=""):
 				success = f'"{systemFileName}" enviado com sucesso! Julgue o corpus na <a href="/corpus">página inicial</a>.'
 				addDatabase(goldenFile)
 			#loadCorpus.submit(goldenFile)
-
+			corpusGolden = ""
+			corpusSystem = ""
 		else:
 			alert = 'Extensão deve estar entre "' + ",".join(ALLOWED_EXTENSIONS) + '"'
 
@@ -527,7 +544,9 @@ def sendAnnotation():
 							if value['sentence']:
 								attention += ["<li>" + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].id) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].word) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].__dict__[value['attribute']]) + "</li>"]
 						attention += ["</ul>"]
-			
+
+		corpus = ""
+		if corpusSystem: corpusSystem = ""
 		attention = "\n".join(attention)
 
 	return jsonify({
@@ -601,7 +620,13 @@ def getAnnotation():
 				html2 += '<td contenteditable=true class="{drag} valor"><input type=hidden name="{col}<coluna>{t}">{coluna}</td>'.format(col=col, t=t, coluna=coluna, drag=drag)
 			html2 += "</tr>"
 		html2 += "</table>"
+	
+	if 'ud1' in globals():
+		ud1 = ""
 
+	if 'ud2' in globals():
+		ud2 = ""
+		
 	return jsonify({
 		'annotationUd1': html1,
 		'annotationUd2': html2,
@@ -622,6 +647,9 @@ def corpus():
 		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
 
 	resp = google.get('/oauth2/v2/userinfo')
+
+	if request.args.get('c'):
+		loadCorpus.submit(conllu(request.args.get('c')).naked)
 
 	if not request.args.get('c'):
 		return render_template(
@@ -671,6 +699,15 @@ def corpus():
 			deprel=request.args.get('UPOS'),
 			coluna='UPOS',
 		)
+
+	elif request.args.get("action") and request.args.get("action") == "destroy":
+		if conllu(request.args.get("c")).golden() in allCorpora.corpora:
+			allCorpora.corpora[conllu(request.args.get("c")).golden()] = ""
+		if conllu(request.args.get("c")).system() in allCorpora.corpora:
+			allCorpora.corpora[conllu(request.args.get("c")).system()] = ""
+		if conllu(request.args.get("c")).original() in allCorpora.corpora:
+			allCorpora.corpora[conllu(request.args.get("c")).original()] = ""
+		return redirect('/corpus')
 	
 	else:
 		return render_template(
@@ -749,4 +786,4 @@ app.jinja_env.globals.update(allCorpora=allCorpora)
 app.jinja_env.globals.update(isinstance=isinstance)
 
 if __name__ == "__main__":
-	app.run(threaded=True, port="5050")
+	app.run(threaded=False, port="5050", processes=1)

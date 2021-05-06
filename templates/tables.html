@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}{% if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora[conllu(c).golden()] != "" %}{% else %}Carregando {% endif %}{{ c }}{% endblock %}
+{% block title %}{% if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora[conllu(c).golden()].sentences %}{% else %}Carregando {% endif %}{{ c }}{% endblock %}
 
 {% block content %}
 
-{% if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora[conllu(c).golden()] != "" %}
+{% if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora[conllu(c).golden()].sentences %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <input type="hidden" id="ud1" value="{{conllu(c).findGolden()}}">
 {% if conllu(c).system() in allCorpora.corpora %}<input type="hidden" id="ud2" value="{{conllu(c).findSystem()}}">{% endif %}
