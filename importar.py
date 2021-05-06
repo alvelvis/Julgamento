@@ -621,7 +621,7 @@ def resub(s, a, b):
 def loadCorpus(x):
     if os.path.isfile(conllu(x).findGolden()) and not os.path.isfile(conllu(x).findOriginal()):
         shutil.copyfile(conllu(x).findGolden(), conllu(x).findOriginal())
-    if not conllu(x).golden() in allCorpora.corpora or (not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
+    if not conllu(x).golden() in allCorpora.corpora or (not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem())):
         #if not conllu(x).golden() in allCorpora.corpora:
             #if GOOGLE_LOGIN:
                 #renderErrors(c=x, texto="", fromZero=True)
