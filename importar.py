@@ -621,7 +621,7 @@ def resub(s, a, b):
 def loadCorpus(x):
     if os.path.isfile(conllu(x).findGolden()) and not os.path.isfile(conllu(x).findOriginal()):
         shutil.copyfile(conllu(x).findGolden(), conllu(x).findOriginal())
-    if not conllu(x).golden() in allCorpora.corpora or not conllu(x).system() in allCorpora.corpora:
+    if not conllu(x).golden() in allCorpora.corpora or (not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
         #if not conllu(x).golden() in allCorpora.corpora:
             #if GOOGLE_LOGIN:
                 #renderErrors(c=x, texto="", fromZero=True)
@@ -638,7 +638,7 @@ def loadCorpus(x):
             allCorpora.corpora[conllu(x).system()] = estrutura_ud.Corpus(recursivo=True)
             allCorpora.corpora[conllu(x).system()].load(conllu(x).findSystem())
             sys.stderr.write(" system ok <<<<<<<<")
-        if not conllu(x).golden() in allCorpora.corpora or not allCorpora.corpora[conllu(x).golden()].sentences:
+        if not allCorpora.corpora[conllu(x).golden()].sentences:
             sys.stderr.write("\n>>>>>>>>>>>>>> loading {}...".format(x))
             allCorpora.corpora[conllu(x).original()].load(conllu(x).findOriginal())
             allCorpora.corpora[conllu(x).golden()].load(conllu(x).findGolden())
