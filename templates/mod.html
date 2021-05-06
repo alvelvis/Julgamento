@@ -15,7 +15,7 @@
         <div class="panel-body">
             {{ loop.index }} / {{ sentences | length }}
         </div>
-        {% with sent_id=sentence['sent_id'], golden=sentence['golden'], bold=sentence['bold'], t=sentence['t'], rel=sentence['golden'].tokens[sentence['t']].col[mod] %}
+        {% with sent_id=sentence['sent_id'], golden=sentence['golden'], bold=sentence['bold'], t=sentence['t'], rel=sentence['golden'].tokens[sentence['t']].__dict__[mod] %}
             {% include 'sentence.html' %}
         {% endwith %}
     </div>
