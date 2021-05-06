@@ -408,8 +408,8 @@ def upload(alert="", success=""):
 				success = f'"{systemFileName}" enviado com sucesso! Julgue o corpus na <a href="/corpus">página inicial</a>.'
 				addDatabase(goldenFile)
 			#loadCorpus.submit(goldenFile)
-			corpusGolden = ""
-			corpusSystem = ""
+			del corpusGolden
+			del corpusSystem
 		else:
 			alert = 'Extensão deve estar entre "' + ",".join(ALLOWED_EXTENSIONS) + '"'
 
@@ -545,8 +545,8 @@ def sendAnnotation():
 								attention += ["<li>" + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].id) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].word) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].__dict__[value['attribute']]) + "</li>"]
 						attention += ["</ul>"]
 
-		corpus = ""
-		if corpusSystem: corpusSystem = ""
+		del corpus
+		if "corpusSystem" in globals(): del corpusSystem
 		attention = "\n".join(attention)
 
 	return jsonify({
@@ -622,10 +622,10 @@ def getAnnotation():
 		html2 += "</table>"
 	
 	if 'ud1' in globals():
-		ud1 = ""
+		del ud1
 
 	if 'ud2' in globals():
-		ud2 = ""
+		del ud2
 		
 	return jsonify({
 		'annotationUd1': html1,
@@ -702,11 +702,11 @@ def corpus():
 
 	elif request.args.get("action") and request.args.get("action") == "destroy":
 		if conllu(request.args.get("c")).golden() in allCorpora.corpora:
-			allCorpora.corpora[conllu(request.args.get("c")).golden()] = ""
+			del allCorpora.corpora[conllu(request.args.get("c")).golden()]
 		if conllu(request.args.get("c")).system() in allCorpora.corpora:
-			allCorpora.corpora[conllu(request.args.get("c")).system()] = ""
+			del allCorpora.corpora[conllu(request.args.get("c")).system()]
 		if conllu(request.args.get("c")).original() in allCorpora.corpora:
-			allCorpora.corpora[conllu(request.args.get("c")).original()] = ""
+			del allCorpora.corpora[conllu(request.args.get("c")).original()]
 		return redirect('/corpus')
 	
 	else:
