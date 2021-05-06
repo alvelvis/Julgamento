@@ -649,7 +649,7 @@ def corpus():
 	resp = google.get('/oauth2/v2/userinfo')
 
 	if request.args.get('c'):
-		loadCorpus.submit(conllu(request.args.get('c')).naked)
+		loadCorpus(conllu(request.args.get('c')).naked)
 
 	if not request.args.get('c'):
 		return render_template(

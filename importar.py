@@ -617,32 +617,33 @@ def matrix(table, c, kind="UPOS"):
 def resub(s, a, b):
     return re.sub(r'\b' + a + r'\b', b, s)
 
-@executor.job
+#@executor.job
 def loadCorpus(x):
     if os.path.isfile(conllu(x).findGolden()) and not os.path.isfile(conllu(x).findOriginal()):
         shutil.copyfile(conllu(x).findGolden(), conllu(x).findOriginal())
-    if not conllu(x).golden() in allCorpora.corpora or (not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem())):
-        #if not conllu(x).golden() in allCorpora.corpora:
-            #if GOOGLE_LOGIN:
-                #renderErrors(c=x, texto="", fromZero=True)
-                #with open(conllu(x).findErrorsValidarUD(), "wb") as f:
-                    #f.write(pickle.dumps(validar_UD.validate(
-                        #conllu=corpusGolden,
-                        #errorList=VALIDAR_UD,
-                        #))
-                    #)
+    if os.path.isfile(conllu(x).findSystem()) and not conllu(x).system() in allCorpora.corpora:
+        allCorpora.corpora[conllu(x).system()] = estrutura_ud.Corpus(recursivo=True)
+    if not conllu(x).golden() in allCorpora.corpora:
         allCorpora.corpora[conllu(x).golden()] = estrutura_ud.Corpus(recursivo=True)
+    if not conllu(x).original() in allCorpora.corpora:
         allCorpora.corpora[conllu(x).original()] = estrutura_ud.Corpus(recursivo=True)
-        if not conllu(x).system() in allCorpora.corpora and os.path.isfile(conllu(x).findSystem()):
-            sys.stderr.write("\n>>>>>>>>>>>>>> loading system {}...".format(x))
-            allCorpora.corpora[conllu(x).system()] = estrutura_ud.Corpus(recursivo=True)
-            allCorpora.corpora[conllu(x).system()].load(conllu(x).findSystem())
-            sys.stderr.write(" system ok <<<<<<<<")
-        if not allCorpora.corpora[conllu(x).golden()].sentences:
-            sys.stderr.write("\n>>>>>>>>>>>>>> loading {}...".format(x))
-            allCorpora.corpora[conllu(x).original()].load(conllu(x).findOriginal())
-            allCorpora.corpora[conllu(x).golden()].load(conllu(x).findGolden())
-            sys.stderr.write(" ok <<<<<<<<")
+    if conllu(x).system() in allCorpora.corpora and not allCorpora.corpora[conllu(x).system()].sentences:
+        sys.stderr.write("\n>>>>>>>>>>>>>> loading system {}...".format(x))
+        corpus = estrutura_ud.Corpus(recursivo=True)
+        corpus.load(conllu(x).findSystem())
+        allCorpora.corpora[conllu(x).system()].sentences = dict(corpus.sentences.items())
+        sys.stderr.write(" system ok <<<<<<<<")
+    if conllu(x).original() in allCorpora.corpora and not allCorpora.corpora[conllu(x).original()].sentences:
+        corpus = estrutura_ud.Corpus(recursivo=True)
+        corpus.load(conllu(x).findOriginal())
+        allCorpora.corpora[conllu(x).original()].sentences = dict(corpus.sentences.items())
+    if conllu(x).golden() in allCorpora.corpora and not allCorpora.corpora[conllu(x).golden()].sentences:
+        sys.stderr.write("\n>>>>>>>>>>>>>> loading {}...".format(x))
+        corpus = estrutura_ud.Corpus(recursivo=True)
+        corpus.load(conllu(x).findGolden())
+        allCorpora.corpora[conllu(x).golden()].sentences = dict(corpus.sentences.items())
+        sys.stderr.write(" ok <<<<<<<<")
+    corpus = ""
 
 def addDatabase(golden):
     corpusdb = db.session.query(models.Corpus).get(conllu(golden).naked)
