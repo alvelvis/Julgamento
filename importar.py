@@ -640,11 +640,9 @@ def loadCorpus(x):
             sys.stderr.write(" system ok <<<<<<<<")
         if not conllu(x).golden() in allCorpora.corpora or not allCorpora.corpora[conllu(x).golden()].sentences:
             sys.stderr.write("\n>>>>>>>>>>>>>> loading {}...".format(x))
-            corpus = estrutura_ud.Corpus(recursivo=True)
-            allCorpora.corpora[conllu(x).original()].sentences = dict(corpus.sentences.items())
+            allCorpora.corpora[conllu(x).original()].load(conllu(x).findOriginal())
             allCorpora.corpora[conllu(x).golden()].load(conllu(x).findGolden())
             sys.stderr.write(" ok <<<<<<<<")
-            corpus = ""
 
 def addDatabase(golden):
     corpusdb = db.session.query(models.Corpus).get(conllu(golden).naked)
