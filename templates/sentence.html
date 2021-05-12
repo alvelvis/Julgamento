@@ -4,10 +4,10 @@
         <div class="header" style="padding-bottom:10px;">
             <p><span title="Esta sentença já foi editada anteriormente" class="badge translateTitle alreadyEdited" style="background-color: red">{% if c and conllu(c).original() in allCorpora.corpora and golden.sent_id in allCorpora.corpora[conllu(c).golden()].sentences and golden.sent_id in allCorpora.corpora[conllu(c).original()].sentences and allCorpora.corpora[conllu(c).golden()].sentences[golden.sent_id].tokens_to_str() != allCorpora.corpora[conllu(c).original()].sentences[golden.sent_id].tokens_to_str() %}!{% endif %}</span> {{ golden.sent_id or golden.id }}</p>
             <p class="text">
-                {% if thirdBold %}{{ golden.text | resub(re.escape(bold['word']), '<b><span style="color:'+bold['color']+';">' + bold['word'] + '</span></b>') | resub(re.escape(thirdBold['word']), '<span style="color:'+thirdBold['color']+';">' + thirdBold['word'] + '</span>') | resub(re.escape(secBold['word']), '<span style="color:'+secBold['color']+';">' + secBold['word'] + '</span>') | safe }}
-                {% elif secBold %}{{ golden.text | resub(re.escape(bold['word']), '<b><span style="color:'+bold['color']+';">' + bold['word'] + '</span></b>') | resub(re.escape(secBold['word']), '<span style="color:'+secBold['color']+';">' + secBold['word'] + '</span>') | safe }}
+                {% if thirdBold %}{{ golden | paint_text(bold['id'], bold['color'], secBold['id'], secBold['color'], thirdBold['id'], thirdBold['color']) | safe }}
+                {% elif secBold %}{{ golden | paint_text(bold['id'], bold['color'], secBold['id'], secBold['color']) | safe }}
                 {% elif not bold %}{{ golden.text | safe }}
-                {% elif bold %}{{ golden.text | resub(re.escape(bold['word']), '<b><span style="color:'+bold['color']+';">' + bold['word'] + '</span></b>') | safe }}
+                {% elif bold %}{{ golden | paint_text(bold['id'], bold['color']) | safe }}
                 {% endif %}
             </p>
             <p style="display:none" class="tokenIds">

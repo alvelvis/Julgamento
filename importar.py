@@ -94,7 +94,7 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
                 if "\t" in arquivoSplit[t-1]:
                     if not linha.split(":", 1)[1] in sent_ids:
                         sent_ids[linha.split(":", 1)[1]] = []
-                    bold = {'word': arquivoSplit[t-1].split("\t")[1], 'color': 'black'}# if '\t' in arquivo.splitlines()[t-1] else ""
+                    bold = {'word': arquivoSplit[t-1].split("\t")[1], 'color': 'black', 'id': arquivo.splitlines()[t-1].split("\t")[0]}# if '\t' in arquivo.splitlines()[t-1] else ""
                     t = allCorpora.corpora[conllu(c).golden()].sentences[linha.split(" Node ")[0].split("Sent ", 1)[1]].map_token_id[arquivo.splitlines()[t-1].split("\t")[0]]
                     sent_ids[linha.split(":", 1)[1]].append({'id': linha.split(" Node ")[0].split("Sent ", 1)[1], 't': t, 'bold': bold})
         html = ""
@@ -332,10 +332,10 @@ def getMatrixSentences(c, golden, system, coluna):
                             'golden': {'category': golden, 'head': {'id': token.head_token.id, 'word': token.head_token.word}}
                             },
                         'col': coluna.lower(),
-                        'bold': {'word': token.word, 'color': 'black'},
+                        'bold': {'word': token.word, 'color': 'black', 'id': token.id},
                         'boldCol': f'{coluna.lower()}<coluna>{t}',
-                        'secBold': {'word': token.head_token.word, 'color': 'green'} if coluna.lower() in ["deprel"] else "",
-                        'thirdBold': {'word': ud2.sentences[sent_id].tokens[t].head_token.word, 'color': 'red'} if coluna.lower() in ["deprel"] else "",
+                        'secBold': {'word': token.head_token.word, 'color': 'green', 'id': token.head_token.id} if coluna.lower() in ["deprel"] else "",
+                        'thirdBold': {'word': ud2.sentences[sent_id].tokens[t].head_token.word, 'color': 'red', 'id': ud2.sentences[sent_id].tokens[t].head_token.id} if coluna.lower() in ["deprel"] else "",
                         't': t
                     })
     
@@ -491,15 +491,15 @@ def caracteristicasCorpus(ud1, ud2=""):
                 if token.lemma != depois.sentences[sentid].tokens[t].lemma:
                     if not token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma in lemas_diferentes:
                         lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma] = []
-                    lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+                    lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red', 'id': token.id}})
                 if token.upos != depois.sentences[sentid].tokens[t].upos:
                     if not token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos in upos_diferentes:
                         upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos] = []
-                    upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+                    upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red', 'id': token.id}})
                 if token.deprel != depois.sentences[sentid].tokens[t].deprel:
                     if not token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel in deprel_diferentes:
                         deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel] = []
-                    deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red'}})
+                    deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red', 'id': token.id}})
     
     modificacoesCorpora.modificacoes[c] = {'lemma': lemas_diferentes, 'upos': upos_diferentes, 'deprel': deprel_diferentes}
 
@@ -616,6 +616,20 @@ def matrix(table, c, kind="UPOS"):
 
 def resub(s, a, b):
     return re.sub(r'\b' + a + r'\b', b, s)
+
+def paint_text(sentence, id1, color1, id2="", color2="", id3="", color3=""):
+    text = []
+    for token in sentence.tokens:
+        if not '-' in token.id and not '.' in token.id:
+            word = token.word
+            if id3 and token.id == id3:
+                word = "<span style='color:{}'>{}</span>".format(color3 if id2 != id3 else "purple", word)
+            elif id2 and token.id == id2:
+                word = "<span style='color:{}'>{}</span>".format(color2, word)
+            elif id1 and token.id == id1:
+                word = "<b><span style='color:{}'>{}</span></b>".format(color1, word)
+            text.append(word)
+    return " ".join(text)
 
 #@executor.job
 def loadCorpus(x):

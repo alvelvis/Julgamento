@@ -167,9 +167,9 @@ def cristianMarneffe():
 						golden=allCorpora.corpora[conllu(request.values.get("c")).golden()].sentences[frase["sent_id"]],
 						c=request.values.get("c"),
 						t=allCorpora.corpora[conllu(request.values.get("c")).golden()].sentences[frase["sent_id"]].map_token_id[str(frase["id1"])],
-						bold={'word': frase['WORD1'], 'color': 'red'},
+						bold={'word': frase['WORD1'], 'color': 'red', 'id': str(frase["id1"])},
 						rel=frase["rel"],
-						secBold={'word': frase['WORD2'], 'color': 'blue'},
+						secBold={'word': frase['WORD2'], 'color': 'blue', 'id': str(frase["id2"])},
 						goldenAndSystem=True if conllu(request.values.get("c")).system() in allCorpora.corpora else False
 						) + "</div>"
 	
@@ -212,7 +212,7 @@ def getErrorsValidarUD():
 						golden=value['sentence'],
 						c=request.values.get("c"),
 						t=value['t'],
-						bold={'word': value['sentence'].tokens[value['t']].word, 'color': 'black'},
+						bold={'word': value['sentence'].tokens[value['t']].word, 'color': 'black', 'id': value['sentence'].tokens[value['t']].id},
 						rel=value['sentence'].tokens[value['t']].__dict__[value['attribute']],
 						goldenAndSystem=True if conllu(request.values.get("c")).system() in allCorpora.corpora else False,
 					) + "</div>"
@@ -479,9 +479,9 @@ def getCatSents():
 			golden=corpusGolden.sentences[sentence[0]],
 			system=corpusSystem.sentences[sentence[0]],
 			c=request.values.get('c'),
-			bold={'word': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].word, 'color': 'black'},
-			secBold={'word': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.word, 'color': 'green'},
-			thirdBold={'word': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.word, 'color': 'red'},
+			bold={'word': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].word, 'color': 'black', 'id': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].id},
+			secBold={'word': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.word, 'color': 'green', 'id': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.id},
+			thirdBold={'word': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.word, 'color': 'red', 'id': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.id},
 			col=request.values.get('coluna').lower(),
 			boldCol=f'{request.values.get("coluna").lower()}<coluna>{sentence[1]}',
 			t=sentence[1],
@@ -773,6 +773,7 @@ from config import *
 app.before_first_request(checkCorpora)
 
 app.jinja_env.filters['resub'] = resub
+app.jinja_env.filters['paint_text'] = paint_text
 app.jinja_env.filters['sortLambda'] = sortLambda
 app.jinja_env.globals.update(re=re)
 app.jinja_env.globals.update(conllu=conllu)
