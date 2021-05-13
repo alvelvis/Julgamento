@@ -502,7 +502,7 @@ def sendAnnotation():
 		return redirect(url_for('google.login'))
 
 	goldenAndSystem = int(request.values.get('goldenAndSystem'))
-	globals()["change"] = False
+	change = False
 	attention = ""
 	if any('<coluna>' in data and request.values.get(data) for data in request.values):
 		sent_id = request.values.get('sent_id')
@@ -524,14 +524,23 @@ def sendAnnotation():
 				valor = html.unescape(request.values.get(data).replace("<br>", "").strip()).replace("<br>", "").strip()
 				if request.values.get("headToken"):
 					headTokenNum = request.values.get("headToken") if request.values.get("headToken") != "_" else "0"
-				headToken = f'\ncorpus.sentences["{sent_id}"].tokens[{token}].dephead = "{headTokenNum}"\n' if request.values.get('headToken') else "\n"
-				exec(f'if corpus.sentences["{sent_id}"].tokens[{token}].{coluna} != "{valor}":\n\tcorpus.sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"{headToken}globals()["change"] = True\nglobals()["allCorpora"].corpora["{conllu(request.values.get("c")).golden()}"].sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"')
+				if corpus.sentences[sent_id].tokens[token].__dict__[coluna] != valor:
+					corpus.sentences[sent_id].tokens[token].__dict__[coluna] = valor
+					if request.values.get('headToken'):
+						corpus.sentences[sent_id].tokens[token].dephead = headTokenNum
+					change = True
+					allCorpora.corpora[conllu(request.values.get("c")).golden()].sentences[sent_id].tokens[token].__dict__[coluna] = valor
 				
 				if goldenAndSystem:
-					exec(f'if corpusSystem.sentences["{sent_id}"].tokens[{token}].{coluna} != "{valor}":\n\tcorpusSystem.sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"{headToken}globals()["change"] = True\nglobals()["allCorpora"].corpora["{conllu(request.values.get("c")).system()}"].sentences["{sent_id}"].tokens[{token}].{coluna} = "{valor}"')
+					if corpusSystem.sentences[sent_id].tokens[token].__dict__[coluna] != valor:
+						corpusSystem.sentences[sent_id].tokens[token].__dict__[coluna] = valor
+						if request.values.get('headToken'):
+							corpus.sentences[sent_id].tokens[token].dephead = headTokenNum
+						change = True
+						allCorpora.corpora[conllu(request.values.get("c")).system()].sentences[sent_id].tokens[token].__dict__[coluna] = valor
 
 		attention = []
-		if globals()["change"]:
+		if change:
 			corpus.save(arquivo)
 			if goldenAndSystem:
 				corpusSystem.save(arquivoSystem)
@@ -550,7 +559,7 @@ def sendAnnotation():
 		attention = "\n".join(attention)
 
 	return jsonify({
-		'change': globals()["change"],
+		'change': change,
 		'data': prettyDate(datetime.datetime.now()).prettyDateDMAH(),
 		'attention': attention,
 		'success': True,

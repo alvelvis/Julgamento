@@ -85,7 +85,7 @@ deprel|erro: DET deve ter deprel "det"
 upos = "DET" and deprel != "det|fixed|flat:name"
 
 deprel|erro: ADP deve ter deprel "case"
-upos = "ADP" and deprel != "case|fixed|flat:name|compound"
+upos = "ADP" and deprel != "case|fixed|flat:name|compound" and misc != ".*MWE.*"
 
 deprel|erro: ADP não pode ter filho
 head_token.upos = "ADP" and @deprel != "(fixed|compound|flat|flat:name)"
@@ -109,7 +109,7 @@ deprel|erro: AUX deve ter deprel "aux" ou "cop"
 upos = "AUX" and deprel != "(aux|aux:pass|cop)"
 
 deprel|erro: ADV deve ser advmod
-deprel = "advmod" and upos != "ADV"
+deprel = "advmod" and upos != "ADV" and misc != ".*MWE.*"
 deprel != "advmod" and upos = "ADV"
 
 feats|erro: VERB deve ter feats VerbForm
