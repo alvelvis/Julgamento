@@ -557,8 +557,44 @@ var translations = {
     },
     "Partições": {
         'en-US': 'Partitions'
+    },
+    'Filtrar sentenças': {
+        'en-US': 'Filter sentences'
+    },
+    'Identificador das sentenças': {
+        'en-US': 'Sentences identifiers'
+    },
+    'Filtrar': {
+        'en-US': 'Filter'
+    },
+    'Utilize expressão regular': {
+        'en-US': 'Use regular expression'
+    },
+    'Remover sentenças dessa página': {
+        'en-US': 'Eliminate sentences from this page'
     }
 };
+
+$('.filterSentences').click(function(){
+    $('.filterSentencesDiv').slideToggle();
+});
+
+$('.filterThisSentenceBtn').click(function(){
+    if ($('#filterSentencesInput').val().split("|").indexOf($(this).attr('sent_id')) == -1) {
+        $('#filterSentencesInput').val($('#filterSentencesInput').val() + ($('#filterSentencesInput').val().length ? "|" : "") + $(this).attr('sent_id'));
+        $('.filterSentencesButton').click();
+    }
+})
+
+$('.filterSentencesButton').click(function(){
+    $('.sentenceDiv').each(function(i, div){
+        if ($('#filterSentencesInput').val().length && $(div).find('.sent_id').text().match($('#filterSentencesInput').val())) {
+            $(div).hide();
+        } else {
+            $(div).show();
+        }
+    })
+});
 
 function updateTranslation(){
 

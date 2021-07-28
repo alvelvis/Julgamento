@@ -9,9 +9,9 @@
 <h1><span class='translateHtml'>Confusões entre</span> "{{ud1}}" (<span class='translateHtml'>golden</span>) <span class='translateHtml'>e</span> "{{ud2}}" (<span class='translateHtml'>sistema</span>)</h1>
 <h3><span class='translateHtml'>Coluna:</span> {{ col }}</h3>
 <hr>
-<br>
+{{ filter_sentences | safe }}
 {% for sentence in sentences %}
-    <div class="panel panel-default col-lg-10 col-lg-offset-1">
+    <div class="sentenceDiv panel panel-default col-lg-10 col-lg-offset-1">
         <div class="panel-body">
             {{ loop.index }} / {{ sentences | length }}
         </div>

@@ -781,6 +781,16 @@ from config import *
 
 app.before_first_request(checkCorpora)
 
+filter_sentences = '''
+<button type="button" title="Remover sentenças dessa página" class="filterSentences translateTitle btn btn-default"><i class="fa fa-filter"></i> <span class="translateHtml">Filtrar sentenças</span></button>
+<br><br>
+<div class="form-group panel panel-default panel-body col-lg-4 filterSentencesDiv" style="display:none;">
+    <label for="filterSentencesInput" class="translateTitle translateHtml" title="Utilize expressão regular">Identificador das sentenças</label>
+    <input type="text" class="form-control" id="filterSentencesInput" >
+    <br>
+    <button type="submit" class="filterSentencesButton translateHtml btn btn-primary mb-2">Filtrar</button>
+</div>'''
+
 app.jinja_env.filters['resub'] = resub
 app.jinja_env.filters['paint_text'] = paint_text
 app.jinja_env.filters['sortLambda'] = sortLambda
@@ -794,6 +804,7 @@ app.jinja_env.globals.update(prettyDate=prettyDate)
 app.jinja_env.globals.update(findCorpora=findCorpora)
 app.jinja_env.globals.update(allCorpora=allCorpora)
 app.jinja_env.globals.update(isinstance=isinstance)
+app.jinja_env.globals.update(filter_sentences=filter_sentences)
 
 if __name__ == "__main__":
 	app.run(threaded=False, port="5050", processes=1)

@@ -103,7 +103,7 @@ upos = "AUX" and deprel != "(aux|aux:pass|cop)" and misc != ".*MWE.*"
 
 deprel|erro: ADV deve ser advmod
 deprel = "advmod" and upos != "ADV" and misc != ".*MWE.*"
-deprel != "advmod" and upos = "ADV"
+deprel != "advmod|fixed|compound" and upos = "ADV"
 
 feats|erro: VERB deve ter feats VerbForm
 upos = "(AUX|VERB)" and feats != ".*VerbForm=.*"
