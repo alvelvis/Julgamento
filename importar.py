@@ -10,7 +10,7 @@ import sys, shutil
 MAX_FILE_SIZE = 50
 
 INTERROGATORIO = False
-if os.path.isdir(JULGAMENTO_FOLDER.rsplit('/', 1)[0] + "/Interrogat-rio"):
+if os.path.isdir(os.path.abspath(os.path.join(JULGAMENTO_FOLDER, "..", "Interrogat-rio"))):
     globals()['INTERROGATORIO'] = True
 else:
     globals()['INTERROGATORIO'] = False
@@ -66,8 +66,11 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
     if not os.path.isfile(conllu(c).findErrors() + "_html") or fromZero:
         if fromZero or not texto:
             #if not os.path.isfile(conllu(c).findErrors()):
-            if os.system(JULGAMENTO_FOLDER + f'/.julgamento/bin/python3 {os.path.abspath(os.path.dirname(__file__))}/tools/validate.py {conllu(c).findGolden()} --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee {conllu(c).findErrors()}'):
-                pass
+            if not 'win' in sys.platform:
+                if os.system(JULGAMENTO_FOLDER + f'/.julgamento/bin/python3 {os.path.abspath(os.path.dirname(__file__))}/tools/validate.py {conllu(c).findGolden()} --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee {conllu(c).findErrors()}'):
+                    pass
+            else:
+                raise Exception("Only available on Linux.")
             with open(conllu(c).findErrors()) as f:
                 texto = f.read()
         if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora.get(conllu(c).golden()):

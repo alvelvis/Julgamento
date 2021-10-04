@@ -112,8 +112,8 @@ def refreshTables():
 	#allCorpora.corpora[] = ""
 	if conllu(request.values.get("c")).system() in allCorpora.corpora:
 		allCorpora.corpora.pop(conllu(request.values.get("c")).system())
-	if os.path.isdir(UPLOAD_FOLDER + "/CM-" + request.values.get("c")):
-		shutil.rmtree(UPLOAD_FOLDER + "/CM-" + request.values.get("c") + "/", ignore_errors=True)
+	if os.path.isdir(os.path.abspath(os.path.join(UPLOAD_FOLDER, "CM-" + request.values.get("c")))):
+		shutil.rmtree(os.path.abspath(os.path.join(UPLOAD_FOLDER, "CM-" + request.values.get("c"))), ignore_errors=True)
 	if os.path.isfile(conllu(request.values.get("c")).findErrorsValidarUD()):
 		os.remove(conllu(request.values.get("c")).findErrorsValidarUD())
 	if os.path.isfile(conllu(request.values.get("c")).findErrors()):
@@ -144,12 +144,15 @@ def cristianMarneffe():
 	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for("google.login"))
 
-	if not os.path.isfile(UPLOAD_FOLDER + f"/CM-{request.values.get('c')}/results_{request.values.get('tipo')}.json"):
-		os.system(JULGAMENTO_FOLDER + "/.julgamento/bin/python3 {}/Cristian-Marneffe.py {} {}".format(
-			JULGAMENTO_FOLDER,
-			conllu(request.values.get("c")).findGolden(), 
-			request.values.get("tipo"),
-			))
+	if not os.path.isfile(os.path.abspath(os.path.join(UPLOAD_FOLDER, "CM-" + request.values.get('c'), "results_" + request.values.get('tipo') + ".json"))):
+		if not 'win' in sys.platform:
+			os.system(JULGAMENTO_FOLDER + "/.julgamento/bin/python3 \"{}/Cristian-Marneffe.py\" \"{}\" {}".format(
+				JULGAMENTO_FOLDER,
+				conllu(request.values.get("c")).findGolden(), 
+				request.values.get("tipo"),
+				))
+		else:
+			raise Exception("Only available on Linux.")
 
 	with open(UPLOAD_FOLDER + f"/CM-{request.values.get('c')}/results_{request.values.get('tipo')}.json") as f:
 		results = json.load(f)
@@ -379,8 +382,8 @@ def upload(alert="", success=""):
 		goldenFile = request.files.get('goldenFile')
 		if goldenFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
 			goldenFileName = removerAcento(conllu(request.values.get('goldenName')).golden())
-			if (INTERROGATORIO and not os.path.isfile(COMCORHD_FOLDER + '/' + goldenFileName)) or (not INTERROGATORIO and not os.path.isfile(UPLOAD_FOLDER + '/' + goldenFileName)):
-				goldenFile.save(COMCORHD_FOLDER + '/' + goldenFileName) if INTERROGATORIO else goldenFile.save(UPLOAD_FOLDER + '/' + goldenFileName)
+			if (INTERROGATORIO and not os.path.isfile(os.path.abspath(os.path.join(COMCORHD_FOLDER, goldenFileName)))) or (not INTERROGATORIO and not os.path.isfile(os.path.abspath(os.path.join(UPLOAD_FOLDER, goldenFileName)))):
+				goldenFile.save(os.path.abspath(os.path.join(COMCORHD_FOLDER, goldenFileName))) if INTERROGATORIO else goldenFile.save(os.path.abspath(os.path.join(UPLOAD_FOLDER, goldenFileName)))
 				shutil.copyfile(conllu(goldenFileName).findGolden(), conllu(goldenFileName).findOriginal())
 				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/Interrogat-rio'>Interrogatório</a>, ou, (2) "
 				success = f'"{goldenFileName}" enviado com sucesso! {textInterrogatorio if INTERROGATORIO else ""}Julgue-o na <a href="/corpus">página inicial</a>.'
@@ -394,7 +397,7 @@ def upload(alert="", success=""):
 		systemFile = request.files.get('systemFile')
 		if systemFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
 			systemFileName = conllu(goldenFile).system()
-			systemFile.save(UPLOAD_FOLDER + '/' + systemFileName)
+			systemFile.save(os.path.abspath(os.path.join(UPLOAD_FOLDER, systemFileName)))
 			if not os.path.isfile(conllu(systemFileName).findOriginal()):
 				shutil.copyfile(conllu(systemFileName).findGolden(), conllu(systemFileName).findOriginal())
 			corpusGolden = estrutura_ud.Corpus(recursivo=False)
@@ -414,46 +417,52 @@ def upload(alert="", success=""):
 			alert = 'Extensão deve estar entre "' + ",".join(ALLOWED_EXTENSIONS) + '"'
 
 	elif request.method == 'POST' and 'trainFile' in request.values:
-		corpusTemporario = False
-		if os.path.isfile(COMCORHD_FOLDER + "/" + conllu(request.values.get('trainFile')).golden()):
-			os.system(f'cp {COMCORHD_FOLDER + "/" + conllu(request.values.get("trainFile")).golden()} {UPLOAD_FOLDER}')
-			corpusTemporario = f"; rm {UPLOAD_FOLDER}/{conllu(request.values.get('trainFile')).golden()} &"
-		if not request.values.get('crossvalidation'):
-			Popen(f"cd {UPLOAD_FOLDER}; cp {conllu(request.values.get('trainFile')).golden()} {conllu(request.values.get('trainFile')).naked + '_test'}.conllu; sh udpipe.sh {conllu(request.values.get('trainFile')).naked + '_test'} {request.values.get('partitions')} 2>&1 | tee -a {conllu(request.values.get('trainFile')).naked + '_test'}_inProgress {corpusTemporario if corpusTemporario else '&'}", shell=True)
-			nomeConllu = conllu(request.values.get('trainFile')).naked + "_test"
+		if not 'win' in sys.platform:
+			corpusTemporario = False
+			if os.path.isfile(COMCORHD_FOLDER + "/" + conllu(request.values.get('trainFile')).golden()):
+				os.system(f'cp {COMCORHD_FOLDER + "/" + conllu(request.values.get("trainFile")).golden()} {UPLOAD_FOLDER}')
+				corpusTemporario = f"; rm {UPLOAD_FOLDER}/{conllu(request.values.get('trainFile')).golden()} &"
+			if not request.values.get('crossvalidation'):
+				Popen(f"cd {UPLOAD_FOLDER}; cp {conllu(request.values.get('trainFile')).golden()} {conllu(request.values.get('trainFile')).naked + '_test'}.conllu; sh udpipe.sh {conllu(request.values.get('trainFile')).naked + '_test'} {request.values.get('partitions')} 2>&1 | tee -a {conllu(request.values.get('trainFile')).naked + '_test'}_inProgress {corpusTemporario if corpusTemporario else '&'}", shell=True)
+				nomeConllu = conllu(request.values.get('trainFile')).naked + "_test"
+			else:
+				Popen(f"cd {UPLOAD_FOLDER}; sh crossvalidation.sh {request.values.get('trainFile')} {request.values.get('partitions')} 2>&1 | tee -a {request.values.get('trainFile')}_inProgress {corpusTemporario if corpusTemporario else '&'}", shell=True)
+				nomeConllu = conllu(request.values.get('trainFile')).naked
+			novoCorpus = models.Corpus(
+				name=nomeConllu,
+				date=str(datetime.datetime.now()),
+				sentences=0,
+				about=request.values.get('about') if request.values.get('about') else ">",
+				partitions=request.values.get('partitions'),
+				author=google.get('/oauth2/v2/userinfo').json()['email'] if GOOGLE_LOGIN else "",
+				goldenAlias='Golden',
+				systemAlias='Sistema'
+			)
+			db.session.add(novoCorpus)
+			db.session.commit()
+			success = "Um modelo está sendo treinado a partir do corpus \"" + nomeConllu + "\". Acompanhe o status do treinamento na <a href='/'>página inicial do Julgamento.</a>"
 		else:
-			Popen(f"cd {UPLOAD_FOLDER}; sh crossvalidation.sh {request.values.get('trainFile')} {request.values.get('partitions')} 2>&1 | tee -a {request.values.get('trainFile')}_inProgress {corpusTemporario if corpusTemporario else '&'}", shell=True)
-			nomeConllu = conllu(request.values.get('trainFile')).naked
-		novoCorpus = models.Corpus(
-			name=nomeConllu,
-			date=str(datetime.datetime.now()),
-			sentences=0,
-			about=request.values.get('about') if request.values.get('about') else ">",
-			partitions=request.values.get('partitions'),
-			author=google.get('/oauth2/v2/userinfo').json()['email'] if GOOGLE_LOGIN else "",
-			goldenAlias='Golden',
-			systemAlias='Sistema'
-		)
-		db.session.add(novoCorpus)
-		db.session.commit()
-		success = "Um modelo está sendo treinado a partir do corpus \"" + nomeConllu + "\". Acompanhe o status do treinamento na <a href='/'>página inicial do Julgamento.</a>"
+			raise Exception("Only available on Linux.")
 
 	elif request.method == 'POST' and 'repoName' in request.values:
-		sh = f"cd {UPLOAD_FOLDER}/repositories/{request.values.get('repoName')}; \
-				git pull; \
-					git checkout {request.values.get('repoCommit').split(' | commit ')[1]}; \
-						cat documents/*.conllu > {conllu(removerAcento(request.values.get('repoCorpusName'))).findGolden()}; \
-							cat documents/*.conllu > {conllu(removerAcento(request.values.get('repoCorpusName'))).findOriginal()}"
-		if request.values.get('criarRamo'):
-			sh += f"; git checkout -b {removerAcento(request.values.get('repoCorpusName'))}; \
-						git push --set-upstream origin {removerAcento(request.values.get('repoCorpusName'))}"
+		if not 'win' in sys.platform:
+			sh = f"cd {UPLOAD_FOLDER}/repositories/{request.values.get('repoName')}; \
+					git pull; \
+						git checkout {request.values.get('repoCommit').split(' | commit ')[1]}; \
+							cat documents/*.conllu > {conllu(removerAcento(request.values.get('repoCorpusName'))).findGolden()}; \
+								cat documents/*.conllu > {conllu(removerAcento(request.values.get('repoCorpusName'))).findOriginal()}"
+			if request.values.get('criarRamo'):
+				sh += f"; git checkout -b {removerAcento(request.values.get('repoCorpusName'))}; \
+							git push --set-upstream origin {removerAcento(request.values.get('repoCorpusName'))}"
 
-		if not os.path.isfile(f"{conllu(removerAcento(request.values.get('repoCorpusName'))).findGolden()}"):
-			os.system(sh)
-			textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/interrogat-rio'>Interrogatório</a>, ou, (2) "
-			success = f"Corpus {'e ramo ' if request.values.get('criarRamo') else ''}\"{removerAcento(request.values.get('repoCorpusName'))}\" criado{'s' if request.values.get('criarRamo') else ''} com sucesso! {textInterrogatorio if INTERROGATORIO else ''}Para prosseguir com o julgamento, treine um modelo a partir desse corpus clicando no menu lateral \"Treinar um modelo\" ou envie um arquivo sistema equivalente ao corpus."
+			if not os.path.isfile(f"{conllu(removerAcento(request.values.get('repoCorpusName'))).findGolden()}"):
+				os.system(sh)
+				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/interrogat-rio'>Interrogatório</a>, ou, (2) "
+				success = f"Corpus {'e ramo ' if request.values.get('criarRamo') else ''}\"{removerAcento(request.values.get('repoCorpusName'))}\" criado{'s' if request.values.get('criarRamo') else ''} com sucesso! {textInterrogatorio if INTERROGATORIO else ''}Para prosseguir com o julgamento, treine um modelo a partir desse corpus clicando no menu lateral \"Treinar um modelo\" ou envie um arquivo sistema equivalente ao corpus."
+			else:
+				alert = f"Corpus com o nome '{removerAcento(request.values.get('repoCorpusName'))}' já existe."
 		else:
-			alert = f"Corpus com o nome '{removerAcento(request.values.get('repoCorpusName'))}' já existe."
+			raise Exception("Only available on Linux.")
 
 	return render_template(
 		'upload.html',

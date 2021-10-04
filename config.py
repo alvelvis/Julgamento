@@ -2,8 +2,8 @@ import os
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 APP_NAME = "julgamento"
-VALIDATE_UD = f'{os.path.abspath(os.path.dirname(__file__))}/validate.py'
-VALIDAR_UD = f'{os.path.abspath(os.path.dirname(__file__))}/validar_UD.txt'
+VALIDATE_UD = os.path.abspath(os.path.join(os.path.dirname(__file__), "validate.py"))
+VALIDAR_UD = os.path.abspath(os.path.join(os.path.dirname(__file__), "validar_UD.txt"))
 VALIDATE_LANG = 'PT'
 DEBUG = True
 SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -25,8 +25,8 @@ ALLOWED_GOOGLE_EMAILS = '''
 
 	'''.strip().replace(" ", "").replace('\t', '').replace('\n', '').split("|")
 
-UPLOAD_FOLDER = f"{os.path.abspath(os.path.dirname(__file__))}/static/uploads"
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static", "uploads")
 JULGAMENTO_FOLDER = os.path.abspath(os.path.dirname(__file__))
-COMCORHD_FOLDER = f"{os.path.abspath(os.path.dirname(__file__)).rsplit('/', 1)[0]}/Interrogat-rio/www/interrogar-ud/conllu"
+COMCORHD_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Interrogat-rio", "www", "interrogar-ud", "conllu"))
 ALLOWED_EXTENSIONS = "conllu".split("|")
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, "prod.db")
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.abspath(os.path.join(BASEDIR, "prod.db"))

@@ -552,6 +552,9 @@ var translations = {
         'pt-BR': 'Descartar alterações',
         'en-US': 'Discard changes'
     },
+    "descarregar corpus": {
+        'en-US': 'unload corpus'
+    },
     "Gerenciamento - Julgamento": {
         'en-US': 'Management - Julgamento'
     },
