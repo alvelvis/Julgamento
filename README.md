@@ -8,16 +8,6 @@ If you wish to deploy Julgamento to a web server, using Ubuntu/Apache2, check [D
 
 Check the [Wiki](https://github.com/alvelvis/Julgamento/wiki) for a broader understanding of Julgamento tools.
 
-# How to run on a Windows machine
-
-1) Go to [releases](https://github.com/alvelvis/Julgamento/releases)
-
-2) Download the latest version `Julgamento.zip`
-
-3) Extract the folder `Julgamento` from the zip file
-
-4) Double click `julgamento_for_windows.bat`
-
 # How to install in a local server: 4-steps Tutorial
 
 If you wish to run Julgamento in a local server, a Linux computer (or Windows with [Windows Subsystem for Linux](https://docs.microsoft.com/pt-br/windows/wsl/install-win10)), `python3` and `virtualenv` are needed.
