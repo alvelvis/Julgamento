@@ -67,7 +67,7 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
         if fromZero or not texto:
             #if not os.path.isfile(conllu(c).findErrors()):
             if not 'win' in sys.platform:
-                if os.system(JULGAMENTO_FOLDER + f'/.julgamento/bin/python3 {os.path.abspath(os.path.dirname(__file__))}/tools/validate.py {conllu(c).findGolden()} --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee {conllu(c).findErrors()}'):
+                if os.system('"' + JULGAMENTO_FOLDER + f'/.julgamento/bin/python3" "{os.path.abspath(os.path.dirname(__file__))}/tools/validate.py" "{conllu(c).findGolden()}" --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee "{conllu(c).findErrors()}"'):
                     pass
             else:
                 raise Exception("Only available on Linux.")
@@ -592,8 +592,9 @@ def sentAccuracy(ud1, ud2):
 
 def metrics(ud1, ud2):
     html = ""
-    if os.system(f"python3 {JULGAMENTO_FOLDER}/conll18_ud_eval.py {ud1} {ud2} -v > {UPLOAD_FOLDER}/{conllu(ud1).naked}_metrics"):
+    if os.system(f"python3 '{JULGAMENTO_FOLDER}/conll18_ud_eval.py' '{ud1}' '{ud2}' -v > '{UPLOAD_FOLDER}/{conllu(ud1).naked}_metrics'"):
         pass
+    print(f"python3 '{JULGAMENTO_FOLDER}/conll18_ud_eval.py' '{ud1}' '{ud2}' -v > '{UPLOAD_FOLDER}/{conllu(ud1).naked}_metrics'")
     with open(f"{UPLOAD_FOLDER}/{conllu(ud1).naked}_metrics", 'r') as f:
         html += f"<pre>{f.read()}</pre>"
     

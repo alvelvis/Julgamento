@@ -146,7 +146,7 @@ def cristianMarneffe():
 
 	if not os.path.isfile(os.path.abspath(os.path.join(UPLOAD_FOLDER, "CM-" + request.values.get('c'), "results_" + request.values.get('tipo') + ".json"))):
 		if not 'win' in sys.platform:
-			os.system(JULGAMENTO_FOLDER + "/.julgamento/bin/python3 \"{}/Cristian-Marneffe.py\" \"{}\" {}".format(
+			os.system("'" + JULGAMENTO_FOLDER + "/.julgamento/bin/python3' \"{}/Cristian-Marneffe.py\" \"{}\" {}".format(
 				JULGAMENTO_FOLDER,
 				conllu(request.values.get("c")).findGolden(), 
 				request.values.get("tipo"),
