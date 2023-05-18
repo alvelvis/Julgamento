@@ -70,7 +70,8 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
                 if os.system('"' + JULGAMENTO_FOLDER + f'/.julgamento/bin/python3" "{os.path.abspath(os.path.dirname(__file__))}/tools/validate.py" "{conllu(c).findGolden()}" --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee "{conllu(c).findErrors()}"'):
                     pass
             else:
-                raise Exception("Only available on Linux.")
+                if os.system('"{}\\python.exe\" "{}\\tools\\validate.py" "{}" --max-err=0 --lang={} > "{}" 2>&1'.format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), os.path.abspath(os.path.dirname(__file__)), conllu(c).findGolden(), VALIDATE_LANG, conllu(c).findErrors())):
+                    pass
             with open(conllu(c).findErrors()) as f:
                 texto = f.read()
         if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora.get(conllu(c).golden()):
@@ -242,35 +243,35 @@ class conllu:
         return self.naked + "_features.html"
 
     def findGolden(self):
-        if INTERROGATORIO and os.path.isfile(f'{COMCORHD_FOLDER}/{self.naked}.conllu'):
-            return f'{COMCORHD_FOLDER}/{self.naked}.conllu'
-        elif os.path.isfile(UPLOAD_FOLDER + "/" + self.naked + ".conllu"):
-            return UPLOAD_FOLDER + "/" + self.naked + ".conllu"
+        if INTERROGATORIO and os.path.isfile(os.path.join(COMCORHD_FOLDER, self.naked + '.conllu')):
+            return os.path.join(COMCORHD_FOLDER, self.naked + '.conllu')
+        elif os.path.isfile(os.path.join(UPLOAD_FOLDER, self.naked + ".conllu")):
+            return os.path.join(UPLOAD_FOLDER, self.naked + ".conllu")
         elif INTERROGATORIO:
-            return f'{COMCORHD_FOLDER}/{self.naked}.conllu'
+            return os.path.join(COMCORHD_FOLDER, self.naked + '.conllu')
         else:
-            return UPLOAD_FOLDER + "/" + self.naked + ".conllu"
+            return os.path.join(UPLOAD_FOLDER, self.naked + ".conllu")
             
     def findOriginal(self):
-        return UPLOAD_FOLDER + "/" + self.naked + "_original.conllu"
+        return os.path.join(UPLOAD_FOLDER, self.naked + "_original.conllu")
 
     def findFeatures(self):
-        return UPLOAD_FOLDER + "/" + self.naked + "_features.html"
+        return os.path.join(UPLOAD_FOLDER, self.naked + "_features.html")
 
     def findSystem(self):
-        return UPLOAD_FOLDER + "/" + self.naked + "_sistema.conllu"
+        return os.path.join(UPLOAD_FOLDER, self.naked + "_sistema.conllu")
 
     def findInProgress(self):
-        return UPLOAD_FOLDER + "/" + self.naked + "_inProgress"
+        return os.path.join(UPLOAD_FOLDER, self.naked + "_inProgress")
 
     def findSuccess(self):
-        return UPLOAD_FOLDER + "/" + self.naked + "_success"
+        return os.path.join(UPLOAD_FOLDER, self.naked + "_success")
 
     def findErrors(self):
-        return UPLOAD_FOLDER + "/" + self.naked + "_errors"
+        return os.path.join(UPLOAD_FOLDER, self.naked + "_errors")
 
     def findErrorsValidarUD(self):
-        return UPLOAD_FOLDER + "/" + self.naked + "_errorsValidarUD"
+        return os.path.join(UPLOAD_FOLDER, self.naked + "_errorsValidarUD")
 
 
 class prettyDate:
