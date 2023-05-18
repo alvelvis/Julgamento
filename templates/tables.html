@@ -24,8 +24,8 @@
             <!--a href="#DEPRELAccuracy" name="accuracy" class="tables-toggle list-group-item translateHtml">Acurácia por DEPREL</a-->
             <a href="#cristianMarneffe" name="cristianMarneffe" tipo="lexicais" class="cristianMarneffeToggle list-group-item translateHtml">N-grams inconsistentes (lexicais)</a>
             <a href="#cristianMarneffe" name="cristianMarneffe" tipo="gramaticais" class="cristianMarneffeToggle list-group-item translateHtml">N-grams inconsistentes (gramaticais)</a>
-            {% if conllu(c).system() in allCorpora.corpora %}<a href="#POSMatrix" name="POSMatrix" class="tables-toggle list-group-item translateHtml">Matriz de confusão de UPOS</a>{% endif %}
-            {% if conllu(c).system() in allCorpora.corpora %}<a href="#DEPRELMatrix" name="DEPRELMatrix" class="tables-toggle list-group-item translateHtml">Matriz de confusão de DEPREL</a>{% endif %}
+            {% if conllu(c).system() in allCorpora.corpora %}<a href="#matrix" name="matrix" class="tables-toggle list-group-item translateHtml">Matriz de confusão</a>{% endif %}
+            <!--{% if conllu(c).system() in allCorpora.corpora %}<a href="#DEPRELMatrix" name="DEPRELMatrix" class="tables-toggle list-group-item translateHtml">Matriz de confusão de DEPREL</a>{% endif %}-->
             <a href="#errorValidarUD" class="errorValidarUDToggle list-group-item translateHtml">Erros de validar_UD.py</a>
             <a href="#errorLog" class="errorLogToggle list-group-item translateHtml">Erros de validate.py</a>
             <a href="#refreshTables" class="refreshTables list-group-item translateHtml translateTitle" title="Refazer tabelas de acordo com novas atualizações no corpus">Atualizar corpus e tabelas</a>
@@ -54,13 +54,7 @@
     <div class="panel-body">
     </div>
 </div>
-<div class="container">
-    <div id="POSMatrix" class="tables panel panel-default col-lg-10 col-lg-offset-1">
-        <div class="panel-body">
-        </div>
-    </div>
-</div>
-<div id="DEPRELMatrix" class="tables panel panel-default">
+<div id="matrix" class="tables panel panel-default col-lg-10 col-lg-offset-1">
     <div class="panel-body">
     </div>
 </div>

@@ -73,6 +73,8 @@ def disconnect():
 	clients -= 1
 	sys.stderr.write('\n>>>>>>>>>>>> users connected: {}'.format(clients))
 
+col_index = lambda x: "id word lemma upos xpos feats dephead deprel deps misc".split(" ").index(x) + 1
+
 @app.route("/api/getPhrases", methods=["POST"])
 def getPhrases():
 	if GOOGLE_LOGIN and not google.authorized:
@@ -291,6 +293,7 @@ def getTables():
 	if not google.authorized and GOOGLE_LOGIN:
 		return redirect(url_for('google.login'))
 	table = request.values.get('table')
+	matrix_col = request.values.get('matrix_col', None)
 
 	if table == "caracteristicas":
 		return jsonify({
@@ -315,13 +318,13 @@ def getTables():
 			'html': f'''
 			<div id="POSAccuracy" class="col-lg-4">
 				<div class=" panel panel-default panel-body">
-					<h3 class="translateHtml">Acurácia por UPOS</h3>
+					<h3 class="translateHtml" style="text-align:center; ">Acurácia por UPOS</h3>
 					{categoryAccuracy(request.values.get('ud1'), request.values.get('ud2'), request.values.get('c'), 'UPOS')['tables']}
 				</div>
 			</div>
 			<div id="DEPRELAccuracy" class="col-lg-8">
 				<div class=" panel panel-default panel-body">
-					<h3 class="translateHtml">Acurácia por DEPREL</h3>
+					<h3 class="translateHtml" style="text-align:center; ">Acurácia por DEPREL</h3>
 					{categoryAccuracy(request.values.get('ud1'), request.values.get('ud2'), request.values.get('c'), 'DEPREL')['tables']}
 				</div>
 			</div>
@@ -329,33 +332,34 @@ def getTables():
 			'success': True
 		})
 
-	elif table == 'POSMatrix':
+	elif table == 'matrix':
+		matrix_col = matrix_col.lower()
 		ud1Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud1')).golden())
 		ud2Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud2')).system())
-		listaPOS = confusao.get_list(ud1Estruturado, ud2Estruturado, 4)
+		listaPOS = confusao.get_list(ud1Estruturado, ud2Estruturado, col_index(matrix_col))
 		listaPOS1 = listaPOS['matriz_1']
 		listaPOS2 = listaPOS['matriz_2']
 		pd.options.display.max_rows = None
 		pd.options.display.max_columns = None
 		pd.set_option('display.expand_frame_repr', False)
 		return jsonify({
-			'html': '<h3 class="translateHtml">Matriz de confusão de UPOS</h3>' + matrix(str(pd.crosstab(pd.Series(listaPOS1), pd.Series(listaPOS2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind="UPOS"),
+			'html': '<h3 class="translateHtml">Matriz de confusão de {}</h3>'.format(matrix_col.upper()) + matrix(str(pd.crosstab(pd.Series(listaPOS1), pd.Series(listaPOS2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind=matrix_col),
 			'success': True,
 		})
 
-	elif table == 'DEPRELMatrix':
-		ud1Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud1')).golden())
-		ud2Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud2')).system())
-		listaDep = confusao.get_list(ud1Estruturado, ud2Estruturado, 8)
-		listaDep1 = listaDep['matriz_1']
-		listaDep2 = listaDep['matriz_2']
-		pd.options.display.max_rows = None
-		pd.options.display.max_columns = None
-		pd.set_option('display.expand_frame_repr', False)
-		return jsonify({
-			'html': '<h3 class="translateHtml">Matriz de confusão de DEPREL</h3>' + matrix(str(pd.crosstab(pd.Series(listaDep1), pd.Series(listaDep2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind="DEPREL"),
-			'success': True,
-		})
+	# elif table == 'DEPRELMatrix':
+	# 	ud1Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud1')).golden())
+	# 	ud2Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud2')).system())
+	# 	listaDep = confusao.get_list(ud1Estruturado, ud2Estruturado, 8)
+	# 	listaDep1 = listaDep['matriz_1']
+	# 	listaDep2 = listaDep['matriz_2']
+	# 	pd.options.display.max_rows = None
+	# 	pd.options.display.max_columns = None
+	# 	pd.set_option('display.expand_frame_repr', False)
+	# 	return jsonify({
+	# 		'html': '<h3 class="translateHtml">Matriz de confusão de DEPREL</h3>' + matrix(str(pd.crosstab(pd.Series(listaDep1), pd.Series(listaDep2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind="DEPREL"),
+	# 		'success': True,
+	# 	})
 
 	elif table == 'errorLog':
 		return ""

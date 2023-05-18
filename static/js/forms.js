@@ -1,7 +1,7 @@
 var translations = {
-    "Não foram encontradas inconsistências do tipo Cristian-Marneffe.": {
-        "pt-BR": "Não foram encontradas inconsistências do tipo Cristian-Marneffe.",
-        "en-US": "No Cristian-Marneffe inconsistencies were found."
+    "Não foram encontrados n-grams inconsistentes.": {
+        "pt-BR": "Não foram encontradas n-grams inconsistentes.",
+        "en-US": "No inconsistent n-grams were found."
     },
     "Não foram encontrados erros de validação.": {
         "pt-BR": "Não foram encontrados erros de validação.",
@@ -25,6 +25,10 @@ var translations = {
     "Acurácia por DEPREL": {
         "pt-BR": "Acurácia por DEPREL",
         "en-US": "DEPREL accuracy"
+    },
+    "Matriz de confusão": {
+        "pt-BR": "Matriz de confusão",
+        "en-US": "Confusion matrix"
     },
     "Matriz de confusão de UPOS": {
         "pt-BR": "Matriz de confusão de UPOS",
@@ -63,7 +67,7 @@ var translations = {
     },
     "Erros de dephead": {
         "pt-BR": "Erros de dephead",
-        "en-US": "DEPHEAD erros"
+        "en-US": "DEPHEAD errors"
     },
     "Acertos": {
         "pt-BR": "Acertos",
@@ -289,13 +293,13 @@ var translations = {
         "pt-BR": "Acurácia por categoria morfossintática",
         "en-US": "Accuracy per morphosyntactic category"
     },
-    "Cristian-Marneffe (lexicais)": {
-        "pt-BR": "Cristian-Marneffe (lexicais)",
-        "en-US": "Cristian-Marneffe (lexical)"
+    "N-grams inconsistentes (lexicais)": {
+        "pt-BR": "N-grams inconsistentes (lexicais)",
+        "en-US": "Inconsistent n-grams (lexical)"
     },
-    "Cristian-Marneffe (gramaticais)": {
-        "pt-BR": "Cristian-Marneffe (gramaticais)",
-        "en-US": "Cristian-Marneffe (grammatical)"
+    "N-grams inconsistentes (gramaticais)": {
+        "pt-BR": "N-grams inconsistentes (gramaticais)",
+        "en-US": "Inconsistent n-grams (grammatical)"
     },
     "Erros de validar_UD.py": {
         "pt-BR": "Erros de validar_UD.py",
@@ -1029,7 +1033,7 @@ $(document).ready(function(){
                 tipo: tipo,
             },
             success: function(data){
-                $('#cristianMarneffe').html('<h3>Cristian-Marneffe (' + tipo + ')</h3>' + data['html'] + "</div>");
+                $('#cristianMarneffe').html('<h3 class="translateHtml">N-grams inconsistentes (' + tipo + ')</h3>' + data['html'] + "</div>");
                 $('#cristianMarneffe').show();
                 atualizar();
             }
@@ -1048,7 +1052,7 @@ $(document).ready(function(){
                 fromZero: false,
             },
             success: function(data){
-                $('#errorLog').html('<h3>Erros de validação</h3>' + data['html'] + "</div>");
+                $('#errorLog').html('<h3 class="translateHtml">Erros de validate.py</h3>' + data['html'] + "</div>");
                 $('#errorLog').show();
                 atualizar();
             }
@@ -1065,7 +1069,7 @@ $(document).ready(function(){
                 c: $('#c').val(),
             },
             success: function(data){
-                $('#errorValidarUD').html('<h3>Erros de validação</h3>' + data['html'] + "</div>");
+                $('#errorValidarUD').html('<h3 class="translateHtml">Erros de validar_UD.py</h3>' + data['html'] + "</div>");
                 $('#errorValidarUD').show();
                 atualizar();
             }
@@ -1204,9 +1208,16 @@ $(document).ready(function(){
     };
 
     $('.tables-toggle').click(function(){
-        loadingScreen();
         $('.tables').hide();
         $div = $(this).attr('name');
+        matrix_col = ""
+        if ($div == "matrix") { 
+            matrix_col = window.prompt("Coluna (ex: upos, deprel, deps, etc.)") 
+            if (!matrix_col) {
+                return
+            }
+        }
+        loadingScreen();
         $.ajax({
             url:"/api/getTables",
             method:"POST",
@@ -1214,7 +1225,8 @@ $(document).ready(function(){
                 table: $div,
                 ud1: $('#ud1').val(),
                 ud2: $('#ud2').val(),
-                c: $('#c').val()
+                c: $('#c').val(),
+                matrix_col: matrix_col
             },
             success: function(data){
                 $('#' + $div).children('.panel-body').html(data['html']);
