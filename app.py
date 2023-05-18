@@ -154,10 +154,10 @@ def cristianMarneffe():
 				request.values.get("tipo"),
 				))
 		else:
-			raise Exception("Only available on Linux.")
+			subprocess.Popen('"{}\\python.exe\" "{}\\Cristian-Marneffe.py" "{}" {}'.format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), os.path.abspath(os.path.dirname(__file__)), conllu(request.values.get("c")).findGolden(), request.values.get("tipo")), shell=False).wait()
 
 	with open(UPLOAD_FOLDER + f"/CM-{request.values.get('c')}/results_{request.values.get('tipo')}.json") as f:
-		results = json.load(f)
+		results = json.load(f) 
 
 	html = ""
 	if not results:

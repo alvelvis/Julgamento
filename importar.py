@@ -6,6 +6,7 @@ import models, pickle
 from app import db, app, executor, allCorpora, modificacoesCorpora
 from localtime import localtime
 import sys, shutil
+import subprocess
 
 MAX_FILE_SIZE = 50
 
@@ -70,8 +71,7 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
                 if os.system('"' + JULGAMENTO_FOLDER + f'/.julgamento/bin/python3" "{os.path.abspath(os.path.dirname(__file__))}/tools/validate.py" "{conllu(c).findGolden()}" --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee "{conllu(c).findErrors()}"'):
                     pass
             else:
-                if os.system('"{}\\python.exe\" "{}\\tools\\validate.py" "{}" --max-err=0 --lang={} > "{}" 2>&1'.format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), os.path.abspath(os.path.dirname(__file__)), conllu(c).findGolden(), VALIDATE_LANG, conllu(c).findErrors())):
-                    pass
+                subprocess.Popen('"{}\\python.exe\" "{}\\tools\\validate.py" "{}" --max-err=0 --lang={} > "{}" 2>&1'.format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), os.path.abspath(os.path.dirname(__file__)), conllu(c).findGolden(), VALIDATE_LANG, conllu(c).findErrors()), shell=True).wait()
             with open(conllu(c).findErrors()) as f:
                 texto = f.read()
         if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora.get(conllu(c).golden()):
