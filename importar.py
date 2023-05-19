@@ -218,7 +218,7 @@ def formDB():
 class conllu:
 
     def __init__(self, corpus):
-        if '/' in corpus: corpus = corpus.rsplit('/', 1)[1]
+        corpus = os.path.basename(corpus)
         self.naked = corpus.split("_inProgress")[0].split("_meta")[0].split('_sistema')[0].split(".conllu")[0].split('_success')[0].split('_original')[0].split('_features.html')[0]
 
     def golden(self):
@@ -353,6 +353,7 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     
     golden = allCorpora.corpora.get(conllu(ud1).golden())
     system = allCorpora.corpora.get(conllu(ud2).system())
+
     dicionario = {}
     UAS = dict()
     for sentid, sentence in golden.sentences.items():
@@ -593,9 +594,18 @@ def sentAccuracy(ud1, ud2):
 
 def metrics(ud1, ud2):
     html = ""
-    if os.system(f"python3 '{JULGAMENTO_FOLDER}/conll18_ud_eval.py' '{ud1}' '{ud2}' -v > '{UPLOAD_FOLDER}/{conllu(ud1).naked}_metrics'"):
-        pass
-    print(f"python3 '{JULGAMENTO_FOLDER}/conll18_ud_eval.py' '{ud1}' '{ud2}' -v > '{UPLOAD_FOLDER}/{conllu(ud1).naked}_metrics'")
+    if not 'win' in sys.platform:
+        if os.system(f"python3 '{JULGAMENTO_FOLDER}/conll18_ud_eval.py' '{ud1}' '{ud2}' -v > '{UPLOAD_FOLDER}/{conllu(ud1).naked}_metrics'"):
+            pass
+    else:
+        subprocess.Popen('"{}\\python.exe\" "{}\\conll18_ud_eval.py" "{}" "{}" -v > {}'.format(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), 
+            JULGAMENTO_FOLDER,
+            ud1,
+            ud2,
+            os.path.join(UPLOAD_FOLDER, conllu(ud1).naked + "_metrics")
+            ), shell=True).wait()
+
     with open(f"{UPLOAD_FOLDER}/{conllu(ud1).naked}_metrics", 'r') as f:
         html += f"<pre>{f.read()}</pre>"
     
