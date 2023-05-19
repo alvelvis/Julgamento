@@ -24,7 +24,7 @@ If you wish to run Julgamento in a local server, a Linux computer (or Windows wi
 
 1) The recommended way to download the repository is by cloning it. In a terminal, execute the following command:
 
-	$ git clone https://github.com/alvelvis/Julgamento.git
+	$ git clone https://github.com/alvelvis/Julgamento.git --recursive
 
 2) Change to the directory:
 
