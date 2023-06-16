@@ -68,7 +68,7 @@ upos|erro: conj deve ser subordinado à mesma POS
 @deprel = "conj" and head_token.upos != upos
 
 misc|erro: MISC inválido
-misc !== "MWE=.*|MWEPOS=.*|Spaces?After=.*|d2d:.*|ChangedBy=.*|_|start_char=.*|end_char=.*"
+misc !== "MWE=.*|MWEPOS=.*|Spaces?After=.*|d2d:.*|ChangedBy=.*|_|start_char=.*|end_char=.*|TokenRange=.*"
 
 deprel|erro: O pai deste token não pode ter dependentes
 head_token.deprel == "(cc|case|det|flat:name|fixed|compound)" and @deprel != "(fixed|compound|flat|flat:name)" and head_token.misc != ".*MWE.*"

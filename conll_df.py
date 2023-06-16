@@ -45,6 +45,8 @@ def _make_sent_csv(sentstring, fname, meta, splitter, i, skip_meta=False):
         if not line:
             continue
         if line.startswith('#'):
+            if not '=' in line:
+                line = line + " = null" # add null value to metadata without =
             if not skip_meta:
                 try:
                     k, v = line.lstrip('# ').split(splitter, 1)
@@ -135,7 +137,7 @@ def conll_df(path,
         if year:
             basedict['year'] = year.group(0)
 
-    sents = data.split('\n\n')
+    sents = [x for x in data.split('\n\n') if len([y for y in x.splitlines() if not y.startswith("#")]) >= 2] # only process sentences with 2 or more tokens
     sents_meta = [_make_sent_csv(sstring, fname, dict(basedict), splitter, i, skip_meta=skip_meta) \
                   for i, sstring in enumerate(sents, start=1)]
     sents, metadata = zip(*sents_meta)
