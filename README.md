@@ -1,8 +1,8 @@
 # Julgamento
 
-Julgamento (Trial) is an enviroment for evaluating annotated corpora in the [CoNLL-U](https://universaldependencies.org/format.html) format. It is being developed and used by the research group [ComCorHd (Computational Linguistics, Corpus and Digital Humanities)](http://comcorhd.letras.puc-rio.br), from the Linguistics Department of PUC-Rio, in Brazil, for the project Linguistic resources for Portuguese Natural Language Processing.
+Julgamento is an enviroment for evaluating annotated corpora in the [CoNLL-U](https://universaldependencies.org/format.html) format. It's been used in several research projects at PUC-Rio, including **Linguistic resources for Portuguese Natural Language Processing** from the Linguistics Department of PUC-Rio, in Brazil, under the supervision of Prof. Cláudia Freitas, and project [**Petrolês**](https://petroles.puc-rio.ai), at the Applied Computational Intelligence Laboratory from PUC-Rio.
 
-Julgamento is part of [ET: a workstation for querying, revising and evaluating annotated corpora](http://comcorhd.letras.puc-rio.br/ET). Consider also installing [Interrogatório](https://github.com/alvelvis/Interrogat-rio), an enviroment for querying and revising annotated corpora, in the same folder as Julgamento to integrate both.
+Julgamento is part of ET: a workstation for querying, revising and evaluating annotated corpora. Consider also installing [Interrogatório](https://github.com/alvelvis/Interrogat-rio), an enviroment for querying and revising annotated corpora, in the same folder as Julgamento to integrate both.
 
 If you wish to deploy Julgamento to a web server, using Ubuntu/Apache2, check [Deploying with Ubuntu/Apache2](https://github.com/alvelvis/Julgamento/wiki/Deploying-with-Ubuntu-Apache2).
 
