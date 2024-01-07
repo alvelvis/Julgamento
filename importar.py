@@ -1,9 +1,9 @@
-from config import UPLOAD_FOLDER, COMCORHD_FOLDER, JULGAMENTO_FOLDER, REPOSITORIES, VALIDATE_UD, VALIDATE_LANG, GOOGLE_LOGIN, VALIDAR_UD
+from config import UPLOAD_FOLDER, COMCORHD_FOLDER, JULGAMENTO_FOLDER, REPOSITORIES, VALIDATE_UD, VALIDATE_LANG, VALIDAR_UD
 from flask import render_template, request
 import pandas as pd
 import os, estrutura_ud, estrutura_dados, confusao, re, time, datetime, validar_UD
 import models, pickle
-from app import db, app, executor, allCorpora, modificacoesCorpora
+from app import db, app, allCorpora, modificacoesCorpora
 from localtime import localtime
 import sys, shutil
 import subprocess
@@ -305,19 +305,6 @@ class prettyDate:
 
         return f"{self.dia} de {self.mesExtenso} de {self.ano}"
 
-dicionarioColunas = {
-		'0': 'id',
-		'1': 'word',
-		'2': 'lemma',
-		'3': 'upos',
-		'4': 'xpos',
-		'5': 'feats',
-		'6': 'dephead',
-		'7': 'deprel',
-		'8': 'deps',
-		'9': 'misc',
-	}
-
 def getMatrixSentences(c, golden, system, coluna):
     listaSentences = []
     ud1 = allCorpora.corpora.get(conllu(c).golden())
@@ -563,8 +550,7 @@ def caracteristicasCorpus(ud1, ud2=""):
     with open(conllu(ud1).findFeatures(), "w") as f:
         f.write(render_template('caracteristicas.html',
             tabela_Geral=tabela_Geral,
-            corpus=conllu(ud1).naked,
-            user="")
+            corpus=conllu(ud1).naked,)
             )
     return tabela_Geral
 
@@ -646,7 +632,6 @@ def paint_text(sentence, id1, color1, id2="", color2="", id3="", color3=""):
             text.append(word)
     return " ".join(text)
 
-#@executor.job
 def loadCorpus(x):
     if os.path.isfile(conllu(x).findGolden()) and not os.path.isfile(conllu(x).findOriginal()):
         shutil.copyfile(conllu(x).findGolden(), conllu(x).findOriginal())
@@ -685,7 +670,6 @@ def addDatabase(golden):
         sentences=0,
         about=request.values.get('sysAbout') if request.values.get('sysAbout') else ">",
         partitions="",
-        author=google.get('/oauth2/v2/userinfo').json()['email'] if GOOGLE_LOGIN else "",
         goldenAlias='Golden',
         systemAlias='Sistema'
     )

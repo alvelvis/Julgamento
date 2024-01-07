@@ -1,20 +1,15 @@
 import config, sys, re, estrutura_ud, html, os, subprocess, time, shutil, pickle, threading
+from estrutura_ud import idx_to_col, col_to_idx
 import pandas as pd
 from flask import Flask, redirect, url_for, session, request, make_response, render_template, jsonify
-from flask_dance.contrib.google import make_google_blueprint, google
-from flask_dance.consumer import oauth_authorized, oauth_before_login
 from flask_sqlalchemy import SQLAlchemy
-from oauthlib.oauth2.rfc6749.errors import TokenExpiredError
-from flask_login import logout_user, LoginManager, current_user, login_required
 from jinja2 import Template, escape, Markup, Environment
 from interrogar_UD import getDistribution
 import datetime
 import validar_UD, functions
 from functions import cleanEstruturaUD
-from flask_executor import Executor
 from subprocess import Popen
 import json
-from flask_socketio import SocketIO, emit
 
 def tracefunc(frame, event, arg, indent=[0]):
       if event == "call":
@@ -30,21 +25,7 @@ def tracefunc(frame, event, arg, indent=[0]):
 
 app = Flask(__name__)
 app.config.from_object('config')
-executor = Executor(app)
 db = SQLAlchemy(app)
-blueprint = make_google_blueprint(
-    client_id=app.config.get('GOOGLE_CLIENT_ID'),
-    client_secret=app.config.get('GOOGLE_SECRET_KEY'),
-	scope = [
-	"openid",
-	"https://www.googleapis.com/auth/userinfo.email",
-	"https://www.googleapis.com/auth/userinfo.profile"
-	]
-)
-app.register_blueprint(blueprint, url_prefix="/login")
-login_manager = LoginManager(app)
-socketio = SocketIO(app, logge=True)
-clients = 0
 
 class Corpora:
 
@@ -59,27 +40,8 @@ class Modificacoes:
 allCorpora = Corpora()
 modificacoesCorpora = Modificacoes()
 
-@socketio.on("connect", namespace="/socket")
-def connect():
-	# global variable as it needs to be shared
-	global clients
-	clients += 1
-	# emits a message with the user count anytime someone connects
-	sys.stderr.write('\n>>>>>>>>>>>> users connected: {}'.format(clients))
-
-@socketio.on("disconnect", namespace="/socket")
-def disconnect():
-	global clients
-	clients -= 1
-	sys.stderr.write('\n>>>>>>>>>>>> users connected: {}'.format(clients))
-
-col_index = lambda x: "id word lemma upos xpos feats dephead deprel deps misc".split(" ").index(x) + 1
-
 @app.route("/api/getPhrases", methods=["POST"])
 def getPhrases():
-	if GOOGLE_LOGIN and not google.authorized:
-		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
-
 	dist = getDistribution(allCorpora.corpora[conllu(request.values.get("c")).golden()], parametros='word = ".*" and sent_id = "' + request.values.get("sent_id") + '"', coluna="children")
 
 	return jsonify({
@@ -89,8 +51,6 @@ def getPhrases():
 
 @app.route("/api/changeAbout", methods="POST".split("|"))
 def changeAbout():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
 	corpus = db.session.query(models.Corpus).get(request.values.get("c"))
 	corpus.about = re.sub(r'<.*?>', "", request.values.get("about"))
 	db.session.merge(corpus)
@@ -103,11 +63,6 @@ def changeAbout():
 
 @app.route("/api/refreshTables", methods="POST".split("|"))
 def refreshTables():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
-	#allCorpora.corpora.pop(conllu(request.values.get("c")).golden(), None)
-	#allCorpora.corpora.pop(conllu(request.values.get("c")).system(), None)
-	#loadCorpus.submit(request.values.get("c"))
 	if request.values.get("c") in modificacoesCorpora.modificacoes:
 		modificacoesCorpora.modificacoes.pop(request.values.get("c"))
 	allCorpora.corpora.pop(conllu(request.values.get("c")).golden())
@@ -126,9 +81,6 @@ def refreshTables():
 
 @app.route("/api/getCommits", methods="POST".split("|"))
 def getCommits():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
-
 	if 'branch' in request.values:
 		return jsonify({
 			'html': checkRepo(repositorio=request.values.get('repoName'), branch=request.values.get('branch'))['commits'],
@@ -143,9 +95,6 @@ def getCommits():
 
 @app.route("/api/cristianMarneffe", methods="POST".split("|"))
 def cristianMarneffe():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
-
 	if not os.path.isfile(os.path.abspath(os.path.join(UPLOAD_FOLDER, "CM-" + request.values.get('c'), "results_" + request.values.get('tipo') + ".json"))):
 		if not 'win' in sys.platform:
 			os.system("'" + JULGAMENTO_FOLDER + "/.julgamento/bin/python3' \"{}/Cristian-Marneffe.py\" \"{}\" {}".format(
@@ -186,9 +135,6 @@ def cristianMarneffe():
 
 @app.route('/api/getErrors', methods="POST".split("|"))
 def getErrors():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
-		
 	html = renderErrors(c=request.values.get("c"), exc=request.values.get('exceptions').split("|") if request.values.get('exceptions') else "", fromZero=True)
 	return jsonify({
 		'html': html,
@@ -198,9 +144,6 @@ def getErrors():
 
 @app.route('/api/getErrorsValidarUD', methods="POST".split("|"))
 def getErrorsValidarUD():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
-	
 	html = ""
 
 	errors = validar_UD.validate(allCorpora.corpora[conllu(request.values.get("c")).golden()], errorList=VALIDAR_UD, noMissingToken=True)
@@ -232,8 +175,6 @@ def getErrorsValidarUD():
 
 @app.route('/api/filterCorpora', methods="POST".split("|"))
 def filterCorpora():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
 	return jsonify({
 		'html': findCorpora(filtro=request.values.get('filtro'), tipo=request.values.get('tipo')),
 		'success': True,
@@ -241,8 +182,6 @@ def filterCorpora():
 
 @app.route('/api/deleteGolden', methods="POST|GET".split("|"))
 def deleteGolden():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
 	if os.path.isfile(conllu(request.values.get("c")).findGolden()):
 		caracteristicasCorpus(request.values.get("c"))
 		os.remove(conllu(request.values.get("c")).findGolden())
@@ -251,14 +190,11 @@ def deleteGolden():
 	return render_template(
 		'upload.html',
 		success="Corpus golden \"" + request.values.get("c") + "\" deletado com sucesso!",
-		user=google.get('/oauth2/v2/userinfo').json(),
 	)
 
 
 @app.route('/cancelTrain', methods="GET".split("|"))
 def cancelTrain():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
 	if not request.args.get('delete'):
 		os.system('killall udpipe-1.2.0')
 		return redirect("/log?c=" + request.args.get('c'))
@@ -290,8 +226,6 @@ def cancelTrain():
 
 @app.route('/api/getTables', methods="POST".split("|"))
 def getTables():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for('google.login'))
 	table = request.values.get('table')
 	matrix_col = request.values.get('matrix_col', None)
 
@@ -336,7 +270,7 @@ def getTables():
 		matrix_col = matrix_col.lower()
 		ud1Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud1')).golden())
 		ud2Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud2')).system())
-		listaPOS = confusao.get_list(ud1Estruturado, ud2Estruturado, col_index(matrix_col))
+		listaPOS = confusao.get_list(ud1Estruturado, ud2Estruturado, col_to_idx.get(matrix_col, str(int(matrix_col.split("col")[1])-1)))
 		listaPOS1 = listaPOS['matriz_1']
 		listaPOS2 = listaPOS['matriz_2']
 		pd.options.display.max_rows = None
@@ -346,20 +280,6 @@ def getTables():
 			'html': '<h3 class="translateHtml">Matriz de confusão de {}</h3>'.format(matrix_col.upper()) + matrix(str(pd.crosstab(pd.Series(listaPOS1), pd.Series(listaPOS2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind=matrix_col),
 			'success': True,
 		})
-
-	# elif table == 'DEPRELMatrix':
-	# 	ud1Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud1')).golden())
-	# 	ud2Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud2')).system())
-	# 	listaDep = confusao.get_list(ud1Estruturado, ud2Estruturado, 8)
-	# 	listaDep1 = listaDep['matriz_1']
-	# 	listaDep2 = listaDep['matriz_2']
-	# 	pd.options.display.max_rows = None
-	# 	pd.options.display.max_columns = None
-	# 	pd.set_option('display.expand_frame_repr', False)
-	# 	return jsonify({
-	# 		'html': '<h3 class="translateHtml">Matriz de confusão de DEPREL</h3>' + matrix(str(pd.crosstab(pd.Series(listaDep1), pd.Series(listaDep2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind="DEPREL"),
-	# 		'success': True,
-	# 	})
 
 	elif table == 'errorLog':
 		return ""
@@ -373,12 +293,9 @@ def getTables():
 
 @app.route('/upload', methods="GET|POST".split("|"))
 def upload(alert="", success=""):
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for('google.login'))
 	if request.method == "GET":
 		return render_template(
 			'upload.html',
-			user=google.get('/oauth2/v2/userinfo').json(),
 			formDB=formDB()
 		)
 
@@ -432,18 +349,20 @@ def upload(alert="", success=""):
 			else:
 				Popen(f"cd {UPLOAD_FOLDER}; sh crossvalidation.sh {request.values.get('trainFile')} {request.values.get('partitions')} 2>&1 | tee -a {request.values.get('trainFile')}_inProgress {corpusTemporario if corpusTemporario else '&'}", shell=True)
 				nomeConllu = conllu(request.values.get('trainFile')).naked
-			novoCorpus = models.Corpus(
-				name=nomeConllu,
-				date=str(datetime.datetime.now()),
-				sentences=0,
-				about=request.values.get('about') if request.values.get('about') else ">",
-				partitions=request.values.get('partitions'),
-				author=google.get('/oauth2/v2/userinfo').json()['email'] if GOOGLE_LOGIN else "",
-				goldenAlias='Golden',
-				systemAlias='Sistema'
-			)
-			db.session.add(novoCorpus)
-			db.session.commit()
+			try:
+				novoCorpus = models.Corpus(
+					name=nomeConllu,
+					date=str(datetime.datetime.now()),
+					sentences=0,
+					about=request.values.get('about') if request.values.get('about') else ">",
+					partitions=request.values.get('partitions'),
+					goldenAlias='Golden',
+					systemAlias='Sistema'
+				)
+				db.session.add(novoCorpus)
+				db.session.commit()
+			except TypeError as e:
+				raise Exception("Apague o arquivo prod.db e tente novamente. (%s)" % e)
 			success = "Um modelo está sendo treinado a partir do corpus \"" + nomeConllu + "\". Acompanhe o status do treinamento na <a href='/'>página inicial do Julgamento.</a>"
 		else:
 			raise Exception("Only available on Linux.")
@@ -472,16 +391,12 @@ def upload(alert="", success=""):
 		'upload.html',
 		alert=alert,
 		success=success,
-		user=google.get('/oauth2/v2/userinfo').json(),
 		formDB=formDB()
 	)
 
 
 @app.route('/api/getCatSents', methods="POST".split("|"))
 def getCatSents():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
-
 	html = f'<h3>{request.values.get("tipo")}</h3>'
 	sentences = categoryAccuracy(conllu(request.values.get('c')).findGolden(), conllu(request.values.get('c')).findSystem(), request.values.get('c'), request.values.get('coluna'))['UAS'][request.values.get('deprel')][request.values.get('tipo')][1]
 	corpusGolden = allCorpora.corpora[conllu(request.values.get('c')).golden()]
@@ -511,9 +426,6 @@ def getCatSents():
 
 @app.route('/api/sendAnnotation', methods="POST".split("|"))
 def sendAnnotation():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for('google.login'))
-
 	goldenAndSystem = int(request.values.get('goldenAndSystem'))
 	change = False
 	attention = ""
@@ -533,7 +445,7 @@ def sendAnnotation():
 		for data in request.values:
 			if '<coluna>' in data and request.values.get(data):
 				token = int(data.split('<coluna>')[1])
-				coluna = data.split('<coluna>')[0] if not re.search(r'^\d+$', data.split('<coluna>')[0], flags=re.MULTILINE) else dicionarioColunas[data.split('<coluna>')[0]]
+				coluna = data.split('<coluna>')[0] if not re.search(r'^\d+$', data.split('<coluna>')[0], flags=re.MULTILINE) else idx_to_col.get(int(data.split('<coluna>')[0]), "col%s" % (int(data.split("<coluna>")[0])+1))
 				valor = html.unescape(request.values.get(data).replace("<br>", "").strip()).replace("<br>", "").strip()
 				if request.values.get("headToken"):
 					headTokenNum = request.values.get("headToken") if request.values.get("headToken") != "_" else "0"
@@ -581,8 +493,6 @@ def sendAnnotation():
 
 @app.route("/log")
 def log(success=False):
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
 	if not os.path.isfile(conllu(request.args.get('c')).findInProgress()) and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(request.args.get('c')).naked}_success"):
 		inProgress = f"{UPLOAD_FOLDER}/{conllu(request.args.get('c')).naked}_success"
 		success = True
@@ -594,7 +504,6 @@ def log(success=False):
 	return render_template(
 		'log.html',
 		log=log, 
-		user=google.get('/oauth2/v2/userinfo').json(), 
 		corpus=request.args.get('c'), 
 		success=success,
 		terminated=request.args.get('terminated') or ''
@@ -603,9 +512,6 @@ def log(success=False):
 
 @app.route("/api/getAnnotation", methods="POST".split("|"))
 def getAnnotation():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for('google.login'))
-
 	html1, html2 = "", ""
 
 	if request.values.get('ud') == 'ud1':
@@ -657,33 +563,23 @@ def getAnnotation():
 
 @app.route("/git-update")
 def gitUpdate():
-	if GOOGLE_LOGIN and not google.authorized:
-		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
-	
 	os.system(f"cd {JULGAMENTO_FOLDER}; git pull")
 	print("ok")
 
 @app.route("/corpus")
 def corpus():
-	if GOOGLE_LOGIN and not google.authorized:
-		return redirect(url_for("google.login") + "?next_url=" + request.full_path)
-
-	resp = google.get('/oauth2/v2/userinfo')
-
 	if request.args.get('c'):
 		loadCorpus(conllu(request.args.get('c')).naked)
 
 	if not request.args.get('c'):
 		return render_template(
 			'corpus.html',
-			user = resp.json(),
 			corpora = checkCorpora()
 		)
 
 	elif request.args.get('mod'):
 		return render_template(
 			'mod.html',
-			user=resp.json(),
 			antes=request.args.get('antes'),
 			depois=request.args.get('depois'),
 			mod=request.args.get('mod'),
@@ -694,7 +590,6 @@ def corpus():
 	elif request.args.get('ud1') and request.args.get('ud2') and request.args.get('col'):
 		return render_template(
 			'matriz.html',
-			user=resp.json(),
 			ud1=request.args.get('ud1'),
 			ud2=request.args.get('ud2'),
 			c=request.args.get('c'),
@@ -705,7 +600,6 @@ def corpus():
 	elif request.args.get('DEPREL'):
 		return render_template(
 			'catAccuracy.html',
-			user=resp.json(),
 			c=request.values.get('c'),
 			conteudo=categoryAccuracy(conllu(request.values.get('c')).findGolden(), conllu(request.values.get('c')).findSystem(), request.values.get('c'), 'DEPREL')['UAS'][request.args.get('DEPREL')],
 			deprel=request.args.get('DEPREL'),
@@ -715,7 +609,6 @@ def corpus():
 	elif request.args.get('UPOS'):
 		return render_template(
 			'catAccuracy.html',
-			user=resp.json(),
 			c=request.values.get('c'),
 			conteudo=categoryAccuracy(conllu(request.values.get('c')).findGolden(), conllu(request.values.get('c')).findSystem(), request.values.get('c'), 'UPOS')['UAS'][request.args.get('UPOS')],
 			deprel=request.args.get('UPOS'),
@@ -734,59 +627,14 @@ def corpus():
 	else:
 		return render_template(
 			'tables.html',
-			user = resp.json(),
 			c = request.args.get('c'),
 			sobre = db.session.query(models.Corpus).get(request.args.get('c')).about if db.session.query(models.Corpus).get(request.args.get('c')) else "Sem informação",
 			pagina = "tables",
 		)
 
-@app.errorhandler(TokenExpiredError)
-@app.errorhandler(KeyError)
-def handle_error(e):
-    session.clear()
-    return redirect(url_for("google.login") + "?next_url=" + request.full_path)
-
-@app.route("/logout")
-def logout():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for("google.login"))
-	
-	token = blueprint.token['access_token']
-	logout_user()
-	session.clear()
-	google.post(
-		"https://accounts.google.com/o/oauth2/revoke",
-		params={"token": token},
-		headers={"Content-Type": "application/x-www-form-urlencoded"}
-	)
-	del blueprint.token
-	return redirect(url_for('google.login'))
-
-
-@oauth_before_login.connect
-def before_login(blueprint, url):
-	session["next_url"] = request.full_path.split("next_url=")[1] if 'next_url=' in request.full_path else ''
-
-
-@oauth_authorized.connect
-def logged_in(blueprint, token):
-	blueprint.token = token
-	next_url = session["next_url"]
-	resp = google.get("/oauth2/v2/userinfo")
-	email = resp.json().get('email')
-	if not email in ALLOWED_GOOGLE_EMAILS:
-		next_link = "/corpus" if not next_url else next_url
-		return redirect('/logout?next_url=' + next_link)
-	else:
-		return redirect(next_url or '/corpus')
-
-
 @app.route("/")
 def index():
-	if not google.authorized and GOOGLE_LOGIN:
-		return redirect(url_for('google.login'))
-	else:
-		return redirect('/corpus')
+	return redirect('/corpus')
 
 import models
 from importar import *
