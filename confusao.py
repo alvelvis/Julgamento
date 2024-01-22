@@ -230,8 +230,8 @@ function openCity(evt, cityName) {
 						carregamento_check.append('check2_'+str(i))
 						carregamento_comment.append('comment'+str(i))
 						html.append('<div class="container"><input type="hidden" name="negrito" value="' + negrito + '">' + str(i+1) + ' / ' + str(len(sentenças[combinação])) + '<br><br>' + sentença[0] + '<br><br>' + '''<input type="hidden" name="copiar_id" id="''' + str(i) + '''" value="''' + sentença[0].replace('/BOLD','').replace('@BOLD','').replace('@YELLOW/', '').replace('@PURPLE/', '').replace('@BLUE/', '').replace('@RED/', '').replace('@CYAN/', '').replace('/FONT', '') + '''">''' + caixa + '<!--br><br><input type="checkbox" style="margin-left:0px" id="check1_'+str(i)+'" >' + combinação.split('-')[0] + ' <input type="checkbox" id="check2_'+str(i)+'" >' + combinação.split('-')[1] + ' - Comentários: <input type="text" id="comment'+str(i)+'" name="maior" -->')
-						html.append('''<br><input type="button" id="botao1''' + combinação + str(i) + '''" style="margin-left:0px" value="Mostrar GOLDEN" onClick="ativa1('sentence1''' + combinação + str(i) + '''', 'botao1''' + combinação + str(i) + '''')" > <input type="button" id="botao2''' + combinação + str(i) + '''" value="Mostrar PREVISTO" onClick="ativa2('sentence2''' + combinação + str(i) + '''', 'botao2''' + combinação + str(i) + '''')">''' + pais)
-						html.append("<div id='sentence1" + combinação + str(i) + "' style='display:none'><b><br>GOLDEN:</b>")
+						html.append('''<br><input type="button" id="botao1''' + combinação + str(i) + '''" style="margin-left:0px" value="Mostrar PRINCIPAL" onClick="ativa1('sentence1''' + combinação + str(i) + '''', 'botao1''' + combinação + str(i) + '''')" > <input type="button" id="botao2''' + combinação + str(i) + '''" value="Mostrar PREVISTO" onClick="ativa2('sentence2''' + combinação + str(i) + '''', 'botao2''' + combinação + str(i) + '''')">''' + pais)
+						html.append("<div id='sentence1" + combinação + str(i) + "' style='display:none'><b><br>PRINCIPAL:</b>")
 						html.append("<pre>" + sentença[2].replace('<','&lt;').replace('>','&gt;').replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>") + "</pre></div><div id='sentence2" + combinação + str(i) + "' style='display:none'><br><b>PREVISTO:</b>")
 						html.append("<pre>" + sentença[3].replace('<','&lt;').replace('>','&gt;').replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>") + '</pre></div></div>')
 
@@ -263,11 +263,11 @@ window.location = window.location.href.split("?")[0] + "?" + document.getElement
 function ativa1(nome, botao){
 var div = document.getElementById(nome)
 if (div.style.display == 'none') {
-document.getElementById(botao).value='Esconder GOLDEN'
+document.getElementById(botao).value='Esconder PRINCIPAL'
 div.style.display = 'block'
 } else {
 div.style.display = 'none'
-document.getElementById(botao).value='Mostrar GOLDEN'
+document.getElementById(botao).value='Mostrar PRINCIPAL'
 }
 }
 function ativa2(nome, botao){
@@ -319,15 +319,15 @@ def get_percentages(ud1, ud2, output, coluna):
 	UAS = dict()
 
 	with open(ud1, "r") as f:
-		golden = estrutura_ud.Corpus()
-		golden.build(f.read())	
+		first = estrutura_ud.Corpus()
+		first.build(f.read())	
 
 	with open(ud2, "r") as f:
-		system = estrutura_ud.Corpus()
-		system.build(f.read())
+		second = estrutura_ud.Corpus()
+		second.build(f.read())
 
 	dicionario = {}
-	for sentid, sentence in golden.sentences.items():
+	for sentid, sentence in first.sentences.items():
 		for t, token in enumerate(sentence.tokens):
 			if not token.__dict__[feats[coluna].lower()] in dicionario:
 				if coluna == 8:
@@ -336,29 +336,29 @@ def get_percentages(ud1, ud2, output, coluna):
 				else:
 					dicionario[token.__dict__[feats[coluna].lower()]] = [0, 0, 0]
 			dicionario[token.__dict__[feats[coluna].lower()]][0] += 1
-			if system.sentences[sentid].tokens[t].__dict__[feats[coluna].lower()] == token.__dict__[feats[coluna].lower()]:
+			if second.sentences[sentid].tokens[t].__dict__[feats[coluna].lower()] == token.__dict__[feats[coluna].lower()]:
 				dicionario[token.__dict__[feats[coluna].lower()]][1] += 1
 				if coluna == 8:
-					if system.sentences[sentid].tokens[t].dephead == token.dephead:
+					if second.sentences[sentid].tokens[t].dephead == token.dephead:
 						dicionario[token.deprel][2] += 1
 					else:
-						tok_golden = token.head_token.upos
-						tok_system = system.sentences[sentid].tokens[t].head_token.upos
-						tok_golden += "_L" if int(token.head_token.id) < int(token.id) else "_R"
-						tok_system += "_L" if int(system.sentences[sentid].tokens[t].head_token.id) < int(system.sentences[sentid].tokens[t].id) else "_R"
-						if tok_golden + "/" + tok_system in UAS[token.deprel]:
-							UAS[token.deprel][tok_golden + "/" + tok_system]["qtd"] += 1
+						tok_first = token.head_token.upos
+						tok_second = second.sentences[sentid].tokens[t].head_token.upos
+						tok_first += "_L" if int(token.head_token.id) < int(token.id) else "_R"
+						tok_second += "_L" if int(second.sentences[sentid].tokens[t].head_token.id) < int(second.sentences[sentid].tokens[t].id) else "_R"
+						if tok_first + "/" + tok_second in UAS[token.deprel]:
+							UAS[token.deprel][tok_first + "/" + tok_second]["qtd"] += 1
 						else:
-							UAS[token.deprel][tok_golden + "/" + tok_system] = {"qtd": 1, "sentences": []}
-						UAS[token.deprel][tok_golden + "/" + tok_system]["sentences"].append([sentence, system.sentences[sentid], token, token.head_token, system.sentences[sentid].tokens[t].head_token, system.sentences[sentid].tokens[t]])
+							UAS[token.deprel][tok_first + "/" + tok_second] = {"qtd": 1, "sentences": []}
+						UAS[token.deprel][tok_first + "/" + tok_second]["sentences"].append([sentence, second.sentences[sentid], token, token.head_token, second.sentences[sentid].tokens[t].head_token, second.sentences[sentid].tokens[t]])
 
 	sent_accuracy = [0, 0]
-	for sentid, sentence in golden.sentences.items():
-		if sentid in system.sentences and len(sentence.tokens) == len(system.sentences[sentid].tokens):
+	for sentid, sentence in first.sentences.items():
+		if sentid in second.sentences and len(sentence.tokens) == len(second.sentences[sentid].tokens):
 			sent_accuracy[0] += 1
 			acertos = 0
 			for t, token in enumerate(sentence.tokens):
-				if system.sentences[sentid].tokens[t].upos == token.upos and system.sentences[sentid].tokens[t].dephead == token.dephead and system.sentences[sentid].tokens[t].deprel == token.deprel:
+				if second.sentences[sentid].tokens[t].upos == token.upos and second.sentences[sentid].tokens[t].dephead == token.dephead and second.sentences[sentid].tokens[t].deprel == token.deprel:
 					acertos += 1
 			if acertos == len(sentence.tokens):
 				sent_accuracy[1] += 1
@@ -368,13 +368,13 @@ def get_percentages(ud1, ud2, output, coluna):
 		f.write(sentence_accuracy)
 
 	if coluna == 8:
-		csv = ["{0:20} {1:10} {2:10} {3:10} {4:10} {5:10}".format("DEPREL", "GOLDEN", "ACERTOS_DEPREL", "ACERTOS_DEPREL_DEPHEAD", "PORCENTAGEM_DEPREL", "PORCENTAGEM_DEPREL_DEPHEAD")]
+		csv = ["{0:20} {1:10} {2:10} {3:10} {4:10} {5:10}".format("DEPREL", "PRINCIPAL", "ACERTOS_DEPREL", "ACERTOS_DEPREL_DEPHEAD", "PORCENTAGEM_DEPREL", "PORCENTAGEM_DEPREL_DEPHEAD")]
 		for classe in sorted(dicionario):
 			dicionario[classe][3] = (dicionario[classe][1] / dicionario[classe][0]) * 100
 			dicionario[classe][4] = (dicionario[classe][2] / dicionario[classe][0]) * 100
 			csv.append("{0:20} {1:10} {2:10} {3:10} {4:10} {5:10}".format(classe, str(dicionario[classe][0]), str(dicionario[classe][1]), str(dicionario[classe][2]), str(dicionario[classe][3]) + "%", str(dicionario[classe][4]) + "%"))
 	else:
-		csv = ["{0:20} {1:10} {2:10} {3:10}".format(feats[coluna], "GOLDEN", "ACERTOS", "PORCENTAGEM")]
+		csv = ["{0:20} {1:10} {2:10} {3:10}".format(feats[coluna], "PRINCIPAL", "ACERTOS", "PORCENTAGEM")]
 		for classe in sorted(dicionario):
 			dicionario[classe][2] = (dicionario[classe][1] / dicionario[classe][0]) * 100
 			csv.append("{0:20} {1:10} {2:10} {3:10}".format(classe, str(dicionario[classe][0]), str(dicionario[classe][1]), str(dicionario[classe][2]) + "%"))
@@ -387,10 +387,10 @@ def get_percentages(ud1, ud2, output, coluna):
 		for x in UAS[deprel].values(): total += x["qtd"]
 		escrever = ["<tr><td>{0}</td><td>{1}</td><td>{2}</td><td><a href='./{4}_{0}_{1}.html'>{3}%</a></td></tr>".format(padrao.split("/")[0], padrao.split("/")[1], quantidade["qtd"], (quantidade["qtd"]/total)*100, deprel) for padrao, quantidade in sorted(UAS[deprel].items(), key=lambda x: x[1]["qtd"], reverse=True)]
 		with open("UAS/" + deprel + ".html", "w") as f:
-			f.write("<body style='margin:20px'>" + str(dicionario[deprel][3] - dicionario[deprel][4]) + '% "' + deprel + '" com dephead divergentes<br><br><head><link href="../style.css" rel="stylesheet" type="text/css"></head>' + "<table><tr><td colspan='4'>Distribuição dos erros</td></tr><tr><th>GOLDEN</th><th>PREVISTO</th><th>N</th><th>%</th></tr>" + "\n".join(escrever) + "<tr><td colspan='2'>Total</td><td>" + str(total) + "</td></tr></table>")
+			f.write("<body style='margin:20px'>" + str(dicionario[deprel][3] - dicionario[deprel][4]) + '% "' + deprel + '" com dephead divergentes<br><br><head><link href="../style.css" rel="stylesheet" type="text/css"></head>' + "<table><tr><td colspan='4'>Distribuição dos erros</td></tr><tr><th>PRINCIPAL</th><th>SECUNDÁRIO</th><th>N</th><th>%</th></tr>" + "\n".join(escrever) + "<tr><td colspan='2'>Total</td><td>" + str(total) + "</td></tr></table>")
 
 		for padrao in UAS[deprel]:
-			escrever = "<body style='margin:20px;'>DEPREL: " + deprel + "\n<br>GOLDEN HEAD: " + padrao.split("/")[0] + "\n<br>PREVISTO HEAD: " + padrao.split("/")[1] + '''\n<br><input type=button value='Copiar sent_id das frases' onclick='copiar_frases()'> <input id='input' style='display:none'><br><br>'''
+			escrever = "<body style='margin:20px;'>DEPREL: " + deprel + "\n<br>PRINCIPAL HEAD: " + padrao.split("/")[0] + "\n<br>SECUNDÁRIO HEAD: " + padrao.split("/")[1] + '''\n<br><input type=button value='Copiar sent_id das frases' onclick='copiar_frases()'> <input id='input' style='display:none'><br><br>'''
 			for n, sentence in enumerate(UAS[deprel][padrao]["sentences"]):
 				escrever += str(n+1) + " / " + str(len(UAS[deprel][padrao]["sentences"]))
 				escrever += "\n<br><input type=hidden name=copiar_id value='"+sentence[0].sent_id.replace("'", "\\'")+"'># sent_id = " + sentence[0].sent_id
@@ -400,10 +400,10 @@ def get_percentages(ud1, ud2, output, coluna):
 				text = re.sub(r"\b" + re.escape(sentence[3].word) + r"\b", "<font color=green>" + sentence[3].word + "</font>", text)
 				text = re.sub(r"\b" + re.escape(sentence[4].word) + r"\b", "<font color=red>" + sentence[4].word + "</font>", text)
 				escrever += "\n<br># text = " + text
-				escrever += '''\n<br><input type='button' id="but_'''+str(n)+'''" value='Mostrar GOLDEN' onclick='if(document.getElementById("pre_'''+str(n)+'''").style.display == "none") { document.getElementById("pre_''' + str(n) + '''").style.display = "block"; document.getElementById("but_'''+str(n)+'''").value = "Esconder GOLDEN"; } else { document.getElementById("pre_''' + str(n) + '''").style.display = "none"; document.getElementById("but_'''+str(n)+'''").value = "Mostrar GOLDEN"; }\'>'''
-				escrever += '''\n<input type='button' id="but2_'''+str(n)+'''" value='Mostrar PREVISTO' onclick='if(document.getElementById("pre2_'''+str(n)+'''").style.display == "none") { document.getElementById("pre2_''' + str(n) + '''").style.display = "block"; document.getElementById("but2_'''+str(n)+'''").value = "Esconder PREVISTO"; } else { document.getElementById("pre2_''' + str(n) + '''").style.display = "none"; document.getElementById("but2_'''+str(n)+'''").value = "Mostrar PREVISTO"; }\'>'''
-				escrever += '\n<pre id=pre_' + str(n) + ' style="display:none">GOLDEN<br>' + sentence[0].to_str().replace(sentence[2].to_str(), "<b>" + sentence[2].to_str() + "</b>").replace(sentence[3].to_str(), "<font color=green>" + sentence[3].to_str() + "</font>") + '</pre>'
-				escrever += '\n<pre id=pre2_' + str(n) + ' style="display:none">PREVISTO<br>' + sentence[1].to_str().replace(sentence[5].to_str(), "<b>" + sentence[5].to_str() + "</b>").replace(sentence[4].to_str(), "<font color=red>" + sentence[4].to_str() + "</font>") + '</pre>'
+				escrever += '''\n<br><input type='button' id="but_'''+str(n)+'''" value='Mostrar PRINCIPAL' onclick='if(document.getElementById("pre_'''+str(n)+'''").style.display == "none") { document.getElementById("pre_''' + str(n) + '''").style.display = "block"; document.getElementById("but_'''+str(n)+'''").value = "Esconder PRINCIPAL"; } else { document.getElementById("pre_''' + str(n) + '''").style.display = "none"; document.getElementById("but_'''+str(n)+'''").value = "Mostrar PRINCIPAL"; }\'>'''
+				escrever += '''\n<input type='button' id="but2_'''+str(n)+'''" value='Mostrar SECUNDÁRIO' onclick='if(document.getElementById("pre2_'''+str(n)+'''").style.display == "none") { document.getElementById("pre2_''' + str(n) + '''").style.display = "block"; document.getElementById("but2_'''+str(n)+'''").value = "Esconder SECUNDÁRIO"; } else { document.getElementById("pre2_''' + str(n) + '''").style.display = "none"; document.getElementById("but2_'''+str(n)+'''").value = "Mostrar SECUNDÁRIO"; }\'>'''
+				escrever += '\n<pre id=pre_' + str(n) + ' style="display:none">PRINCIPAL<br>' + sentence[0].to_str().replace(sentence[2].to_str(), "<b>" + sentence[2].to_str() + "</b>").replace(sentence[3].to_str(), "<font color=green>" + sentence[3].to_str() + "</font>") + '</pre>'
+				escrever += '\n<pre id=pre2_' + str(n) + ' style="display:none">SECUNDÁRIO<br>' + sentence[1].to_str().replace(sentence[5].to_str(), "<b>" + sentence[5].to_str() + "</b>").replace(sentence[4].to_str(), "<font color=red>" + sentence[4].to_str() + "</font>") + '</pre>'
 				escrever += "\n<hr>"
 			escrever += '''
 	<script>
@@ -443,11 +443,11 @@ def main(ud1, ud2, output, coluna = 4):
 	pd.set_option('display.expand_frame_repr', False)
 	saída = list()
 	saída.append('Col ' + str(coluna)+': ' + feats[coluna])
-	saída.append('GOLDEN: ' + ud1)
-	saída.append('PREVISTO: ' + ud2 + '\n')
+	saída.append('PRINCIPAL: ' + ud1)
+	saída.append('SECUNDÁRIO: ' + ud2 + '\n')
 	saída.append(str(pd.crosstab(pd.Series(lista_conllu1), pd.Series(lista_conllu2), rownames=['UD[1]'], colnames=['UD[2]'], margins=True)))
 	saída.append('\n')
-	saída.append('#!$$ Sentenças de GOLDEN que não foram encontradas em PREVISTO:\n')
+	saída.append('#!$$ Sentenças de PRINCIPAL que não foram encontradas em SECUNDÁRIO:\n')
 	for item in lista_conllu['solitários_1']:
 			saída.append(item)
 
@@ -467,7 +467,7 @@ if __name__ == '__main__':
 	número_de_argumentos_mínimo = 4
 
 	if len(sys.argv) < número_de_argumentos_mínimo +1:
-		print('uso: confusão.py GOLDEN.conllu:utf8 PREVISTO.conllu:utf8 saída.txt:utf8 coluna')
+		print('uso: confusão.py PRINCIPAL.conllu:utf8 SECUNDARIO.conllu:utf8 saída.txt:utf8 coluna')
 		print('Colunas:')
 		for i in range(len(feats)):
 				print(str(i+1) + ': ' + feats[i+1])

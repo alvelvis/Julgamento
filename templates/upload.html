@@ -5,6 +5,7 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <h1 class="translateHtml">Gerenciamento de corpora</h1>
+<span class="translateHtml">Para julgar um corpus, faça upload dele abaixo. Além disso, você pode enviar uma segunda versão desse corpus, com a qual você quer comparar.</span>
 <hr>
 
 <div class="container col-md-12 col-md-offset-0">
@@ -24,43 +25,42 @@
         
         <h3 class="translateHtml">Alguns caminhos</h3>
         <ul class="list-group">
-            <a href="#" name="optGold" class="opt list-group-item translateHtml">Enviar arquivo golden</a>
-            <a href="#" name="optSys" class="opt list-group-item translateHtml">Enviar arquivo sistema</a>
-            {% if comcorhd %}<a href="#" name="optPullWorkbench" class="opt list-group-item translateHtml">Puxar golden do GitHub</a>{% endif %}
-            <a href="#" name="optTrainSys" class="opt list-group-item translateHtml">Treinar um modelo</a>
-            <a href="#" name="successfulTraining" class="opt list-group-item translateHtml">Relatórios de treinamento</a>
+            <a href="#" name="optGold" class="opt list-group-item translateHtml">Enviar corpus no formato CoNLL-U</a>
+            <a href="#" name="optSys" class="opt list-group-item translateHtml">Enviar segunda versão de um corpus</a>
+            {% if comcorhd %}<a href="#" name="optPullWorkbench" class="opt list-group-item translateHtml">Puxar corpus do GitHub</a>{% endif %}
+            {% if comcorhd %}<a href="#" name="optTrainSys" class="opt list-group-item translateHtml">Treinar um modelo</a>{% endif %}
+            {% if comcorhd %}<a href="#" name="successfulTraining" class="opt list-group-item translateHtml">Relatórios de treinamento</a>{% endif %}
             <a href="#" name="corporaFeatures" class="opt list-group-item translateHtml">Corpora excluídos</a>
-            <a href="#" name="deleteSystem" class="opt list-group-item translateHtml">Excluir corpus do Julgamento</a>
+            <a href="#" name="deleteSecond" class="opt list-group-item translateHtml">Excluir corpus do Julgamento</a>
         </ul>
     </div>
 
-    <div class="col-lg-9 uploadOption deleteSystem panel panel-default" style="display:none">
+    <div class="col-lg-9 uploadOption deleteSecond panel panel-default" style="display:none">
         <div class="col-lg-6 panel panel-body">
-            <h3 class="translateHtml">Excluir corpus pronto para julgamento</h3>
             <HR>
             <div class="well">
-                <input type=checkbox class="deleteGoldenToo"> <a style="cursor:pointer; text-decoration:none;" title="Caso esteja desmarcado, apenas o arquivo sistema será excluído" class="translateHtml translateTitle" onclick="($('.deleteGoldenToo').click())">Deletar arquivo golden também</a>
+                <span class="translateHtml">Os arquivos listados abaixo têm uma versão secundária.</span>
+                <br><input type=checkbox class="deleteFirstToo"> <a style="cursor:pointer; text-decoration:none;" title="Caso esteja desmarcado, apenas o arquivo secundário será excluído" class="translateHtml translateTitle" onclick="($('.deleteFirstToo').click())">Deletar arquivo principal também, além do secundário</a>
             </div>
             <div class="">
                 <div class="">
-                    <input class='form-control filterDeleteSystem translatePlaceholder' placeholder="Filtrar...">
-                    <ul class="list-group deleteSystemCorpora panel-body">
+                    <input class='form-control filterdeleteSecond translatePlaceholder' placeholder="Filtrar...">
+                    <ul class="list-group deleteSecondCorpora panel-body">
                         {{findCorpora(filtro='', tipo='delete')|safe}}
                     </ul>
                 </div>
             </div>
         </div>
         <div class="col-lg-6 panel panel-body">
-            <h3 class="translateHtml">Excluir corpus "golden" do Julgamento</h3>
             <HR>
             <div class="well">
-                <span class="translateHtml">Os arquivos listados não têm uma contraparte "sistema" e, portanto, têm o seu julgamento limitado a poucas funcionalidades.</span>
+                <span class="translateHtml">Os arquivos listados abaixo não têm versão secundária.</span>
             </div>
             <div class=" ">
                 <div class="">
-                    <input class='form-control filterDeleteGolden translatePlaceholder' placeholder="Filtrar...">
-                    <ul class="list-group deleteGoldenCorpora panel-body">
-                        {{findCorpora(filtro='', tipo='deleteGolden')|safe}}
+                    <input class='form-control filterdeleteFirst translatePlaceholder' placeholder="Filtrar...">
+                    <ul class="list-group deleteFirstCorpora panel-body">
+                        {{findCorpora(filtro='', tipo='deleteFirst')|safe}}
                     </ul>
                 </div>
             </div>
@@ -94,54 +94,54 @@
     </div>
 
     <div class="col-lg-9 uploadOption optGold" style="display:none">
-        <h3 class="translateHtml">Enviar arquivo golden</h3>
+        <h3 class="translateHtml">Enviar corpus no formato CoNLL-U</h3>
         <ul class="well well-sm">
             <h4 class="translateHtml">O arquivo deve ter a extensão ".conllu".</h4>
             <h4 class="translateHtml">O arquivo será salvo {% if comcorhd %}no repositório do Interrogatório{% else %}no repositório do Julgamento{% endif %}.</h4>
         </ul>
         <div class="panel panel-default panel-body" style="text-align:center">
             <div class="col-lg-6 col-lg-offset-3">
-                <h3 class="translateHtml">Selecione um arquivo "golden"</h3>
+                <h3 class="translateHtml">Selecione um arquivo CoNLL-U</h3>
                 <hr>
-                <h1><span style="cursor:pointer" onClick="$('#optGoldGoldenFile').click();" title="Selecione um arquivo" class="glyphOptGoldGold glyphicon glyphicon-upload translateTitle"></span></h1>
+                <h1><span style="cursor:pointer" onClick="$('#optGoldfirstFile').click();" title="Selecione um arquivo" class="glyphOptGoldGold glyphicon glyphicon-upload translateTitle"></span></h1>
             </div>
             <form class="formGold" enctype="multipart/form-data" method="POST" action="/upload">
-                <input style="display:none" type=file onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptGoldGold').removeClass('glyphicon-upload').addClass('glyphicon-ok'); $('#goldenName').val($(this).val().replace(/^.*[\\\/]/, '').split('.conllu')[0]); } else { $('.glyphOptGoldGold').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optGoldGoldenFile" name="goldenFile">
-                <center><input style="width:50%; text-align: center;" placeholder="Nome do corpus" class="form-control translatePlaceholder" id="goldenName" name="goldenName" required></center>
+                <input style="display:none" type=file onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptGoldGold').removeClass('glyphicon-upload').addClass('glyphicon-ok'); $('#firstName').val($(this).val().replace(/^.*[\\\/]/, '').split('.conllu')[0]); } else { $('.glyphOptGoldGold').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optGoldfirstFile" name="firstFile">
+                <center><input style="width:50%; text-align: center;" placeholder="Nome do corpus" class="form-control translatePlaceholder" id="firstName" name="firstName" required></center>
             </form>
         </div>
-        <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptGoldGold').hasClass('glyphicon-ok') && $('#goldenName').val()) { $('.formGold').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> <span class="translateHtml">Enviar</span></button></center>
+        <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptGoldGold').hasClass('glyphicon-ok') && $('#firstName').val()) { $('.formGold').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> <span class="translateHtml">Enviar</span></button></center>
     </div>
 
     <div class="col-lg-9 uploadOption optSys" style="display:none">
-        <h3 class="translateHtml">Enviar arquivo sistema</h3>
+        <h3 class="translateHtml">Enviar segunda versão de um corpus</h3>
         <div class="well well-sm">
-            <h4 class="translateHtml">Para enviar um arquivo sistema, é necessário que já haja seu arquivo golden no repositório.</h4>
+            <h4 class="translateHtml">Para enviar a segunda versão de um corpus, é necessário que já exista a versão principal dele no repositório.</h4>
         </div>
         <div class="form-horizontal">
             <form class="formSys" enctype="multipart/form-data" method="POST" action="/upload">
-                <input type=file style="display:none" onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptSysSystem').removeClass('glyphicon-upload').addClass('glyphicon-ok'); } else { $('.glyphOptSysSystem').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optSysSystemFile" name="systemFile">
+                <input type=file style="display:none" onChange="if ($(this).val().endsWith('.conllu')) { $('.glyphOptSyssecond').removeClass('glyphicon-upload').addClass('glyphicon-ok'); } else { $('.glyphOptSyssecond').removeClass('glyphicon-ok').addClass('glyphicon-upload'); }" id="optSyssecondFile" name="secondFile">
                 <div class="form-group">
-                    <label for="sysGoldenFile" class="col-sm-4 control-label"><span class="translateHtml">Arquivo golden</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='Para enviar um arquivo golden, selecione "Enviar arquivo golden" no menu lateral'></span></label>
+                    <label for="sysfirstFile" class="col-sm-4 control-label"><span class="translateHtml">Arquivo principal</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='Para enviar um arquivo principal, selecione "Enviar corpus no formato CoNLL-U" no menu lateral'></span></label>
                     <div class="col-sm-8">
-                        <select name="sysGoldenFile" id="sysGoldenFile" class="form-control selectpicker" data-live-search="true" required>
+                        <select name="sysfirstFile" id="sysfirstFile" class="form-control selectpicker" data-live-search="true" required>
                             <option class="translateHtml" disabled selected value> -- escolha uma opção -- </option>
-                            {% for x in checkCorpora()['missingSystem'] %}
+                            {% for x in checkCorpora()['missingsecond'] %}
                             <option>{{x}}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="sysAbout" class="col-sm-4 control-label"><span class="translateHtml">Sobre o corpus</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='Informação extra para ajudar a identificar os diferentes corpora disponíveis'></span></label>
+                    <label for="sysAbout" class="col-sm-4 control-label"><span class="translateHtml">Sobre o corpus</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='Descrição para ajudar a identificar os diferentes corpora disponíveis'></span></label>
                     <div class="col-sm-8">
                         <input class="form-control" id="sysAbout" name="sysAbout" >
                     </div>
                 </div>
-                <center><h3 class="translateHtml">Selecione um arquivo "sistema"</h3><h1><span style="cursor:pointer" onClick="$('#optSysSystemFile').click();" title="Selecione um arquivo" class="glyphOptSysSystem translateTitle glyphicon glyphicon-upload"></span></h1><br></center>
+                <center><h3 class="translateHtml">Selecione a segunda versão do corpus</h3><h1><span style="cursor:pointer" onClick="$('#optSyssecondFile').click();" title="Selecione um arquivo" class="glyphOptSyssecond translateTitle glyphicon glyphicon-upload"></span></h1><br></center>
             </form>            
         </div>
-        <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptSysSystem').hasClass('glyphicon-ok') && $('[name=sysGoldenFile]').val()) { $('.formSys').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> <span class="translateHtml">Enviar</span></button></center>
+        <center><button class="btn btn-default" type="form-control" onclick="if ($('.glyphOptSyssecond').hasClass('glyphicon-ok') && $('[name=sysfirstFile]').val()) { $('.formSys').submit(); }"><span class='glyphicon glyphicon-cloud-upload'></span> <span class="translateHtml">Enviar</span></button></center>
     </div>
     
     <div class="col-lg-9 uploadOption optTrainSys" style="display:none">
@@ -149,17 +149,17 @@
         <div class="well well-sm">
             <h4 class="translateHtml">O treinamento será realizando utilizando o UDPipe versão 1.2.0.</h4>
             <h4 class="translateHtml">O treinamento para um corpus de 9 mil sentenças dura, em média, 6 horas.</h4>
-            <h4 class="translateHtml">Após o treinamento de um modelo, a partição teste (ou o corpus todo, no caso de crossvalidation) será anotada utilizando esse modelo, e o resultado será alinhado com o seu golden para que se possa realizar o julgamento.</h4>
+            <h4 class="translateHtml">Após o treinamento de um modelo, a partição teste (ou o corpus todo, no caso de crossvalidation) será anotada utilizando esse modelo, e o resultado será alinhado com o corpus principal para que se possa realizar o julgamento.</h4>
             <h4 class="translateHtml">Caso queira utilizar o modelo treinado, encontre-o na pasta com o nome do corpus em /static/uploads</h4>
         </div>
         <form name="trainModel" method="POST" action="/upload">
             <div class="form-horizontal">
                 <div class="form-group">
-                    <label for="trainFile" class="col-sm-4 control-label"><span class="translateHtml">Arquivo golden</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='Para enviar um arquivo golden, selecione "Enviar arquivo golden" no menu lateral'></span></label>
+                    <label for="trainFile" class="col-sm-4 control-label"><span class="translateHtml">Arquivo principal</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='Para enviar um arquivo principal, selecione "Enviar corpus no formato CoNLL-U" no menu lateral'></span></label>
                     <div class="col-sm-8">
                         <select name="trainFile" id="trainFile" class="form-control selectpicker trainFile" data-live-search="true" required>
                             <option class="translateHtml" disabled selected value> -- escolha uma opção -- </option>
-                            {% for x in checkCorpora()['missingSystem'] %}
+                            {% for x in checkCorpora()['missingsecond'] %}
                             <option>{{x}}</option>
                             {% endfor %}
                         </select>
@@ -176,7 +176,7 @@
     </div>
 
     <div class="col-lg-9 uploadOption optPullWorkbench" style="display:none">
-        <h3 class="translateHtml">Puxar golden do GitHub</h3>
+        <h3 class="translateHtml">Puxar do GitHub</h3>
         <div class="well well-sm">
             <h4 class="translateHtml">Os repositórios devem estar listados no arquivo de configurações do servidor.</h4>
             <h4 class="translateHtml">Os repositórios devem conter uma pasta "documents" com arquivos no formato ".conllu".</h4>

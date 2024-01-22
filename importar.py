@@ -63,23 +63,23 @@ def checkRepo(repositorio="", branch=""):
     }
 
 
-def renderErrors(c, texto="", exc=[], fromZero=False):
-    if not os.path.isfile(conllu(c).findErrors() + "_html") or fromZero:
+def renderErrorsUD(c, texto="", exc=[], fromZero=False):
+    if not os.path.isfile(conllu(c).findErrorsUD() + "_html") or fromZero:
         if fromZero or not texto:
-            #if not os.path.isfile(conllu(c).findErrors()):
+            #if not os.path.isfile(conllu(c).findErrorsUD()):
             if not 'win' in sys.platform:
-                if os.system('"' + JULGAMENTO_FOLDER + f'/.julgamento/bin/python3" "{os.path.abspath(os.path.dirname(__file__))}/tools/validate.py" "{conllu(c).findGolden()}" --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee "{conllu(c).findErrors()}"'):
+                if os.system('"' + JULGAMENTO_FOLDER + f'/.julgamento/bin/python3" "{os.path.abspath(os.path.dirname(__file__))}/tools/validate.py" "{conllu(c).findFirst()}" --max-err=0 --lang={VALIDATE_LANG} 2>&1 | tee "{conllu(c).findErrorsUD()}"'):
                     pass
             else:
-                subprocess.Popen('"{}\\python.exe\" "{}\\tools\\validate.py" "{}" --max-err=0 --lang={} > "{}" 2>&1'.format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), os.path.abspath(os.path.dirname(__file__)), conllu(c).findGolden(), VALIDATE_LANG, conllu(c).findErrors()), shell=True).wait()
-            with open(conllu(c).findErrors()) as f:
+                subprocess.Popen('"{}\\python.exe\" "{}\\tools\\validate.py" "{}" --max-err=0 --lang={} > "{}" 2>&1'.format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), os.path.abspath(os.path.dirname(__file__)), conllu(c).findFirst(), VALIDATE_LANG, conllu(c).findErrorsUD()), shell=True).wait()
+            with open(conllu(c).findErrorsUD()) as f:
                 texto = f.read()
-        if conllu(c).golden() in allCorpora.corpora and allCorpora.corpora.get(conllu(c).golden()):
-            corpus = allCorpora.corpora.get(conllu(c).golden())
+        if conllu(c).first() in allCorpora.corpora and allCorpora.corpora.get(conllu(c).first()):
+            corpus = allCorpora.corpora.get(conllu(c).first())
         else:
             corpus = estrutura_ud.Corpus(recursivo=True)
-            corpus.load(conllu(c).findGolden())
-        with open(conllu(c).findGolden(), 'r') as f:
+            corpus.load(conllu(c).findFirst())
+        with open(conllu(c).findFirst(), 'r') as f:
             arquivo = f.read()
             arquivoSplit = arquivo.splitlines()
         sent_ids = {}
@@ -99,7 +99,7 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
                     if not linha.split(":", 1)[1] in sent_ids:
                         sent_ids[linha.split(":", 1)[1]] = []
                     bold = {'word': arquivoSplit[t-1].split("\t")[1], 'color': 'black', 'id': arquivo.splitlines()[t-1].split("\t")[0]}# if '\t' in arquivo.splitlines()[t-1] else ""
-                    t = allCorpora.corpora[conllu(c).golden()].sentences[linha.split(" Node ")[0].split("Sent ", 1)[1]].map_token_id[arquivo.splitlines()[t-1].split("\t")[0]]
+                    t = allCorpora.corpora[conllu(c).first()].sentences[linha.split(" Node ")[0].split("Sent ", 1)[1]].map_token_id[arquivo.splitlines()[t-1].split("\t")[0]]
                     sent_ids[linha.split(":", 1)[1]].append({'id': linha.split(" Node ")[0].split("Sent ", 1)[1], 't': t, 'bold': bold})
         html = ""
         for k, problem in enumerate(sorted(sent_ids)):
@@ -110,19 +110,19 @@ def renderErrors(c, texto="", exc=[], fromZero=False):
                         html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(sent_ids[problem]) }</div>' + \
                             render_template(
                                 'sentence.html',
-                                golden=corpus.sentences[sent_id['id']],
+                                first=corpus.sentences[sent_id['id']],
                                 c=c,
                                 t=sent_id['t'],
                                 bold=sent_id['bold'],
-                                goldenAndSystem=True if conllu(c).system() in allCorpora.corpora else False,
+                                firstAndsecond=True if conllu(c).second() in allCorpora.corpora else False,
                             ) + "</div></div>"
                     else:
                         html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(sent_ids[problem]) }: {sent_id["id"]}</div>'
 
-        with open(conllu(c).findErrors() + "_html", "w") as f:
+        with open(conllu(c).findErrorsUD() + "_html", "w") as f:
             f.write(html)
     else:
-        with open(conllu(c).findErrors() + "_html") as f:
+        with open(conllu(c).findErrorsUD() + "_html") as f:
             html = f.read()
     
     return html
@@ -137,15 +137,15 @@ def findCorpora(filtro, tipo):
         corpora = checkCorpora()['success']
     elif tipo == 'delete':
         corpora = checkCorpora()['available']
-    elif tipo == 'onlyGolden':
-        corpora = checkCorpora()['missingSystem']
-    elif tipo == 'deleteGolden':
-        corpora = checkCorpora()['missingSystem']
+    elif tipo == 'onlyfirst':
+        corpora = checkCorpora()['missingsecond']
+    elif tipo == 'deleteFirst':
+        corpora = checkCorpora()['missingsecond']
     elif tipo == 'features':
         corpora = checkCorpora()['withFeatures']
     filtro = filtro.split()
     for corpus in corpora:
-        if tipo not in ["deleteGolden", "onlyGolden", 'features']:
+        if tipo not in ["deleteFirst", "onlyfirst", 'features']:
             sobre = corpus['sobre'] if 'sobre' in corpus else ""
             corpusNom = corpus['nome']
             corpusDate = corpus['data'] 
@@ -165,9 +165,9 @@ def findCorpora(filtro, tipo):
                 lista.append(f'<a href="/log?c={ corpus["nome"] }" class="list-group-item"><strong>{ corpus["nome"] }</strong><br><span class="translateHtml">Conclusão:</span> { prettyDate(corpus["data"]).prettyDateDMAH() }</a>')
             elif tipo == 'delete':
                 lista.append(f'<a style="cursor:pointer" onclick="apagarCorpus(\'{corpus["nome"]}\')" class="list-group-item"><strong>{ corpus["nome"] }</strong> <span class="badge">{ corpus["sentences"] } <span class="translateHtml">sentenças</span></span><br>{ corpus["sobre"] }<br><small>{ prettyDate(corpus["data"]).prettyDateDMAH() }</small></a>')
-            elif tipo == 'deleteGolden':
-                lista.append(f'<a style="cursor:pointer" onclick="apagarCorpusGolden(\'{corpus}\')" class="list-group-item"><strong>{ corpus }</strong></a>')
-            elif tipo == 'onlyGolden':
+            elif tipo == 'deleteFirst':
+                lista.append(f'<a style="cursor:pointer" onclick="apagarcorpusFirst(\'{corpus}\')" class="list-group-item"><strong>{ corpus }</strong></a>')
+            elif tipo == 'onlyfirst':
                 if os.path.isfile(conllu(corpus).findOriginal()):
                     lista.append(f'<a href="/corpus?c={ corpus }" class="list-group-item"><strong>{ corpus }</strong></a>')
             elif tipo == 'features':
@@ -183,7 +183,7 @@ def formDB():
     return '''
 <div class="form-horizontal">
     <div class="form-group">
-        <label for="about" class="col-sm-4 control-label"><span class="translateHtml">Sobre o corpus</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='Informação extra para ajudar a identificar os diferentes corpora disponíveis'></span></label>
+        <label for="about" class="col-sm-4 control-label"><span class="translateHtml">Sobre o corpus</span> <span class='glyphicon glyphicon-info-sign translateTitle' title='Descrição para ajudar a identificar os diferentes corpora disponíveis'></span></label>
         <div class="col-sm-8">
             <input class="form-control" id="about" name="about" >
         </div>
@@ -219,16 +219,16 @@ class conllu:
 
     def __init__(self, corpus):
         corpus = os.path.basename(corpus)
-        self.naked = corpus.split("_inProgress")[0].split("_meta")[0].split('_sistema')[0].split(".conllu")[0].split('_success')[0].split('_original')[0].split('_features.html')[0]
+        self.naked = corpus.split("_inProgress")[0].split("_meta")[0].split('_second')[0].split(".conllu")[0].split('_success')[0].split('_original')[0].split('_features.html')[0]
 
-    def golden(self):
+    def first(self):
         return self.naked + ".conllu"
 
     def original(self):
         return self.naked + "_original.conllu"
 
-    def system(self):
-        return self.naked + "_sistema.conllu"
+    def second(self):
+        return self.naked + "_second.conllu"
 
     def inProgress(self):
         return self.naked + "_inProgress"
@@ -236,13 +236,13 @@ class conllu:
     def success(self):
         return self.naked + "_success"
 
-    def errors(self):
+    def errorsUD(self):
         return self.naked + "_errors"
 
     def features(self):
         return self.naked + "_features.html"
 
-    def findGolden(self):
+    def findFirst(self):
         if INTERROGATORIO and os.path.isfile(os.path.join(COMCORHD_FOLDER, self.naked + '.conllu')):
             return os.path.join(COMCORHD_FOLDER, self.naked + '.conllu')
         elif os.path.isfile(os.path.join(UPLOAD_FOLDER, self.naked + ".conllu")):
@@ -258,8 +258,8 @@ class conllu:
     def findFeatures(self):
         return os.path.join(UPLOAD_FOLDER, self.naked + "_features.html")
 
-    def findSystem(self):
-        return os.path.join(UPLOAD_FOLDER, self.naked + "_sistema.conllu")
+    def findSecond(self):
+        return os.path.join(UPLOAD_FOLDER, self.naked + "_second.conllu")
 
     def findInProgress(self):
         return os.path.join(UPLOAD_FOLDER, self.naked + "_inProgress")
@@ -267,11 +267,11 @@ class conllu:
     def findSuccess(self):
         return os.path.join(UPLOAD_FOLDER, self.naked + "_success")
 
-    def findErrors(self):
-        return os.path.join(UPLOAD_FOLDER, self.naked + "_errors")
+    def findErrorsUD(self):
+        return os.path.join(UPLOAD_FOLDER, self.naked + "_errorsUD")
 
-    def findErrorsValidarUD(self):
-        return os.path.join(UPLOAD_FOLDER, self.naked + "_errorsValidarUD")
+    def findErrorsET(self):
+        return os.path.join(UPLOAD_FOLDER, self.naked + "_errorsET")
 
 
 class prettyDate:
@@ -305,22 +305,22 @@ class prettyDate:
 
         return f"{self.dia} de {self.mesExtenso} de {self.ano}"
 
-def getMatrixSentences(c, golden, system, coluna):
+def getMatrixSentences(c, first, second, coluna):
     listaSentences = []
-    ud1 = allCorpora.corpora.get(conllu(c).golden())
-    ud2 = allCorpora.corpora.get(conllu(c).system())
+    ud1 = allCorpora.corpora.get(conllu(c).first())
+    ud2 = allCorpora.corpora.get(conllu(c).second())
     
     for sent_id, sentence in ud1.sentences.items():
         if sent_id in ud2.sentences and len(sentence.tokens) == len(ud2.sentences[sent_id].tokens):
             for t, token in enumerate(sentence.tokens):
-                if token.__dict__[coluna.lower()] == golden and ud2.sentences[sent_id].tokens[t].__dict__[coluna.lower()] == system:
+                if token.__dict__[coluna.lower()] == first and ud2.sentences[sent_id].tokens[t].__dict__[coluna.lower()] == second:
                     listaSentences.append({
                         'sent_id': sent_id, 
-                        'golden': sentence, 
-                        'system': ud2.sentences[sent_id], 
+                        'first': sentence, 
+                        'second': ud2.sentences[sent_id], 
                         'divergence': {
-                            'system': {'category': system, 'head': {'id': ud2.sentences[sent_id].tokens[t].head_token.id, 'word': ud2.sentences[sent_id].tokens[t].head_token.word}},
-                            'golden': {'category': golden, 'head': {'id': token.head_token.id, 'word': token.head_token.word}}
+                            'second': {'category': second, 'head': {'id': ud2.sentences[sent_id].tokens[t].head_token.id, 'word': ud2.sentences[sent_id].tokens[t].head_token.word}},
+                            'first': {'category': first, 'head': {'id': token.head_token.id, 'word': token.head_token.word}}
                             },
                         'col': coluna.lower(),
                         'bold': {'word': token.word, 'color': 'black', 'id': token.id},
@@ -338,33 +338,33 @@ def sortLambda(dicionario, lambdaattr, reverse=True):
 def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     tables = ""
     
-    golden = allCorpora.corpora.get(conllu(ud1).golden())
-    system = allCorpora.corpora.get(conllu(ud2).system())
+    first = allCorpora.corpora.get(conllu(ud1).first())
+    second = allCorpora.corpora.get(conllu(ud2).second())
 
     dicionario = {}
     UAS = dict()
-    for sentid, sentence in golden.sentences.items():
-        if sentid in system.sentences and len(golden.sentences[sentid].tokens) == len(system.sentences[sentid].tokens):
+    for sentid, sentence in first.sentences.items():
+        if sentid in second.sentences and len(first.sentences[sentid].tokens) == len(second.sentences[sentid].tokens):
             for t, token in enumerate(sentence.tokens):
                 if not token.__dict__[coluna.lower()] in dicionario:
                     dicionario[token.__dict__[coluna.lower()]] = [0, 0, 0]
                     if not token.__dict__[coluna.lower()] in UAS:
                         UAS[token.__dict__[coluna.lower()]] = dict()
                 dicionario[token.__dict__[coluna.lower()]][0] += 1
-                if coluna == "DEPREL" and system.sentences[sentid].tokens[t].__dict__[coluna.lower()] == token.__dict__[coluna.lower()]:
+                if coluna == "DEPREL" and second.sentences[sentid].tokens[t].__dict__[coluna.lower()] == token.__dict__[coluna.lower()]:
                     dicionario[token.__dict__[coluna.lower()]][2] += 1
-                if ((coluna == "DEPREL" and system.sentences[sentid].tokens[t].__dict__['dephead'] == token.__dict__['dephead']) or (coluna == "UPOS")) and system.sentences[sentid].tokens[t].__dict__[coluna.lower()] == token.__dict__[coluna.lower()]:
+                if ((coluna == "DEPREL" and second.sentences[sentid].tokens[t].__dict__['dephead'] == token.__dict__['dephead']) or (coluna == "UPOS")) and second.sentences[sentid].tokens[t].__dict__[coluna.lower()] == token.__dict__[coluna.lower()]:
                     dicionario[token.__dict__[coluna.lower()]][1] += 1
-                elif system.sentences[sentid].tokens[t].__dict__[coluna.lower()] == token.__dict__[coluna.lower()]:
-                    tok_golden = token.head_token.upos
-                    tok_system = system.sentences[sentid].tokens[t].head_token.upos
-                    tok_golden += "_L" if int(token.head_token.id) < int(token.id) else "_R"
-                    tok_system += "_L" if int(system.sentences[sentid].tokens[t].head_token.id) < int(system.sentences[sentid].tokens[t].id) else "_R"
-                    if tok_golden + "/" + tok_system in UAS[token.__dict__[coluna.lower()]]:
-                        UAS[token.__dict__[coluna.lower()]][tok_golden + "/" + tok_system][0] += 1
+                elif second.sentences[sentid].tokens[t].__dict__[coluna.lower()] == token.__dict__[coluna.lower()]:
+                    tok_first = token.head_token.upos
+                    tok_second = second.sentences[sentid].tokens[t].head_token.upos
+                    tok_first += "_L" if int(token.head_token.id) < int(token.id) else "_R"
+                    tok_second += "_L" if int(second.sentences[sentid].tokens[t].head_token.id) < int(second.sentences[sentid].tokens[t].id) else "_R"
+                    if tok_first + "/" + tok_second in UAS[token.__dict__[coluna.lower()]]:
+                        UAS[token.__dict__[coluna.lower()]][tok_first + "/" + tok_second][0] += 1
                     else:
-                        UAS[token.__dict__[coluna.lower()]][tok_golden + "/" + tok_system] = [1, []]
-                    UAS[token.__dict__[coluna.lower()]][tok_golden + "/" + tok_system][1].append([sentid, t])
+                        UAS[token.__dict__[coluna.lower()]][tok_first + "/" + tok_second] = [1, []]
+                    UAS[token.__dict__[coluna.lower()]][tok_first + "/" + tok_second][1].append([sentid, t])
 
 
     coluna1 = ""
@@ -386,74 +386,74 @@ def categoryAccuracy(ud1, ud2, c, coluna="DEPREL"):
     return {'tables': tables, 'UAS': UAS}
 
 def caracteristicasCorpus(ud1, ud2=""):
-    golden = allCorpora.corpora.get(conllu(ud1).golden())
-    if not golden:
+    first = allCorpora.corpora.get(conllu(ud1).first())
+    if not first:
         return None
-    system = "" if not ud2 else allCorpora.corpora.get(conllu(ud2).system())
+    second = "" if not ud2 else allCorpora.corpora.get(conllu(ud2).second())
 
     n_Tokens = 0
-    n_Sentences = len(golden.sentences)
+    n_Sentences = len(first.sentences)
     dicionario_Lemas = {}
-    documentos_golden = {}
-    documentos_sistema = {}
-    for sentence in golden.sentences.values():
+    documentos_first = {}
+    documentos_second = {}
+    for sentence in first.sentences.values():
         documento = sentence.sent_id.rsplit("-", 1)[0]
-        if not documento in documentos_golden:
-            documentos_golden[documento] = [0, 0]
-        documentos_golden[documento][0] += 1
+        if not documento in documentos_first:
+            documentos_first[documento] = [0, 0]
+        documentos_first[documento][0] += 1
         for token in sentence.tokens:
             if not '-' in token.id:
                 if not token.lemma in dicionario_Lemas:
                     dicionario_Lemas[token.lemma] = 0
                 dicionario_Lemas[token.lemma] += 1
                 n_Tokens += 1
-                documentos_golden[documento][1] += 1
+                documentos_first[documento][1] += 1
 
-    if system:
+    if second:
         n_Tokens_s = 0
-        n_Sentences_s = len(system.sentences)
+        n_Sentences_s = len(second.sentences)
         dicionario_Lemas_s = {}
-        for sentence in system.sentences.values():
+        for sentence in second.sentences.values():
             documento = sentence.sent_id.rsplit("-", 1)[0]
-            if not documento in documentos_sistema:
-                documentos_sistema[documento] = [0, 0]
-            documentos_sistema[documento][0] += 1
+            if not documento in documentos_second:
+                documentos_second[documento] = [0, 0]
+            documentos_second[documento][0] += 1
             for token in sentence.tokens:
                 if not '-' in token.id:
                     if not token.lemma in dicionario_Lemas_s:
                         dicionario_Lemas_s[token.lemma] = 0
                     dicionario_Lemas_s[token.lemma] += 1
                     n_Tokens_s += 1
-                    documentos_sistema[documento][1] += 1
+                    documentos_second[documento][1] += 1
 
     tabela_Geral = "<h3 class='translateHtml'>Características do corpus</h3><br>"
-    if system:
+    if second:
         tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
         tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
-        tabela_Geral += f"<tr><th class='translateHtml'>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
-        tabela_Geral += f"<tr><th class='translateHtml'>Sistema</th><td>{n_Sentences_s}</td><td>{n_Tokens_s}</td><td>{len(dicionario_Lemas_s)}</td></tr>"
+        tabela_Geral += f"<tr><th class='translateHtml'>Principal</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
+        tabela_Geral += f"<tr><th class='translateHtml'>Secundário</th><td>{n_Sentences_s}</td><td>{n_Tokens_s}</td><td>{len(dicionario_Lemas_s)}</td></tr>"
     else:
         tabela_Geral += "<table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
         tabela_Geral += "<tr><td></td><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th><th class='translateHtml'>Lemas diferentes</th></tr>"
-        tabela_Geral += f"<tr><th class='translateHtml'>Golden</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
+        tabela_Geral += f"<tr><th class='translateHtml'>Principal</th><td>{n_Sentences}</td><td>{n_Tokens}</td><td>{len(dicionario_Lemas)}</td></tr>"
     tabela_Geral += "</table>"
 
-    if documentos_golden:
+    if documentos_first:
         tabela_Geral += "<br><table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
-        tabela_Geral += "<tr><th class='translateHtml'>GOLDEN</th><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th></tr>"
-        for documento in sorted(documentos_golden):
-            tabela_Geral += f"<tr><td>{documento}</td><td>{documentos_golden[documento][0]}</td><td>{documentos_golden[documento][1]}</td></tr>"
+        tabela_Geral += "<tr><th class='translateHtml'>PRINCIPAL</th><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th></tr>"
+        for documento in sorted(documentos_first):
+            tabela_Geral += f"<tr><td>{documento}</td><td>{documentos_first[documento][0]}</td><td>{documentos_first[documento][1]}</td></tr>"
         tabela_Geral += "</table>"
-        if system:
+        if second:
             tabela_Geral += "<br><table style='max-height:70vh; margin:auto; display:block; overflow-x: auto; overflow-y: auto; overflow:scroll;'>"
-            tabela_Geral += "<tr><th class='translateHtml'>SISTEMA</th><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th></tr>"
-            for documento in sorted(documentos_sistema):
-                tabela_Geral += f"<tr><td>{documento}</td><td>{documentos_sistema[documento][0]}</td><td>{documentos_sistema[documento][1]}</td></tr>"
+            tabela_Geral += "<tr><th class='translateHtml'>SECUNDÁRIO</th><th class='translateHtml'>Sentenças</th><th class='translateHtml'>Tokens</th></tr>"
+            for documento in sorted(documentos_second):
+                tabela_Geral += f"<tr><td>{documento}</td><td>{documentos_second[documento][0]}</td><td>{documentos_second[documento][1]}</td></tr>"
             tabela_Geral += "</table>"
     
 
     c = conllu(ud1).naked
-    depois = allCorpora.corpora[conllu(c).golden()]
+    depois = allCorpora.corpora[conllu(c).first()]
     antes = allCorpora.corpora[conllu(c).original()]
 
     lemas_diferentes = {}
@@ -483,15 +483,15 @@ def caracteristicasCorpus(ud1, ud2=""):
                 if token.lemma != depois.sentences[sentid].tokens[t].lemma:
                     if not token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma in lemas_diferentes:
                         lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma] = []
-                    lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red', 'id': token.id}})
+                    lemas_diferentes[token.lemma + "<depois>" + depois.sentences[sentid].tokens[t].lemma].append({'sent_id': sentid, 'first': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red', 'id': token.id}})
                 if token.upos != depois.sentences[sentid].tokens[t].upos:
                     if not token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos in upos_diferentes:
                         upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos] = []
-                    upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red', 'id': token.id}})
+                    upos_diferentes[token.upos + "<depois>" + depois.sentences[sentid].tokens[t].upos].append({'sent_id': sentid, 'first': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red', 'id': token.id}})
                 if token.deprel != depois.sentences[sentid].tokens[t].deprel:
                     if not token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel in deprel_diferentes:
                         deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel] = []
-                    deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel].append({'sent_id': sentid, 'golden': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red', 'id': token.id}})
+                    deprel_diferentes[token.deprel + "<depois>" + depois.sentences[sentid].tokens[t].deprel].append({'sent_id': sentid, 'first': sentence, 't': t, 'bold': {'word': token.word, 'color': 'red', 'id': token.id}})
     
     modificacoesCorpora.modificacoes[c] = {'lemma': lemas_diferentes, 'upos': upos_diferentes, 'deprel': deprel_diferentes}
 
@@ -516,14 +516,14 @@ def caracteristicasCorpus(ud1, ud2=""):
     total_lemas = sum([dicionario_Lemas[y] for y in dicionario_Lemas])
     tabela_Geral += "<div style='margin-top:10px; display:none' class='dist_lemas'>"
     tabela_Geral += "<div class='col-lg-6'><table>"
-    tabela_Geral += "<tr><th class='translateHtml'>Lemas em Golden</th><th>#</th><th>%</th></tr>"
+    tabela_Geral += "<tr><th class='translateHtml'>Lemas em Principal</th><th>#</th><th>%</th></tr>"
     tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas[x]}</td><td>{str((dicionario_Lemas[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas, reverse=False, key=lambda y: (-dicionario_Lemas[y], y))])
     tabela_Geral += "</table></div>"
 
-    if system:
+    if second:
         total_lemas = sum([dicionario_Lemas_s[y] for y in dicionario_Lemas_s])
         tabela_Geral += "<div class='col-lg-6'><table>"
-        tabela_Geral += "<tr><th class='translateHtml'>Lemas em Sistema</th><th>#</th><th>%</th></tr>"
+        tabela_Geral += "<tr><th class='translateHtml'>Lemas em Secundário</th><th>#</th><th>%</th></tr>"
         tabela_Geral += "".join([f"<tr><td>{x}</td><td>{dicionario_Lemas_s[x]}</td><td>{str((dicionario_Lemas_s[x]/total_lemas)*100)[:5]}%</td></tr>" for x in sorted(dicionario_Lemas_s, reverse=False, key=lambda y: (-dicionario_Lemas_s[y], y))])
         tabela_Geral += "</table></div>"
 
@@ -555,16 +555,16 @@ def caracteristicasCorpus(ud1, ud2=""):
     return tabela_Geral
 
 def sentAccuracy(ud1, ud2):
-    golden = allCorpora.corpora.get(conllu(ud1).golden())
-    system = allCorpora.corpora.get(conllu(ud2).system())
+    first = allCorpora.corpora.get(conllu(ud1).first())
+    second = allCorpora.corpora.get(conllu(ud2).second())
 
     sent_accuracy = [0, 0]
-    for sentid, sentence in golden.sentences.items():
-        if sentid in system.sentences and len(sentence.tokens) == len(system.sentences[sentid].tokens):
+    for sentid, sentence in first.sentences.items():
+        if sentid in second.sentences and len(sentence.tokens) == len(second.sentences[sentid].tokens):
             sent_accuracy[0] += 1
             acertos = 0
             for t, token in enumerate(sentence.tokens):
-                if system.sentences[sentid].tokens[t].upos == token.upos and system.sentences[sentid].tokens[t].dephead == token.dephead and system.sentences[sentid].tokens[t].deprel == token.deprel:
+                if second.sentences[sentid].tokens[t].upos == token.upos and second.sentences[sentid].tokens[t].dephead == token.dephead and second.sentences[sentid].tokens[t].deprel == token.deprel:
                     acertos += 1
             if acertos == len(sentence.tokens):
                 sent_accuracy[1] += 1
@@ -573,7 +573,7 @@ def sentAccuracy(ud1, ud2):
         <tr><th class='translateHtml'>Sentenças corretas</th><td>{correctSentences}</td><td>{percentCorrect}</td></tr>\
         </table>".format(
             comparableSentences=sent_accuracy[0],
-            percentSentences=f"{(sent_accuracy[0] / len(golden.sentences)) * 100}%",
+            percentSentences=f"{(sent_accuracy[0] / len(first.sentences)) * 100}%",
             correctSentences=sent_accuracy[1],
             percentCorrect=f"{(sent_accuracy[1] / sent_accuracy[0]) * 100}%",
     )
@@ -633,64 +633,62 @@ def paint_text(sentence, id1, color1, id2="", color2="", id3="", color3=""):
     return " ".join(text)
 
 def loadCorpus(x):
-    if os.path.isfile(conllu(x).findGolden()) and not os.path.isfile(conllu(x).findOriginal()):
-        shutil.copyfile(conllu(x).findGolden(), conllu(x).findOriginal())
-    if os.path.isfile(conllu(x).findSystem()) and not conllu(x).system() in allCorpora.corpora:
-        allCorpora.corpora[conllu(x).system()] = estrutura_ud.Corpus(recursivo=True)
-    if not conllu(x).golden() in allCorpora.corpora:
-        allCorpora.corpora[conllu(x).golden()] = estrutura_ud.Corpus(recursivo=True)
+    if os.path.isfile(conllu(x).findFirst()) and not os.path.isfile(conllu(x).findOriginal()):
+        shutil.copyfile(conllu(x).findFirst(), conllu(x).findOriginal())
+    if os.path.isfile(conllu(x).findSecond()) and not conllu(x).second() in allCorpora.corpora:
+        allCorpora.corpora[conllu(x).second()] = estrutura_ud.Corpus(recursivo=True)
+    if not conllu(x).first() in allCorpora.corpora:
+        allCorpora.corpora[conllu(x).first()] = estrutura_ud.Corpus(recursivo=True)
     if not conllu(x).original() in allCorpora.corpora:
         allCorpora.corpora[conllu(x).original()] = estrutura_ud.Corpus(recursivo=True)
-    if conllu(x).system() in allCorpora.corpora and not allCorpora.corpora[conllu(x).system()].sentences:
-        sys.stderr.write("\n>>>>>>>>>>>>>> loading system {}...".format(x))
+    if conllu(x).second() in allCorpora.corpora and not allCorpora.corpora[conllu(x).second()].sentences:
+        sys.stderr.write("\n>>>>>>>>>>>>>> loading second {}...".format(x))
         corpus = estrutura_ud.Corpus(recursivo=True)
-        corpus.load(conllu(x).findSystem())
-        allCorpora.corpora[conllu(x).system()].sentences = dict(corpus.sentences.items())
-        sys.stderr.write(" system ok <<<<<<<<")
+        corpus.load(conllu(x).findSecond())
+        allCorpora.corpora[conllu(x).second()].sentences = dict(corpus.sentences.items())
+        sys.stderr.write(" second ok <<<<<<<<")
     if conllu(x).original() in allCorpora.corpora and not allCorpora.corpora[conllu(x).original()].sentences:
         corpus = estrutura_ud.Corpus(recursivo=True)
         corpus.load(conllu(x).findOriginal())
         allCorpora.corpora[conllu(x).original()].sentences = dict(corpus.sentences.items())
-    if conllu(x).golden() in allCorpora.corpora and not allCorpora.corpora[conllu(x).golden()].sentences:
-        sys.stderr.write("\n>>>>>>>>>>>>>> loading {}...".format(x))
+    if conllu(x).first() in allCorpora.corpora and not allCorpora.corpora[conllu(x).first()].sentences:
+        sys.stderr.write("\n>>>>>>>>>>>>>> loading first {}...".format(x))
         corpus = estrutura_ud.Corpus(recursivo=True)
-        corpus.load(conllu(x).findGolden())
-        allCorpora.corpora[conllu(x).golden()].sentences = dict(corpus.sentences.items())
+        corpus.load(conllu(x).findFirst())
+        allCorpora.corpora[conllu(x).first()].sentences = dict(corpus.sentences.items())
         sys.stderr.write(" ok <<<<<<<<")
     corpus = ""
 
-def addDatabase(golden):
-    corpusdb = db.session.query(models.Corpus).get(conllu(golden).naked)
+def addDatabase(first):
+    corpusdb = db.session.query(models.Corpus).get(conllu(first).naked)
     if corpusdb:
         db.session.remove(corpusdb)
         db.session.commit()
     novoCorpus = models.Corpus(
-        name=conllu(golden).naked,
+        name=conllu(first).naked,
         date=str(datetime.datetime.now()),
         sentences=0,
-        about=request.values.get('sysAbout') if request.values.get('sysAbout') else ">",
+        about=request.values.get('sysAbout') if request.values.get('sysAbout') else "Editar descrição",
         partitions="",
-        goldenAlias='Golden',
-        systemAlias='Sistema'
     )
     db.session.add(novoCorpus)
     db.session.commit()
 
 def checkCorpora():
     availableCorpora = []
-    missingSystem = []
+    missingsecond = []
 
     for corpus in list(allCorpora.corpora.keys()):
-        if not os.path.isfile(conllu(corpus).findGolden()) and conllu(corpus).golden() in allCorpora.corpora:
-            allCorpora.corpora.pop(conllu(corpus).golden())
-            if conllu(corpus).system() in allCorpora.corpora:
-                allCorpora.corpora.pop(conllu(corpus).system())
+        if not os.path.isfile(conllu(corpus).findFirst()) and conllu(corpus).first() in allCorpora.corpora:
+            allCorpora.corpora.pop(conllu(corpus).first())
+            if conllu(corpus).second() in allCorpora.corpora:
+                allCorpora.corpora.pop(conllu(corpus).second())
             corpusdb = db.session.query(models.Corpus).get(conllu(corpus).naked)
             if corpusdb:
                 db.session.delete(corpusdb)
                 db.session.commit()
-            if os.path.isfile(conllu(corpus).findSystem()):
-                os.remove(conllu(corpus).findSystem())
+            if os.path.isfile(conllu(corpus).findSecond()):
+                os.remove(conllu(corpus).findSecond())
             if os.path.isfile(conllu(corpus).findOriginal()):
                 os.remove(conllu(corpus).findOriginal())
         if not os.path.isfile(conllu(corpus).findOriginal()) and conllu(corpus).original() in allCorpora.corpora:
@@ -699,28 +697,28 @@ def checkCorpora():
     if INTERROGATORIO:
         for x in os.listdir(COMCORHD_FOLDER):
             if os.path.getsize("{}/{}".format(COMCORHD_FOLDER, x))/1024/1000 < MAX_FILE_SIZE:
-                if x.endswith('.conllu') and os.path.isfile(f'{UPLOAD_FOLDER}/{conllu(x).system()}'):
+                if x.endswith('.conllu') and os.path.isfile(f'{UPLOAD_FOLDER}/{conllu(x).second()}'):
                     if not db.session.query(models.Corpus).get(conllu(x).naked):
                         addDatabase(x)
-                    availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).golden() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).golden()], str) else 0}]
+                    availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).first()].sentences) if conllu(x).first() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).first()], str) else 0}]
 
     for x in os.listdir(UPLOAD_FOLDER):
         if os.path.getsize("{}/{}".format(UPLOAD_FOLDER, x))/1024/1000 < MAX_FILE_SIZE:
-            if x.endswith('.conllu') and not x.endswith("_sistema.conllu") and not x.endswith("_original.conllu") and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(conllu(x).naked == k['nome'] for k in availableCorpora):
+            if x.endswith('.conllu') and not x.endswith("_second.conllu") and not x.endswith("_original.conllu") and os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).second()}") and not any(conllu(x).naked == k['nome'] for k in availableCorpora):
                 if not db.session.query(models.Corpus).get(conllu(x).naked):
                     addDatabase(x)
-                availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).golden()].sentences) if conllu(x).system() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).system()], str) else 0}]
+                availableCorpora += [{'nome': conllu(x).naked, 'data': db.session.query(models.Corpus).get(conllu(x).naked).date, 'sobre': db.session.query(models.Corpus).get(conllu(x).naked).about, 'sentences': len(allCorpora.corpora[conllu(x).first()].sentences) if conllu(x).second() in allCorpora.corpora and not isinstance(allCorpora.corpora[conllu(x).second()], str) else 0}]
 
     if INTERROGATORIO:
         for x in os.listdir(COMCORHD_FOLDER):
             if os.path.getsize("{}/{}".format(COMCORHD_FOLDER, x))/1024/1000 < MAX_FILE_SIZE:
-                if x.endswith('.conllu') and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}"):
-                    missingSystem += [conllu(x).naked]
+                if x.endswith('.conllu') and not any(x.endswith(y) for y in ['_second.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).second()}") and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}"):
+                    missingsecond += [conllu(x).naked]
 
     for x in os.listdir(UPLOAD_FOLDER):
         if os.path.getsize("{}/{}".format(UPLOAD_FOLDER, x))/1024/1000 < MAX_FILE_SIZE:
-            if x.endswith('.conllu') and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).system()}") and not any(x.endswith(y) for y in ['_sistema.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}") and not conllu(x).naked in missingSystem:
-                missingSystem += [conllu(x).naked]
+            if x.endswith('.conllu') and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).second()}") and not any(x.endswith(y) for y in ['_second.conllu', '_original.conllu']) and not os.path.isfile(f"{UPLOAD_FOLDER}/{conllu(x).inProgress()}") and not conllu(x).naked in missingsecond:
+                missingsecond += [conllu(x).naked]
     
     inProgress = [{'nome': conllu(x).naked, 'data': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(conllu(x).findInProgress())))} for x in os.listdir(UPLOAD_FOLDER) if x.endswith('_inProgress')]
     success = [{'nome': conllu(x).naked, 'data': time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(os.path.getmtime(conllu(x).findSuccess())))} for x in os.listdir(UPLOAD_FOLDER) if x.endswith('_success')]
@@ -733,8 +731,8 @@ def checkCorpora():
 
     return {
         'available': sorted(availableCorpora, key=lambda x: x['data'], reverse=True),
-        'missingSystem': sorted(missingSystem),
-        'onlyGolden': sorted(missingSystem),
+        'missingsecond': sorted(missingsecond),
+        'onlyfirst': sorted(missingsecond),
         'inProgress': sorted(inProgress, key=lambda x: x['data'], reverse=True),
         'success': sorted(success, key=lambda x: x['data'], reverse=True),
         'withFeatures': sorted(features),

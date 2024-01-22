@@ -11,7 +11,7 @@
 
     {% if corpora['available'] %}
     <div class="{{colCorpus}} panel panel-default">
-        <h3 class="translateHtml">Corpora prontos para julgamento</h3>
+        <h3 class="translateHtml">Corpora com versão secundária</h3>
         <input class='form-control filterAvailableCorpora translatePlaceholder' placeholder="Filtrar...">
         <ul class='list-group panel panel-body availableCorpora'>
             {{findCorpora(filtro='', tipo='available')|safe}}
@@ -19,12 +19,12 @@
     </div>
     {% endif %}
 
-    {% if corpora['onlyGolden'] %}
+    {% if corpora['onlyfirst'] %}
     <div class="{{colCorpus}} panel panel-default">
-        <h3 class="translateHtml">Material dourado pronto para julgamento</h3>
-        <input class='form-control filterOnlyGolden translatePlaceholder' placeholder="Filtrar...">
-        <ul class='list-group panel panel-body onlyGolden'>
-            {{findCorpora(filtro='', tipo='onlyGolden')|safe}}
+        <h3 class="translateHtml">Corpora prontos para julgamento</h3>
+        <input class='form-control filterOnlyfirst translatePlaceholder' placeholder="Filtrar...">
+        <ul class='list-group panel panel-body onlyfirst'>
+            {{findCorpora(filtro='', tipo='onlyfirst')|safe}}
         </ul>
     </div>
     {% endif %}

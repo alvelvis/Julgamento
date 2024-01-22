@@ -1,63 +1,63 @@
-{% if golden %}
+{% if first %}
 <div class="panel-body sentence" style="max-width:100%;">
     <div class="container fixedHeader" style="max-width:100%; padding-bottom:10px">
         <div class="header" style="padding-bottom:10px;">
-            <p><span title="Esta sentença já foi editada anteriormente" class="badge translateTitle alreadyEdited" style="background-color: red">{% if c and conllu(c).original() in allCorpora.corpora and golden.sent_id in allCorpora.corpora[conllu(c).golden()].sentences and golden.sent_id in allCorpora.corpora[conllu(c).original()].sentences and allCorpora.corpora[conllu(c).golden()].sentences[golden.sent_id].tokens_to_str() != allCorpora.corpora[conllu(c).original()].sentences[golden.sent_id].tokens_to_str() %}!{% endif %}</span> <span class="sent_id">{{ golden.sent_id or golden.id }}</span></p>
+            <p><span title="Esta sentença já foi editada anteriormente" class="badge translateTitle alreadyEdited" style="background-color: red">{% if c and conllu(c).original() in allCorpora.corpora and first.sent_id in allCorpora.corpora[conllu(c).first()].sentences and first.sent_id in allCorpora.corpora[conllu(c).original()].sentences and allCorpora.corpora[conllu(c).first()].sentences[first.sent_id].tokens_to_str() != allCorpora.corpora[conllu(c).original()].sentences[first.sent_id].tokens_to_str() %}!{% endif %}</span> <span class="sent_id">{{ first.sent_id or first.id }}</span></p>
             <p class="text">
-                {% if thirdBold %}{{ golden | paint_text(bold['id'], bold['color'], secBold['id'], secBold['color'], thirdBold['id'], thirdBold['color']) | safe }}
-                {% elif secBold %}{{ golden | paint_text(bold['id'], bold['color'], secBold['id'], secBold['color']) | safe }}
-                {% elif not bold %}{{ golden.text | safe }}
-                {% elif bold %}{{ golden | paint_text(bold['id'], bold['color']) | safe }}
+                {% if thirdBold %}{{ first | paint_text(bold['id'], bold['color'], secBold['id'], secBold['color'], thirdBold['id'], thirdBold['color']) | safe }}
+                {% elif secBold %}{{ first | paint_text(bold['id'], bold['color'], secBold['id'], secBold['color']) | safe }}
+                {% elif not bold %}{{ first.text | safe }}
+                {% elif bold %}{{ first | paint_text(bold['id'], bold['color']) | safe }}
                 {% endif %}
             </p>
             <p style="display:none" class="tokenIds">
                 <span style="font-weight:bold;" id="token_id"></span>
-                {% for x in golden.tokens %} <span class='token' style='cursor:pointer' token_id='{{re.sub("<.*?>", "", x.id)}}'>{{re.sub("<.*?>", "", x.word) if not '-' in x.id}}</span> {% endfor %}
+                {% for x in first.tokens %} <span class='token' style='cursor:pointer' token_id='{{re.sub("<.*?>", "", x.id)}}'>{{re.sub("<.*?>", "", x.word) if not '-' in x.id}}</span> {% endfor %}
             </p>
             <p style="display:none; max-height:20vh; overflow-y:auto;" class="phrases">
             </p>
         </div>
         <div class="btn-group" role="group">
-            <button type="button" title="Mostrar anotação golden" sent_id="{{golden.sent_id or golden.id}}" class="goldenButton translateTitle showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-user"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% elif rel %} {{rel}}{% endif %}</button>
-            {% if system %}
-                <button type="button" title="Mostrar anotação sistema" sent_id="{{golden.sent_id or golden.id}}" class="systemButton translateTitle showAnnotation showSystemAnnotation btn btn-default"><i class="fa fa-laptop"></i>{% if divergence %} {{ divergence['system']['category'] }}{% endif %}</button>
+            <button type="button" title="Mostrar anotação principal" sent_id="{{first.sent_id or first.id}}" class="firstButton translateTitle showAnnotation showfirstAnnotation btn btn-default"><i class="fa fa-user"></i>{% if divergence %} {{ divergence['first']['category'] }}{% elif rel %} {{rel}}{% endif %}</button>
+            {% if second %}
+                <button type="button" title="Mostrar anotação secundária" sent_id="{{first.sent_id or first.id}}" class="secondButton translateTitle showAnnotation showsecondAnnotation btn btn-default"><i class="fa fa-laptop"></i>{% if divergence %} {{ divergence['second']['category'] }}{% endif %}</button>
             {% endif %}
-            {% if goldenAndSystem %}
-                <!--button type="button" title="Editar golden e sistema ao mesmo tempo" sent_id="{{golden.sent_id or golden.id}}" class="editGoldenAndSystem translateTitle showAnnotation showGoldenAnnotation btn btn-default"><i class="fa fa-share"></i>{% if divergence %} {{ divergence['golden']['category'] }}{% endif %}</button-->
+            {% if firstAndsecond %}
+                <!--button type="button" title="Editar corpus principal e secundário ao mesmo tempo" sent_id="{{first.sent_id or first.id}}" class="editfirstAndsecond translateTitle showAnnotation showfirstAnnotation btn btn-default"><i class="fa fa-share"></i>{% if divergence %} {{ divergence['first']['category'] }}{% endif %}</button-->
             {% endif %}
-            {% if divergence and system %}
-            <!--button title="O sistema está certo! A coluna '{{col}}' do token '{{bold['word']}}' no arquivo golden será alterada para '{{ divergence['system']['category'] }}', e o token passará a apontar para '{{ divergence['system']['head']['word'] }}'" type="button" class="quickSendAnnotation btn btn-default"><span class='glyphicon glyphicon-flash'></span></button-->
-            <!--form class="quickFormAnnotation" style="display:none"><input type=hidden name="c" value="{{c}}"><input type=hidden name="sent_id" value="{{golden.sent_id}}"><input type=hidden name="{{ boldCol }}" value="{{ divergence['system']['category'] }}"><input type=hidden name="headToken" value="{{ divergence['system']['head']['id'] }}"><input type=hidden name="ud" value="ud1"></form-->
+            {% if divergence and second %}
+            <!--button title="O secundário está certo! A coluna '{{col}}' do token '{{bold['word']}}' no arquivo principal será alterada para '{{ divergence['second']['category'] }}', e o token passará a apontar para '{{ divergence['second']['head']['word'] }}'" type="button" class="quickSendAnnotation btn btn-default"><span class='glyphicon glyphicon-flash'></span></button-->
+            <!--form class="quickFormAnnotation" style="display:none"><input type=hidden name="c" value="{{c}}"><input type=hidden name="sent_id" value="{{first.sent_id}}"><input type=hidden name="{{ boldCol }}" value="{{ divergence['second']['category'] }}"><input type=hidden name="headToken" value="{{ divergence['second']['head']['id'] }}"><input type=hidden name="ud" value="ud1"></form-->
             {% endif %}
             <button type="button" id="cancelChanges" class="cancelChanges translateTitle btn btn-danger" title="Descartar alterações" style="display:none"><span class="glyphicon glyphicon-remove"></span></button>
-            <button type="button" title="Mostrar relação de tokens com id" sent_id="{{golden.sent_id or golden.id}}" class="showTokenIds translateTitle btn btn-default"><i class="fa fa-eye"></i></button>
-            <button type="button" title="Mostrar todos os sintagmas" sent_id="{{golden.sent_id or golden.id}}" class="showPhrases translateTitle btn btn-default"><i class="fa fa-tree"></i></button>
-            <button type="button" title="Filtrar sentenças" sent_id="{{golden.sent_id or golden.id}}" class="translateTitle filterThisSentenceBtn btn btn-default"><i class="fa fa-filter"></i></button>
-            <input type="hidden" class="goldenLabel" value="<i class='fa fa-user'></i>{% if divergence %} {{ divergence['golden']['category'] }}{% elif rel %} {{rel}}{% endif %}">
-            <input type="hidden" class="goldenAndSystemLabel" value="<i class='fa fa-share'></i>{% if divergence %} {{ divergence['golden']['category'] }}{% elif rel %} {{rel}}{% endif %}">
-            <input type="hidden" class="systemLabel" value="<i class='fa fa-laptop'></i>{% if divergence %} {{ divergence['system']['category'] }}{% endif %}">
+            <button type="button" title="Mostrar relação de tokens com id" sent_id="{{first.sent_id or first.id}}" class="showTokenIds translateTitle btn btn-default"><i class="fa fa-eye"></i></button>
+            <button type="button" title="Mostrar todos os sintagmas" sent_id="{{first.sent_id or first.id}}" class="showPhrases translateTitle btn btn-default"><i class="fa fa-tree"></i></button>
+            <button type="button" title="Filtrar sentenças" sent_id="{{first.sent_id or first.id}}" class="translateTitle filterThisSentenceBtn btn btn-default"><i class="fa fa-filter"></i></button>
+            <input type="hidden" class="firstLabel" value="<i class='fa fa-user'></i>{% if divergence %} {{ divergence['first']['category'] }}{% elif rel %} {{rel}}{% endif %}">
+            <input type="hidden" class="firstAndsecondLabel" value="<i class='fa fa-share'></i>{% if divergence %} {{ divergence['first']['category'] }}{% elif rel %} {{rel}}{% endif %}">
+            <input type="hidden" class="secondLabel" value="<i class='fa fa-laptop'></i>{% if divergence %} {{ divergence['second']['category'] }}{% endif %}">
         </div>
     </div>
     <form class="getAnnotation">
         <input type=hidden name="c" id="c" value="{{c}}">
-        <input type=hidden name="sent_id" value="{{golden.sent_id or golden.id}}">
+        <input type=hidden name="sent_id" value="{{first.sent_id or first.id}}">
         <input type=hidden name="ud" class="ud" value="">
         {% if t %}<input type=hidden name="bold" class="bold" value="{{t}}">{% endif %}
     </form>
-    <form class="sendGoldenAnnotation">
-        <input type=hidden name="goldenAndSystem" value="0">
+    <form class="sendfirstAnnotation">
+        <input type=hidden name="firstAndsecond" value="0">
         <input type=hidden name="c" value="{{c}}">
-        <input type=hidden name="sent_id" value="{{golden.sent_id or golden.id}}">
+        <input type=hidden name="sent_id" value="{{first.sent_id or first.id}}">
         <input type=hidden name="ud" value="ud1">
-        <div class="annotationGolden" style="display:none; overflow-x:auto;"></div>
+        <div class="annotationfirst" style="display:none; overflow-x:auto;"></div>
     </form>
-    {% if system %}
-    <form class="sendSystemAnnotation">
-        <input type=hidden name="goldenAndSystem" value="0">
+    {% if second %}
+    <form class="sendsecondAnnotation">
+        <input type=hidden name="firstAndsecond" value="0">
         <input type=hidden name="c" value="{{c}}">
-        <input type=hidden name="sent_id" value="{{system.sent_id or system.id}}">
+        <input type=hidden name="sent_id" value="{{second.sent_id or second.id}}">
         <input type=hidden name="ud" value="ud2">
-        <div class="annotationSystem" style="display:none; overflow-x:auto;"></div>
+        <div class="annotationsecond" style="display:none; overflow-x:auto;"></div>
     </form>
     {% endif %}
     <div class="modification">

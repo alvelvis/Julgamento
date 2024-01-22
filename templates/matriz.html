@@ -6,7 +6,7 @@
 <input type=hidden id="cat1" value ="{{ud1}}">
 <input type=hidden id="cat2" value ="{{ud2}}">
 
-<h1><span class='translateHtml'>Confusões entre</span> "{{ud1}}" (<span class='translateHtml'>golden</span>) <span class='translateHtml'>e</span> "{{ud2}}" (<span class='translateHtml'>sistema</span>)</h1>
+<h1><span class='translateHtml'>Confusões entre</span> "{{ud1}}" (<span class='translateHtml'>principal</span>) <span class='translateHtml'>e</span> "{{ud2}}" (<span class='translateHtml'>secundário</span>)</h1>
 <h3><span class='translateHtml'>Coluna:</span> {{ col }}</h3>
 <hr>
 {{ filter_sentences | safe }}
@@ -15,7 +15,7 @@
         <div class="panel-body">
             {{ loop.index }} / {{ sentences | length }}
         </div>
-        {% with sent_id=sentence['sent_id'], golden=sentence['golden'], system=sentence['system'], divergence=sentence['divergence'], bold=sentence['bold'], secBold=sentence['secBold'], col=sentence['col'].lower(), boldCol=sentence['boldCol'], thirdBold=sentence['thirdBold'], t=sentence['t'] %}
+        {% with sent_id=sentence['sent_id'], first=sentence['first'], second=sentence['second'], divergence=sentence['divergence'], bold=sentence['bold'], secBold=sentence['secBold'], col=sentence['col'].lower(), boldCol=sentence['boldCol'], thirdBold=sentence['thirdBold'], t=sentence['t'] %}
             {% include 'sentence.html' %}
         {% endwith %}
     </div>

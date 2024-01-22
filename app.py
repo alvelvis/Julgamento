@@ -42,7 +42,7 @@ modificacoesCorpora = Modificacoes()
 
 @app.route("/api/getPhrases", methods=["POST"])
 def getPhrases():
-	dist = getDistribution(allCorpora.corpora[conllu(request.values.get("c")).golden()], parametros='word = ".*" and sent_id = "' + request.values.get("sent_id") + '"', coluna="children")
+	dist = getDistribution(allCorpora.corpora[conllu(request.values.get("c")).first()], parametros='word = ".*" and sent_id = "' + request.values.get("sent_id") + '"', coluna="children")
 
 	return jsonify({
 		'html': "- " + "<br>- ".join(dist["all_children"]),
@@ -65,18 +65,18 @@ def changeAbout():
 def refreshTables():
 	if request.values.get("c") in modificacoesCorpora.modificacoes:
 		modificacoesCorpora.modificacoes.pop(request.values.get("c"))
-	allCorpora.corpora.pop(conllu(request.values.get("c")).golden())
+	allCorpora.corpora.pop(conllu(request.values.get("c")).first())
 	#allCorpora.corpora[] = ""
-	if conllu(request.values.get("c")).system() in allCorpora.corpora:
-		allCorpora.corpora.pop(conllu(request.values.get("c")).system())
+	if conllu(request.values.get("c")).second() in allCorpora.corpora:
+		allCorpora.corpora.pop(conllu(request.values.get("c")).second())
 	if os.path.isdir(os.path.abspath(os.path.join(UPLOAD_FOLDER, "CM-" + request.values.get("c")))):
 		shutil.rmtree(os.path.abspath(os.path.join(UPLOAD_FOLDER, "CM-" + request.values.get("c"))), ignore_errors=True)
-	if os.path.isfile(conllu(request.values.get("c")).findErrorsValidarUD()):
-		os.remove(conllu(request.values.get("c")).findErrorsValidarUD())
-	if os.path.isfile(conllu(request.values.get("c")).findErrors()):
-		os.remove(conllu(request.values.get("c")).findErrors())
-	if os.path.isfile(conllu(request.values.get("c")).findErrors() + "_html"):
-		os.remove(conllu(request.values.get("c")).findErrors() + "_html")
+	if os.path.isfile(conllu(request.values.get("c")).findErrorsET()):
+		os.remove(conllu(request.values.get("c")).findErrorsET())
+	if os.path.isfile(conllu(request.values.get("c")).findErrorsUD()):
+		os.remove(conllu(request.values.get("c")).findErrorsUD())
+	if os.path.isfile(conllu(request.values.get("c")).findErrorsUD() + "_html"):
+		os.remove(conllu(request.values.get("c")).findErrorsUD() + "_html")
 	return jsonify({'success': True})
 
 @app.route("/api/getCommits", methods="POST".split("|"))
@@ -93,17 +93,17 @@ def getCommits():
 			'success': True,
 		})
 
-@app.route("/api/cristianMarneffe", methods="POST".split("|"))
-def cristianMarneffe():
+@app.route("/api/inconsistent_ngrams", methods="POST".split("|"))
+def inconsistent_ngrams():
 	if not os.path.isfile(os.path.abspath(os.path.join(UPLOAD_FOLDER, "CM-" + request.values.get('c'), "results_" + request.values.get('tipo') + ".json"))):
 		if not 'win' in sys.platform:
-			os.system("'" + JULGAMENTO_FOLDER + "/.julgamento/bin/python3' \"{}/Cristian-Marneffe.py\" \"{}\" {}".format(
+			os.system("'" + JULGAMENTO_FOLDER + "/.julgamento/bin/python3' \"{}/inconsistent_ngrams.py\" \"{}\" {}".format(
 				JULGAMENTO_FOLDER,
-				conllu(request.values.get("c")).findGolden(), 
+				conllu(request.values.get("c")).findFirst(), 
 				request.values.get("tipo"),
 				))
 		else:
-			subprocess.Popen('"{}\\python.exe\" "{}\\Cristian-Marneffe.py" "{}" {}'.format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), os.path.abspath(os.path.dirname(__file__)), conllu(request.values.get("c")).findGolden(), request.values.get("tipo")), shell=False).wait()
+			subprocess.Popen('"{}\\python.exe\" "{}\\inconsistent_ngrams.py" "{}" {}'.format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), os.path.abspath(os.path.dirname(__file__)), conllu(request.values.get("c")).findFirst(), request.values.get("tipo")), shell=False).wait()
 
 	with open(UPLOAD_FOLDER + f"/CM-{request.values.get('c')}/results_{request.values.get('tipo')}.json") as f:
 		results = json.load(f) 
@@ -118,13 +118,13 @@ def cristianMarneffe():
 				html += f'<div class="panel panel-default"><div class="panel-body">{ k+1 } / { len(exemplo["frases"]) }</div>'
 				html += render_template(
 						'sentence.html',
-						golden=allCorpora.corpora[conllu(request.values.get("c")).golden()].sentences[frase["sent_id"]],
+						first=allCorpora.corpora[conllu(request.values.get("c")).first()].sentences[frase["sent_id"]],
 						c=request.values.get("c"),
-						t=allCorpora.corpora[conllu(request.values.get("c")).golden()].sentences[frase["sent_id"]].map_token_id[str(frase["id1"])],
+						t=allCorpora.corpora[conllu(request.values.get("c")).first()].sentences[frase["sent_id"]].map_token_id[str(frase["id1"])],
 						bold={'word': frase['WORD1'], 'color': 'red', 'id': str(frase["id1"])},
 						rel=frase["rel"],
 						secBold={'word': frase['WORD2'], 'color': 'blue', 'id': str(frase["id2"])},
-						goldenAndSystem=True if conllu(request.values.get("c")).system() in allCorpora.corpora else False
+						firstAndSecond=True if conllu(request.values.get("c")).second() in allCorpora.corpora else False
 						) + "</div>"
 	
 	return jsonify({
@@ -133,20 +133,20 @@ def cristianMarneffe():
 		'c': request.values.get('c'),
 	}) 
 
-@app.route('/api/getErrors', methods="POST".split("|"))
-def getErrors():
-	html = renderErrors(c=request.values.get("c"), exc=request.values.get('exceptions').split("|") if request.values.get('exceptions') else "", fromZero=True)
+@app.route('/api/getErrorsUD', methods="POST".split("|"))
+def getErrorsUD():
+	html = renderErrorsUD(c=request.values.get("c"), exc=request.values.get('exceptions').split("|") if request.values.get('exceptions') else "", fromZero=True)
 	return jsonify({
 		'html': html,
 		'success': True,
 		'c': request.values.get('c'),
 	})
 
-@app.route('/api/getErrorsValidarUD', methods="POST".split("|"))
+@app.route('/api/getErrorsET', methods="POST".split("|"))
 def getErrorsValidarUD():
 	html = ""
 
-	errors = validar_UD.validate(allCorpora.corpora[conllu(request.values.get("c")).golden()], errorList=VALIDAR_UD, noMissingToken=True)
+	errors = validar_UD.validate(allCorpora.corpora[conllu(request.values.get("c")).first()], errorList=VALIDAR_UD, noMissingToken=True)
 
 	if not errors:
 		html = "<div class='alert alert-warning translateHtml' role='alert'>Não foram encontrados erros de validação.</div>"
@@ -157,12 +157,12 @@ def getErrorsValidarUD():
 				html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(errors[error]) }</div>' + \
 					render_template(
 						'sentence.html',
-						golden=value['sentence'],
+						first=value['sentence'],
 						c=request.values.get("c"),
 						t=value['t'],
 						bold={'word': value['sentence'].tokens[value['t']].word, 'color': 'black', 'id': value['sentence'].tokens[value['t']].id},
 						rel=value['sentence'].tokens[value['t']].__dict__[value['attribute']],
-						goldenAndSystem=True if conllu(request.values.get("c")).system() in allCorpora.corpora else False,
+						firstAndSecond=True if conllu(request.values.get("c")).second() in allCorpora.corpora else False,
 					) + "</div>"
 			elif value['sent_id']:
 				html += f'<div class="panel panel-default"><div class="panel-body">{ i+1 } / { len(errors[error]) }: {value["sent_id"]}</div></div>'
@@ -180,16 +180,16 @@ def filterCorpora():
 		'success': True,
 	})
 
-@app.route('/api/deleteGolden', methods="POST|GET".split("|"))
-def deleteGolden():
-	if os.path.isfile(conllu(request.values.get("c")).findGolden()):
+@app.route('/api/deleteFirst', methods="POST|GET".split("|"))
+def deleteFirst():
+	if os.path.isfile(conllu(request.values.get("c")).findFirst()):
 		caracteristicasCorpus(request.values.get("c"))
-		os.remove(conllu(request.values.get("c")).findGolden())
+		os.remove(conllu(request.values.get("c")).findFirst())
 	if os.path.isfile(conllu(request.values.get("c")).findOriginal()):
 		os.remove(conllu(request.values.get("c")).findOriginal())
 	return render_template(
 		'upload.html',
-		success="Corpus golden \"" + request.values.get("c") + "\" deletado com sucesso!",
+		success="Corpus \"" + request.values.get("c") + "\" deletado com sucesso!",
 	)
 
 
@@ -199,23 +199,23 @@ def cancelTrain():
 		os.system('killall udpipe-1.2.0')
 		return redirect("/log?c=" + request.args.get('c'))
 	else:
-		if request.args.get('golden') == 'true':
-			if os.path.isfile(conllu(request.args.get("c")).findGolden()):
+		if request.args.get('first') == 'true':
+			if os.path.isfile(conllu(request.args.get("c")).findFirst()):
 				caracteristicasCorpus(request.values.get("c"))
-				os.remove(conllu(request.args.get("c")).findGolden())
+				os.remove(conllu(request.args.get("c")).findFirst())
 			if os.path.isfile(conllu(request.args.get("c")).findOriginal()):
 				os.remove(conllu(request.args.get("c")).findOriginal())
 			if conllu(request.values.get("c")).original in allCorpora.corpora:
 				allCorpora.corpora.pop(conllu(request.values.get("c")).original)
 		if os.path.isfile(conllu(request.args.get("c")).findInProgress()):
 			os.remove(conllu(request.args.get("c")).findInProgress())
-		if os.path.isfile(conllu(request.args.get("c")).findSystem()):
-			os.remove(conllu(request.args.get("c")).findSystem())
+		if os.path.isfile(conllu(request.args.get("c")).findSecond()):
+			os.remove(conllu(request.args.get("c")).findSecond())
 		corpus = db.session.query(models.Corpus).get(conllu(request.args.get('c')).naked)
-		if conllu(request.values.get("c")).golden() in allCorpora.corpora:
-			allCorpora.corpora.pop(conllu(request.values.get("c")).golden())
-		if conllu(request.values.get("c")).system() in allCorpora.corpora:
-			allCorpora.corpora.pop(conllu(request.values.get("c")).system())
+		if conllu(request.values.get("c")).first() in allCorpora.corpora:
+			allCorpora.corpora.pop(conllu(request.values.get("c")).first())
+		if conllu(request.values.get("c")).second() in allCorpora.corpora:
+			allCorpora.corpora.pop(conllu(request.values.get("c")).second())
 		if corpus:
 			db.session.delete(corpus)
 			db.session.commit()
@@ -268,8 +268,8 @@ def getTables():
 
 	elif table == 'matrix':
 		matrix_col = matrix_col.lower()
-		ud1Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud1')).golden())
-		ud2Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud2')).system())
+		ud1Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud1')).first())
+		ud2Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud2')).second())
 		listaPOS = confusao.get_list(ud1Estruturado, ud2Estruturado, col_to_idx.get(matrix_col, str(int(matrix_col.split("col")[1])-1)))
 		listaPOS1 = listaPOS['matriz_1']
 		listaPOS2 = listaPOS['matriz_2']
@@ -277,17 +277,17 @@ def getTables():
 		pd.options.display.max_columns = None
 		pd.set_option('display.expand_frame_repr', False)
 		return jsonify({
-			'html': '<h3 class="translateHtml">Matriz de confusão de {}</h3>'.format(matrix_col.upper()) + matrix(str(pd.crosstab(pd.Series(listaPOS1), pd.Series(listaPOS2), rownames=['golden'], colnames=['sistema'], margins=True)), request.values.get('c'), kind=matrix_col),
+			'html': '<h3 class="translateHtml">Matriz de confusão de {}</h3>'.format(matrix_col.upper()) + matrix(str(pd.crosstab(pd.Series(listaPOS1), pd.Series(listaPOS2), rownames=['first'], colnames=['secundário'], margins=True)), request.values.get('c'), kind=matrix_col),
 			'success': True,
 		})
 
-	elif table == 'errorLog':
+	elif table == 'errorUD':
 		return ""
 
-	elif table == 'errorValidarUD':
+	elif table == 'errorET':
 		return ""
 
-	elif table == 'cristianMarneffe':
+	elif table == 'inconsistent_ngrams':
 		return ""
 	
 
@@ -299,52 +299,52 @@ def upload(alert="", success=""):
 			formDB=formDB()
 		)
 
-	elif request.method == "POST" and 'goldenFile' in request.files:
-		goldenFile = request.files.get('goldenFile')
-		if goldenFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
-			goldenFileName = removerAcento(conllu(request.values.get('goldenName')).golden())
-			if (INTERROGATORIO and not os.path.isfile(os.path.abspath(os.path.join(COMCORHD_FOLDER, goldenFileName)))) or (not INTERROGATORIO and not os.path.isfile(os.path.abspath(os.path.join(UPLOAD_FOLDER, goldenFileName)))):
-				goldenFile.save(os.path.abspath(os.path.join(COMCORHD_FOLDER, goldenFileName))) if INTERROGATORIO else goldenFile.save(os.path.abspath(os.path.join(UPLOAD_FOLDER, goldenFileName)))
-				shutil.copyfile(conllu(goldenFileName).findGolden(), conllu(goldenFileName).findOriginal())
+	elif request.method == "POST" and 'firstFile' in request.files:
+		firstFile = request.files.get('firstFile')
+		if firstFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
+			firstFileName = removerAcento(conllu(request.values.get('firstName')).first())
+			if (INTERROGATORIO and not os.path.isfile(os.path.abspath(os.path.join(COMCORHD_FOLDER, firstFileName)))) or (not INTERROGATORIO and not os.path.isfile(os.path.abspath(os.path.join(UPLOAD_FOLDER, firstFileName)))):
+				firstFile.save(os.path.abspath(os.path.join(COMCORHD_FOLDER, firstFileName))) if INTERROGATORIO else firstFile.save(os.path.abspath(os.path.join(UPLOAD_FOLDER, firstFileName)))
+				shutil.copyfile(conllu(firstFileName).findFirst(), conllu(firstFileName).findOriginal())
 				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/Interrogat-rio'>Interrogatório</a>, ou, (2) "
-				success = f'"{goldenFileName}" enviado com sucesso! {textInterrogatorio if INTERROGATORIO else ""}Julgue-o na <a href="/corpus">página inicial</a>.'
+				success = f'"{firstFileName}" enviado com sucesso! {textInterrogatorio if INTERROGATORIO else ""}Julgue-o na <a href="/corpus">página inicial</a>.'
 			else:
-				alert = "Arquivo golden já existe na pasta."
+				alert = "Arquivo já existe na pasta."
 		else:
 			alert = 'Extensão deve estar entre "' + ",".join(ALLOWED_EXTENSIONS) + '"'
 
-	elif request.method == "POST" and 'systemFile' in request.files:
-		goldenFile = request.values.get('sysGoldenFile')
-		systemFile = request.files.get('systemFile')
-		if systemFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
-			systemFileName = conllu(goldenFile).system()
-			systemFile.save(os.path.abspath(os.path.join(UPLOAD_FOLDER, systemFileName)))
-			if not os.path.isfile(conllu(systemFileName).findOriginal()):
-				shutil.copyfile(conllu(systemFileName).findGolden(), conllu(systemFileName).findOriginal())
-			corpusGolden = estrutura_ud.Corpus(recursivo=False)
-			corpusSystem = estrutura_ud.Corpus(recursivo=False)
-			corpusGolden.load(conllu(goldenFile).findGolden())
-			corpusSystem.load(conllu(goldenFile).findSystem())
-			if len(corpusGolden.sentences) != len(corpusSystem.sentences):
-				alert = "Arquivo sistema não tem o mesmo número de sentenças do arquivo golden."
-				os.remove(conllu(goldenFile).findSystem())
+	elif request.method == "POST" and 'secondFile' in request.files:
+		firstFile = request.values.get('sysfirstFile')
+		secondFile = request.files.get('secondFile')
+		if secondFile.filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:			
+			secondFileName = conllu(firstFile).second()
+			secondFile.save(os.path.abspath(os.path.join(UPLOAD_FOLDER, secondFileName)))
+			if not os.path.isfile(conllu(secondFileName).findOriginal()):
+				shutil.copyfile(conllu(secondFileName).findFirst(), conllu(secondFileName).findOriginal())
+			corpusFirst = estrutura_ud.Corpus(recursivo=False)
+			corpusSecond = estrutura_ud.Corpus(recursivo=False)
+			corpusFirst.load(conllu(firstFile).findFirst())
+			corpusSecond.load(conllu(firstFile).findSecond())
+			if len(corpusFirst.sentences) != len(corpusSecond.sentences):
+				alert = "Segunda versão não tem o mesmo número de sentenças do arquivo principal."
+				os.remove(conllu(firstFile).findSecond())
 			else:
-				success = f'"{systemFileName}" enviado com sucesso! Julgue o corpus na <a href="/corpus">página inicial</a>.'
-				addDatabase(goldenFile)
-			#loadCorpus.submit(goldenFile)
-			del corpusGolden
-			del corpusSystem
+				success = f'"{secondFileName}" enviado com sucesso! Julgue o corpus na <a href="/corpus">página inicial</a>.'
+				addDatabase(firstFile)
+			#loadCorpus.submit(firstFile)
+			del corpusFirst
+			del corpusSecond
 		else:
 			alert = 'Extensão deve estar entre "' + ",".join(ALLOWED_EXTENSIONS) + '"'
 
 	elif request.method == 'POST' and 'trainFile' in request.values:
 		if not 'win' in sys.platform:
 			corpusTemporario = False
-			if os.path.isfile(COMCORHD_FOLDER + "/" + conllu(request.values.get('trainFile')).golden()):
-				os.system(f'cp {COMCORHD_FOLDER + "/" + conllu(request.values.get("trainFile")).golden()} {UPLOAD_FOLDER}')
-				corpusTemporario = f"; rm {UPLOAD_FOLDER}/{conllu(request.values.get('trainFile')).golden()} &"
+			if os.path.isfile(COMCORHD_FOLDER + "/" + conllu(request.values.get('trainFile')).first()):
+				os.system(f'cp {COMCORHD_FOLDER + "/" + conllu(request.values.get("trainFile")).first()} {UPLOAD_FOLDER}')
+				corpusTemporario = f"; rm {UPLOAD_FOLDER}/{conllu(request.values.get('trainFile')).first()} &"
 			if not request.values.get('crossvalidation'):
-				Popen(f"cd {UPLOAD_FOLDER}; cp {conllu(request.values.get('trainFile')).golden()} {conllu(request.values.get('trainFile')).naked + '_test'}.conllu; sh udpipe.sh {conllu(request.values.get('trainFile')).naked + '_test'} {request.values.get('partitions')} 2>&1 | tee -a {conllu(request.values.get('trainFile')).naked + '_test'}_inProgress {corpusTemporario if corpusTemporario else '&'}", shell=True)
+				Popen(f"cd {UPLOAD_FOLDER}; cp {conllu(request.values.get('trainFile')).first()} {conllu(request.values.get('trainFile')).naked + '_test'}.conllu; sh udpipe.sh {conllu(request.values.get('trainFile')).naked + '_test'} {request.values.get('partitions')} 2>&1 | tee -a {conllu(request.values.get('trainFile')).naked + '_test'}_inProgress {corpusTemporario if corpusTemporario else '&'}", shell=True)
 				nomeConllu = conllu(request.values.get('trainFile')).naked + "_test"
 			else:
 				Popen(f"cd {UPLOAD_FOLDER}; sh crossvalidation.sh {request.values.get('trainFile')} {request.values.get('partitions')} 2>&1 | tee -a {request.values.get('trainFile')}_inProgress {corpusTemporario if corpusTemporario else '&'}", shell=True)
@@ -354,10 +354,8 @@ def upload(alert="", success=""):
 					name=nomeConllu,
 					date=str(datetime.datetime.now()),
 					sentences=0,
-					about=request.values.get('about') if request.values.get('about') else ">",
+					about=request.values.get('about') if request.values.get('about') else "Editar descrição",
 					partitions=request.values.get('partitions'),
-					goldenAlias='Golden',
-					systemAlias='Sistema'
 				)
 				db.session.add(novoCorpus)
 				db.session.commit()
@@ -372,16 +370,16 @@ def upload(alert="", success=""):
 			sh = f"cd {UPLOAD_FOLDER}/repositories/{request.values.get('repoName')}; \
 					git pull; \
 						git checkout {request.values.get('repoCommit').split(' | commit ')[1]}; \
-							cat documents/*.conllu > {conllu(removerAcento(request.values.get('repoCorpusName'))).findGolden()}; \
+							cat documents/*.conllu > {conllu(removerAcento(request.values.get('repoCorpusName'))).findFirst()}; \
 								cat documents/*.conllu > {conllu(removerAcento(request.values.get('repoCorpusName'))).findOriginal()}"
 			if request.values.get('criarRamo'):
 				sh += f"; git checkout -b {removerAcento(request.values.get('repoCorpusName'))}; \
 							git push --set-upstream origin {removerAcento(request.values.get('repoCorpusName'))}"
 
-			if not os.path.isfile(f"{conllu(removerAcento(request.values.get('repoCorpusName'))).findGolden()}"):
+			if not os.path.isfile(f"{conllu(removerAcento(request.values.get('repoCorpusName'))).findFirst()}"):
 				os.system(sh)
 				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/interrogat-rio'>Interrogatório</a>, ou, (2) "
-				success = f"Corpus {'e ramo ' if request.values.get('criarRamo') else ''}\"{removerAcento(request.values.get('repoCorpusName'))}\" criado{'s' if request.values.get('criarRamo') else ''} com sucesso! {textInterrogatorio if INTERROGATORIO else ''}Para prosseguir com o julgamento, treine um modelo a partir desse corpus clicando no menu lateral \"Treinar um modelo\" ou envie um arquivo sistema equivalente ao corpus."
+				success = f"Corpus {'e ramo ' if request.values.get('criarRamo') else ''}\"{removerAcento(request.values.get('repoCorpusName'))}\" criado{'s' if request.values.get('criarRamo') else ''} com sucesso! {textInterrogatorio if INTERROGATORIO else ''}Para prosseguir com o julgamento, treine um modelo a partir desse corpus clicando no menu lateral \"Treinar um modelo\" ou envie uma segunda versão desse corpus."
 			else:
 				alert = f"Corpus com o nome '{removerAcento(request.values.get('repoCorpusName'))}' já existe."
 		else:
@@ -398,24 +396,24 @@ def upload(alert="", success=""):
 @app.route('/api/getCatSents', methods="POST".split("|"))
 def getCatSents():
 	html = f'<h3>{request.values.get("tipo")}</h3>'
-	sentences = categoryAccuracy(conllu(request.values.get('c')).findGolden(), conllu(request.values.get('c')).findSystem(), request.values.get('c'), request.values.get('coluna'))['UAS'][request.values.get('deprel')][request.values.get('tipo')][1]
-	corpusGolden = allCorpora.corpora[conllu(request.values.get('c')).golden()]
-	corpusSystem = allCorpora.corpora[conllu(request.values.get('c')).system()]
+	sentences = categoryAccuracy(conllu(request.values.get('c')).findFirst(), conllu(request.values.get('c')).findSecond(), request.values.get('c'), request.values.get('coluna'))['UAS'][request.values.get('deprel')][request.values.get('tipo')][1]
+	corpusFirst = allCorpora.corpora[conllu(request.values.get('c')).first()]
+	corpusSecond = allCorpora.corpora[conllu(request.values.get('c')).second()]
 	for i, sentence in enumerate(sentences):
 		html += f'<div class="panel panel-default"><div class="panel-body">{i+1} / {len(sentences)}</div>' + render_template(
 			'sentence.html',
-			golden=corpusGolden.sentences[sentence[0]],
-			system=corpusSystem.sentences[sentence[0]],
+			first=corpusFirst.sentences[sentence[0]],
+			second=corpusSecond.sentences[sentence[0]],
 			c=request.values.get('c'),
-			bold={'word': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].word, 'color': 'black', 'id': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].id},
-			secBold={'word': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.word, 'color': 'green', 'id': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.id},
-			thirdBold={'word': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.word, 'color': 'red', 'id': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.id},
+			bold={'word': corpusFirst.sentences[sentence[0]].tokens[sentence[1]].word, 'color': 'black', 'id': corpusFirst.sentences[sentence[0]].tokens[sentence[1]].id},
+			secBold={'word': corpusFirst.sentences[sentence[0]].tokens[sentence[1]].head_token.word, 'color': 'green', 'id': corpusFirst.sentences[sentence[0]].tokens[sentence[1]].head_token.id},
+			thirdBold={'word': corpusSecond.sentences[sentence[0]].tokens[sentence[1]].head_token.word, 'color': 'red', 'id': corpusSecond.sentences[sentence[0]].tokens[sentence[1]].head_token.id},
 			col=request.values.get('coluna').lower(),
 			boldCol=f'{request.values.get("coluna").lower()}<coluna>{sentence[1]}',
 			t=sentence[1],
 			divergence={
-				'system': {'category': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].__dict__[request.values.get('coluna').lower()], 'head': {'id': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.id, 'word': corpusSystem.sentences[sentence[0]].tokens[sentence[1]].head_token.word}},
-				'golden': {'category': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].__dict__[request.values.get('coluna').lower()], 'head': {'id': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.id, 'word': corpusGolden.sentences[sentence[0]].tokens[sentence[1]].head_token.word}},
+				'second': {'category': corpusSecond.sentences[sentence[0]].tokens[sentence[1]].__dict__[request.values.get('coluna').lower()], 'head': {'id': corpusSecond.sentences[sentence[0]].tokens[sentence[1]].head_token.id, 'word': corpusSecond.sentences[sentence[0]].tokens[sentence[1]].head_token.word}},
+				'first': {'category': corpusFirst.sentences[sentence[0]].tokens[sentence[1]].__dict__[request.values.get('coluna').lower()], 'head': {'id': corpusFirst.sentences[sentence[0]].tokens[sentence[1]].head_token.id, 'word': corpusFirst.sentences[sentence[0]].tokens[sentence[1]].head_token.word}},
 			},
 		) + '</div>'
 
@@ -426,21 +424,21 @@ def getCatSents():
 
 @app.route('/api/sendAnnotation', methods="POST".split("|"))
 def sendAnnotation():
-	goldenAndSystem = int(request.values.get('goldenAndSystem'))
+	firstAndsecond = int(request.values.get('firstAndsecond'))
 	change = False
 	attention = ""
 	if any('<coluna>' in data and request.values.get(data) for data in request.values):
 		sent_id = request.values.get('sent_id')
-		arquivo = conllu(request.values.get('c')).findGolden() if request.values.get('ud') == 'ud1' else conllu(request.values.get('c')).findSystem()
-		if goldenAndSystem:
-			arquivoSystem = conllu(request.values.get('c')).findSystem()
+		arquivo = conllu(request.values.get('c')).findFirst() if request.values.get('ud') == 'ud1' else conllu(request.values.get('c')).findSecond()
+		if firstAndsecond:
+			arquivosecond = conllu(request.values.get('c')).findSecond()
 		
 		corpus = estrutura_ud.Corpus(recursivo=False, sent_id=request.values.get('sent_id'))
 		corpus.load(arquivo)
 
-		if goldenAndSystem:
-			corpusSystem = estrutura_ud.Corpus(recursivo=False, sent_id=request.values.get('sent_id'))
-			corpusSystem.load(arquivoSystem)
+		if firstAndsecond:
+			corpusSecond = estrutura_ud.Corpus(recursivo=False, sent_id=request.values.get('sent_id'))
+			corpusSecond.load(arquivosecond)
 
 		for data in request.values:
 			if '<coluna>' in data and request.values.get(data):
@@ -454,21 +452,21 @@ def sendAnnotation():
 					if request.values.get('headToken'):
 						corpus.sentences[sent_id].tokens[token].dephead = headTokenNum
 					change = True
-					allCorpora.corpora[conllu(request.values.get("c")).golden()].sentences[sent_id].tokens[token].__dict__[coluna] = valor
+					allCorpora.corpora[conllu(request.values.get("c")).first()].sentences[sent_id].tokens[token].__dict__[coluna] = valor
 				
-				if goldenAndSystem:
-					if corpusSystem.sentences[sent_id].tokens[token].__dict__[coluna] != valor:
-						corpusSystem.sentences[sent_id].tokens[token].__dict__[coluna] = valor
+				if firstAndsecond:
+					if corpusSecond.sentences[sent_id].tokens[token].__dict__[coluna] != valor:
+						corpusSecond.sentences[sent_id].tokens[token].__dict__[coluna] = valor
 						if request.values.get('headToken'):
 							corpus.sentences[sent_id].tokens[token].dephead = headTokenNum
 						change = True
-						allCorpora.corpora[conllu(request.values.get("c")).system()].sentences[sent_id].tokens[token].__dict__[coluna] = valor
+						allCorpora.corpora[conllu(request.values.get("c")).second()].sentences[sent_id].tokens[token].__dict__[coluna] = valor
 
 		attention = []
 		if change:
 			corpus.save(arquivo)
-			if goldenAndSystem:
-				corpusSystem.save(arquivoSystem)
+			if firstAndsecond:
+				corpusSecond.save(arquivosecond)
 			errors = validar_UD.validate(corpus, errorList=VALIDAR_UD, noMissingToken=True, sent_id=request.values.get('sent_id'))
 			if errors:
 				for error in errors:
@@ -480,7 +478,7 @@ def sendAnnotation():
 						attention += ["</ul>"]
 
 		del corpus
-		if "corpusSystem" in globals(): del corpusSystem
+		if "corpusSecond" in globals(): del corpusSecond
 		attention = "\n".join(attention)
 
 	return jsonify({
@@ -516,7 +514,7 @@ def getAnnotation():
 
 	if request.values.get('ud') == 'ud1':
 		ud1 = estrutura_ud.Corpus(recursivo=False, sent_id=request.values.get('sent_id'))
-		ud1.load(conllu(request.values.get('c')).findGolden())
+		ud1.load(conllu(request.values.get('c')).findFirst())
 		bold = request.values.get('bold') or ""
 		annotationUd1 = escape(ud1.sentences.get(request.values.get('sent_id')).tokens_to_str())
 
@@ -534,7 +532,7 @@ def getAnnotation():
 
 	elif request.values.get('ud') == 'ud2':
 		ud2 = estrutura_ud.Corpus(recursivo=False, sent_id=request.values.get('sent_id'))
-		ud2.load(conllu(request.values.get('c')).findSystem())
+		ud2.load(conllu(request.values.get('c')).findSecond())
 		bold = request.values.get('bold') or ""
 		annotationUd2 = escape(ud2.sentences.get(request.values.get('sent_id')).tokens_to_str())
 
@@ -601,7 +599,7 @@ def corpus():
 		return render_template(
 			'catAccuracy.html',
 			c=request.values.get('c'),
-			conteudo=categoryAccuracy(conllu(request.values.get('c')).findGolden(), conllu(request.values.get('c')).findSystem(), request.values.get('c'), 'DEPREL')['UAS'][request.args.get('DEPREL')],
+			conteudo=categoryAccuracy(conllu(request.values.get('c')).findFirst(), conllu(request.values.get('c')).findSecond(), request.values.get('c'), 'DEPREL')['UAS'][request.args.get('DEPREL')],
 			deprel=request.args.get('DEPREL'),
 			coluna='DEPREL',
 		)
@@ -610,16 +608,16 @@ def corpus():
 		return render_template(
 			'catAccuracy.html',
 			c=request.values.get('c'),
-			conteudo=categoryAccuracy(conllu(request.values.get('c')).findGolden(), conllu(request.values.get('c')).findSystem(), request.values.get('c'), 'UPOS')['UAS'][request.args.get('UPOS')],
+			conteudo=categoryAccuracy(conllu(request.values.get('c')).findFirst(), conllu(request.values.get('c')).findSecond(), request.values.get('c'), 'UPOS')['UAS'][request.args.get('UPOS')],
 			deprel=request.args.get('UPOS'),
 			coluna='UPOS',
 		)
 
 	elif request.args.get("action") and request.args.get("action") == "destroy":
-		if conllu(request.args.get("c")).golden() in allCorpora.corpora:
-			del allCorpora.corpora[conllu(request.args.get("c")).golden()]
-		if conllu(request.args.get("c")).system() in allCorpora.corpora:
-			del allCorpora.corpora[conllu(request.args.get("c")).system()]
+		if conllu(request.args.get("c")).first() in allCorpora.corpora:
+			del allCorpora.corpora[conllu(request.args.get("c")).first()]
+		if conllu(request.args.get("c")).second() in allCorpora.corpora:
+			del allCorpora.corpora[conllu(request.args.get("c")).second()]
 		if conllu(request.args.get("c")).original() in allCorpora.corpora:
 			del allCorpora.corpora[conllu(request.args.get("c")).original()]
 		return redirect('/corpus')
@@ -630,6 +628,7 @@ def corpus():
 			c = request.args.get('c'),
 			sobre = db.session.query(models.Corpus).get(request.args.get('c')).about if db.session.query(models.Corpus).get(request.args.get('c')) else "Sem informação",
 			pagina = "tables",
+			interrogatorio = INTERROGATORIO,
 		)
 
 @app.route("/")
@@ -657,7 +656,7 @@ app.jinja_env.filters['paint_text'] = paint_text
 app.jinja_env.filters['sortLambda'] = sortLambda
 app.jinja_env.globals.update(re=re)
 app.jinja_env.globals.update(conllu=conllu)
-app.jinja_env.globals.update(comcorhd=globals()['INTERROGATORIO'])
+app.jinja_env.globals.update(comcorhd=globals()['COMCORHD'])
 app.jinja_env.globals.update(upload_folder=UPLOAD_FOLDER)
 app.jinja_env.globals.update(checkCorpora=checkCorpora)
 app.jinja_env.globals.update(checkRepo=checkRepo)

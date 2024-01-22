@@ -11,7 +11,7 @@
 <!--div class="container"-->
     <div class="col-lg-2" style="position:sticky; top:100px; overflow:auto; max-height: 60vh;">
         <table id="t01">
-            <thead><tr><th class="translateHtml">Golden</th><th class="translateHtml">Sistema</th><th>#</th></thead></tr><!--<th>%</th>-->
+            <thead><tr><th class="translateHtml">Principal</th><th class="translateHtml">Secundário</th><th>#</th></thead></tr><!--<th>%</th>-->
             {% for tipo in conteudo | sortLambda(lambdaattr=0, reverse=True) %}
                 <tr><td>{{tipo.split("/")[0]}}</td><td>{{tipo.split("/")[1]}}</td><td><a class="catSent" tipo="{{tipo}}" coluna="{{coluna}}" deprel="{{deprel}}" c="{{c}}" href="#">{{conteudo[tipo][0]}}</a></td></tr><!--<td>{{'%0.4f'| format((conteudo[tipo][0]/ conteudo.values() | sum(0) )*100)}}%</td>-->
             {% endfor %}
