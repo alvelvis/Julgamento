@@ -473,7 +473,7 @@ $(document).ready(function(){
                 fromZero: false,
             },
             success: function(data){
-                $('#errorUD').html('<h3 class="translateHtml">Detecção de erros segundo o script UD</h3>O script de erros é obtido do repositório UniversalDependencies/tools no Github' + data['html'] + "</div>");
+                $('#errorUD').html('<h3 class="translateHtml">Detecção de erros segundo o script UD</h3>O script de erros é obtido do repositório UniversalDependencies/tools no Github<hr>' + data['html'] + "</div>");
                 $('#errorUD').show();
                 atualizar();
             }
@@ -490,7 +490,7 @@ $(document).ready(function(){
                 c: $('#c').val(),
             },
             success: function(data){
-                $('#errorET').html('<h3 class="translateHtml">Detecção de erros segundo o script da ET</h3>O script de erros pode ser editado no arquivo Julgamento/validar_UD.txt' + data['html'] + "</div>");
+                $('#errorET').html('<h3 class="translateHtml">Detecção de erros segundo o script da ET</h3>O script de erros pode ser editado no arquivo Julgamento/validar_UD.txt<hr>' + data['html'] + "</div>");
                 $('#errorET').show();
                 atualizar();
             }
