@@ -18,9 +18,9 @@
             </p>
         </div>
         <div class="btn-group" role="group">
-            <button type="button" title="Mostrar anotação principal" sent_id="{{first.sent_id or first.id}}" class="firstButton translateTitle showAnnotation showfirstAnnotation btn btn-default"><i class="fa fa-user"></i>{% if divergence %} {{ divergence['first']['category'] }}{% elif rel %} {{rel}}{% endif %}</button>
+            <button type="button" title="Mostrar anotação principal" sent_id="{{first.sent_id or first.id}}" class="firstButton translateTitle showAnnotation showfirstAnnotation btn btn-default">1️⃣ {% if divergence %}{{ divergence['first']['category'] }}{% elif rel %}{{rel}}{% endif %}</button>
             {% if second %}
-                <button type="button" title="Mostrar anotação secundária" sent_id="{{first.sent_id or first.id}}" class="secondButton translateTitle showAnnotation showsecondAnnotation btn btn-default"><i class="fa fa-laptop"></i>{% if divergence %} {{ divergence['second']['category'] }}{% endif %}</button>
+                <button type="button" title="Mostrar anotação secundária" sent_id="{{first.sent_id or first.id}}" class="secondButton translateTitle showAnnotation showsecondAnnotation btn btn-default">2️⃣ {% if divergence %}{{ divergence['second']['category'] }}{% endif %}</button>
             {% endif %}
             {% if firstAndsecond %}
                 <!--button type="button" title="Editar corpus principal e secundário ao mesmo tempo" sent_id="{{first.sent_id or first.id}}" class="editfirstAndsecond translateTitle showAnnotation showfirstAnnotation btn btn-default"><i class="fa fa-share"></i>{% if divergence %} {{ divergence['first']['category'] }}{% endif %}</button-->
@@ -33,9 +33,9 @@
             <button type="button" title="Mostrar relação de tokens com id" sent_id="{{first.sent_id or first.id}}" class="showTokenIds translateTitle btn btn-default"><i class="fa fa-eye"></i></button>
             <button type="button" title="Mostrar todos os sintagmas" sent_id="{{first.sent_id or first.id}}" class="showPhrases translateTitle btn btn-default"><i class="fa fa-tree"></i></button>
             <button type="button" title="Filtrar sentenças" sent_id="{{first.sent_id or first.id}}" class="translateTitle filterThisSentenceBtn btn btn-default"><i class="fa fa-filter"></i></button>
-            <input type="hidden" class="firstLabel" value="<i class='fa fa-user'></i>{% if divergence %} {{ divergence['first']['category'] }}{% elif rel %} {{rel}}{% endif %}">
+            <input type="hidden" class="firstLabel" value="1️⃣ {% if divergence %} {{ divergence['first']['category'] }}{% elif rel %} {{rel}}{% endif %}">
             <input type="hidden" class="firstAndsecondLabel" value="<i class='fa fa-share'></i>{% if divergence %} {{ divergence['first']['category'] }}{% elif rel %} {{rel}}{% endif %}">
-            <input type="hidden" class="secondLabel" value="<i class='fa fa-laptop'></i>{% if divergence %} {{ divergence['second']['category'] }}{% endif %}">
+            <input type="hidden" class="secondLabel" value="2️⃣ {% if divergence %} {{ divergence['second']['category'] }}{% endif %}">
         </div>
     </div>
     <form class="getAnnotation">

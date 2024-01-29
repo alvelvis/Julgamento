@@ -217,7 +217,7 @@ function atualizar(){
             url: '/api/getAnnotation',
             type: 'POST',
             success: function(data){
-                $button.html("<span class='glyphicon glyphicon-ok'></span> " + $button.siblings($firstLabel).val().split('</i>')[1]);
+                $button.html("<span class='glyphicon glyphicon-ok'></span> " + $button.siblings($firstLabel).val().split(' ')[1]);
                 $button.siblings('.cancelChanges').show();
                 $button.attr('title', $title);
                 $button.removeClass('btn-default').addClass('btn-success').removeClass('showfirstAnnotation').addClass('hidefirstAnnotation');
@@ -284,7 +284,7 @@ function atualizar(){
             type: 'POST',
             success: function(data){
                 $button.siblings('.cancelChanges').show();
-                $button.html("<span class='glyphicon glyphicon-ok'></span>" + $button.siblings('.secondLabel').val().split('</i>')[1]);
+                $button.html("<span class='glyphicon glyphicon-ok'></span>" + $button.siblings('.secondLabel').val().split(' ')[1]);
                 $button.attr('title', 'Salvar secundário');
                 $button.removeClass('btn-default').addClass('btn-success').removeClass('showsecondAnnotation').addClass('hidesecondAnnotation');
                 $button.parents('.panel-body').find('.annotationsecond').html(data['annotationUd2']);
