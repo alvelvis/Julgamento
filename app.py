@@ -270,14 +270,14 @@ def getTables():
 		matrix_col = matrix_col.lower()
 		ud1Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud1')).first())
 		ud2Estruturado = allCorpora.corpora.get(conllu(request.values.get('ud2')).second())
-		listaPOS = confusao.get_list(ud1Estruturado, ud2Estruturado, col_to_idx.get(matrix_col, str(int(matrix_col.split("col")[1])-1)))
+		listaPOS = confusao.get_list(ud1Estruturado, ud2Estruturado, matrix_col)
 		listaPOS1 = listaPOS['matriz_1']
 		listaPOS2 = listaPOS['matriz_2']
 		pd.options.display.max_rows = None
 		pd.options.display.max_columns = None
 		pd.set_option('display.expand_frame_repr', False)
 		return jsonify({
-			'html': '<h3 class="translateHtml">Matriz de confusão de {}</h3>'.format(matrix_col.upper()) + matrix(str(pd.crosstab(pd.Series(listaPOS1), pd.Series(listaPOS2), rownames=['first'], colnames=['secundário'], margins=True)), request.values.get('c'), kind=matrix_col),
+			'html': '<h3 class="translateHtml">Matriz de confusão de {}</h3>'.format(matrix_col.upper()) + matrix(str(pd.crosstab(pd.Series(listaPOS1), pd.Series(listaPOS2), rownames=['principal'], colnames=['secundário'], margins=True)), request.values.get('c'), kind=matrix_col),
 			'success': True,
 		})
 

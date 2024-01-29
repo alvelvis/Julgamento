@@ -10,8 +10,7 @@
 <input type="hidden" id="c" value="{{c}}">
 <h1>{{c}}</h1>
 {% if conllu(c).second() in allCorpora.corpora %}<h4><i title="Edite a descrição do corpus" class="translateTitle fa fa-edit"></i> <div class="sobreCorpus" style="display:inline-block;" contenteditable>{{ sobre | safe }}</div></h4>{% endif %}
-<h4><span class="translateHtml">Principal:</span> {{ conllu(c).naked }}{% if interrogatorio %} (armazenado na pasta do Interrogatório){% endif %}</h4>
-{% if conllu(c).second() in allCorpora.corpora %}<h4><span class="translateHtml">Secundário:</span> {{ conllu(c).findSecond().naked }}</h4>{% endif %}
+{% if interrogatorio %}<h4>CoNLL-U principal armazenado na pasta do Interrogatório</h4>{% endif %}
 <hr>
 <div class="col-lg-4 col-lg-offset-4 panel panel-default">
     <div class="panel-body">
