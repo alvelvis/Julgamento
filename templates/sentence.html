@@ -2,7 +2,7 @@
 <div class="panel-body sentence" style="max-width:100%;">
     <div class="container fixedHeader" style="max-width:100%; padding-bottom:10px">
         <div class="header" style="padding-bottom:10px;">
-            <p><span title="Esta sentença já foi editada anteriormente" class="badge translateTitle alreadyEdited" style="background-color: red">{% if c and conllu(c).original() in allCorpora.corpora and first.sent_id in allCorpora.corpora[conllu(c).first()].sentences and first.sent_id in allCorpora.corpora[conllu(c).original()].sentences and allCorpora.corpora[conllu(c).first()].sentences[first.sent_id].tokens_to_str() != allCorpora.corpora[conllu(c).original()].sentences[first.sent_id].tokens_to_str() %}!{% endif %}</span> <span class="sent_id">{{ first.sent_id or first.id }}</span></p>
+            <!--p><span title="Esta sentença já foi editada anteriormente" class="badge translateTitle alreadyEdited" style="background-color: red">{% if c and conllu(c).original() in allCorpora.corpora and first.sent_id in allCorpora.corpora[conllu(c).first()].sentences and first.sent_id in allCorpora.corpora[conllu(c).original()].sentences and allCorpora.corpora[conllu(c).first()].sentences[first.sent_id].tokens_to_str() != allCorpora.corpora[conllu(c).original()].sentences[first.sent_id].tokens_to_str() %}!{% endif %}</span> <span class="sent_id">{{ first.sent_id or first.id }}</span></p-->
             <p class="text">
                 {% if thirdBold %}{{ first | paint_text(bold['id'], bold['color'], secBold['id'], secBold['color'], thirdBold['id'], thirdBold['color']) | safe }}
                 {% elif secBold %}{{ first | paint_text(bold['id'], bold['color'], secBold['id'], secBold['color']) | safe }}
@@ -26,16 +26,16 @@
                 <!--button type="button" title="Editar corpus principal e secundário ao mesmo tempo" sent_id="{{first.sent_id or first.id}}" class="editfirstAndsecond translateTitle showAnnotation showfirstAnnotation btn btn-default"><i class="fa fa-share"></i>{% if divergence %} {{ divergence['first']['category'] }}{% endif %}</button-->
             {% endif %}
             {% if divergence and second %}
-            <!--button title="O secundário está certo! A coluna '{{col}}' do token '{{bold['word']}}' no arquivo principal será alterada para '{{ divergence['second']['category'] }}', e o token passará a apontar para '{{ divergence['second']['head']['word'] }}'" type="button" class="quickSendAnnotation btn btn-default"><span class='glyphicon glyphicon-flash'></span></button-->
-            <!--form class="quickFormAnnotation" style="display:none"><input type=hidden name="c" value="{{c}}"><input type=hidden name="sent_id" value="{{first.sent_id}}"><input type=hidden name="{{ boldCol }}" value="{{ divergence['second']['category'] }}"><input type=hidden name="headToken" value="{{ divergence['second']['head']['id'] }}"><input type=hidden name="ud" value="ud1"></form-->
+            <button title='Anotação rápida: A coluna {{col}} do token "{{bold["word"]}}" no arquivo principal será alterada para "{{ divergence["second"]["category"] }}"' type="button" class="quickSendAnnotation btn btn-default"><span class='glyphicon glyphicon-flash'></span> {{ divergence['second']['category'] }}</button>
+            <form class="quickFormAnnotation" style="display:none"><input type=hidden name="firstAndsecond" value="0"><input type=hidden name="c" value="{{c}}"><input type=hidden name="sent_id" value="{{first.sent_id}}"><input type=hidden name="{{ boldCol }}" value="{{ divergence['second']['category'] }}"><input type=hidden name="headToken" value="{{ divergence['second']['head']['id'] }}"><input type=hidden name="ud" value="ud1"></form>
             {% endif %}
             <button type="button" id="cancelChanges" class="cancelChanges translateTitle btn btn-danger" title="Descartar alterações" style="display:none"><span class="glyphicon glyphicon-remove"></span></button>
-            <button type="button" title="Mostrar relação de tokens com id" sent_id="{{first.sent_id or first.id}}" class="showTokenIds translateTitle btn btn-default"><i class="fa fa-eye"></i></button>
-            <button type="button" title="Mostrar todos os sintagmas" sent_id="{{first.sent_id or first.id}}" class="showPhrases translateTitle btn btn-default"><i class="fa fa-tree"></i></button>
-            <button type="button" title="Filtrar sentenças" sent_id="{{first.sent_id or first.id}}" class="translateTitle filterThisSentenceBtn btn btn-default"><i class="fa fa-filter"></i></button>
-            <input type="hidden" class="firstLabel" value="1️⃣ {% if divergence %} {{ divergence['first']['category'] }}{% elif rel %} {{rel}}{% endif %}">
+            <!--button type="button" title="Mostrar relação de tokens com id" sent_id="{{first.sent_id or first.id}}" class="showTokenIds translateTitle btn btn-default"><i class="fa fa-eye"></i></button-->
+            <!--button type="button" title="Mostrar todos os sintagmas" sent_id="{{first.sent_id or first.id}}" class="showPhrases translateTitle btn btn-default"><i class="fa fa-tree"></i></button-->
+            <!--button type="button" title="Filtrar sentenças" sent_id="{{first.sent_id or first.id}}" class="translateTitle filterThisSentenceBtn btn btn-default"><i class="fa fa-filter"></i></button-->
+            <input type="hidden" class="firstLabel" value="1️⃣ {% if divergence %}{{ divergence['first']['category'] }}{% elif rel %}{{rel}}{% endif %}">
             <input type="hidden" class="firstAndsecondLabel" value="<i class='fa fa-share'></i>{% if divergence %} {{ divergence['first']['category'] }}{% elif rel %} {{rel}}{% endif %}">
-            <input type="hidden" class="secondLabel" value="2️⃣ {% if divergence %} {{ divergence['second']['category'] }}{% endif %}">
+            <input type="hidden" class="secondLabel" value="2️⃣ {% if divergence %}{{ divergence['second']['category'] }}{% endif %}">
         </div>
     </div>
     <form class="getAnnotation">

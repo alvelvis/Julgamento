@@ -284,7 +284,7 @@ function atualizar(){
             type: 'POST',
             success: function(data){
                 $button.siblings('.cancelChanges').show();
-                $button.html("<span class='glyphicon glyphicon-ok'></span>" + $button.siblings('.secondLabel').val().split(' ')[1]);
+                $button.html("<span class='glyphicon glyphicon-ok'></span> " + $button.siblings('.secondLabel').val().split(' ')[1]);
                 $button.attr('title', 'Salvar secundário');
                 $button.removeClass('btn-default').addClass('btn-success').removeClass('showsecondAnnotation').addClass('hidesecondAnnotation');
                 $button.parents('.panel-body').find('.annotationsecond').html(data['annotationUd2']);
@@ -360,8 +360,8 @@ function atualizar(){
                     $button.html('Salvo');
                     $button.siblings('.hidesecondAnnotation').click();
                     $button.siblings('.hidefirstAnnotation').click();
-                    atualizar();
                 };                
+                atualizar();
             },
         });
     });

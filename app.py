@@ -441,24 +441,25 @@ def sendAnnotation():
 			corpusSecond.load(arquivosecond)
 
 		for data in request.values:
+			# Comentei as referências a headToken, pois dizem respeito à função "quickSendAnnotation", que copia a anotação do corpus 2 para o 1, mas só quero modificar o valor da coluna, não o dephead
 			if '<coluna>' in data and request.values.get(data):
 				token = int(data.split('<coluna>')[1])
 				coluna = data.split('<coluna>')[0] if not re.search(r'^\d+$', data.split('<coluna>')[0], flags=re.MULTILINE) else idx_to_col.get(int(data.split('<coluna>')[0]), "col%s" % (int(data.split("<coluna>")[0])+1))
 				valor = html.unescape(request.values.get(data).replace("<br>", "").strip()).replace("<br>", "").strip()
-				if request.values.get("headToken"):
-					headTokenNum = request.values.get("headToken") if request.values.get("headToken") != "_" else "0"
+				#if request.values.get("headToken"):
+					#headTokenNum = request.values.get("headToken") if request.values.get("headToken") != "_" else "0"
 				if corpus.sentences[sent_id].tokens[token].__dict__[coluna] != valor:
 					corpus.sentences[sent_id].tokens[token].__dict__[coluna] = valor
-					if request.values.get('headToken'):
-						corpus.sentences[sent_id].tokens[token].dephead = headTokenNum
+					#if request.values.get('headToken'):
+						#corpus.sentences[sent_id].tokens[token].dephead = headTokenNum
 					change = True
 					allCorpora.corpora[conllu(request.values.get("c")).first()].sentences[sent_id].tokens[token].__dict__[coluna] = valor
 				
 				if firstAndsecond:
 					if corpusSecond.sentences[sent_id].tokens[token].__dict__[coluna] != valor:
 						corpusSecond.sentences[sent_id].tokens[token].__dict__[coluna] = valor
-						if request.values.get('headToken'):
-							corpus.sentences[sent_id].tokens[token].dephead = headTokenNum
+						#if request.values.get('headToken'):
+							#corpus.sentences[sent_id].tokens[token].dephead = headTokenNum
 						change = True
 						allCorpora.corpora[conllu(request.values.get("c")).second()].sentences[sent_id].tokens[token].__dict__[coluna] = valor
 
