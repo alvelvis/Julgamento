@@ -237,7 +237,7 @@ def getTables():
 
 	elif table == 'metrics':
 		return jsonify({
-			'html': '<h3 class="translateHtml">Métricas do conll18_ud_eval.py</h3>' + metrics(request.values.get('ud1'), request.values.get('ud2')),
+			'html': '<h3 class="translateHtml">Métricas de avaliação do CoNLL 2018</h3>' + metrics(request.values.get('ud1'), request.values.get('ud2')),
 			'success': True
 			})
 

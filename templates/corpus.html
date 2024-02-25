@@ -12,6 +12,7 @@
     {% if corpora['available'] %}
     <div class="{{colCorpus}} panel panel-default">
         <h3 class="translateHtml">Corpora com versão secundária</h3>
+        <p>Para avaliação e comparação</p>
         <input class='form-control filterAvailableCorpora translatePlaceholder' placeholder="Filtrar...">
         <ul class='list-group panel panel-body availableCorpora'>
             {{findCorpora(filtro='', tipo='available')|safe}}
@@ -21,7 +22,8 @@
 
     {% if corpora['onlyfirst'] %}
     <div class="{{colCorpus}} panel panel-default">
-        <h3 class="translateHtml">Corpora prontos para julgamento</h3>
+        <h3 class="translateHtml">Corpora para avaliação</h3>
+        <p>Sem versão secundária</p>
         <input class='form-control filterOnlyfirst translatePlaceholder' placeholder="Filtrar...">
         <ul class='list-group panel panel-body onlyfirst'>
             {{findCorpora(filtro='', tipo='onlyfirst')|safe}}

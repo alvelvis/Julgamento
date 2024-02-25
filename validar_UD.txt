@@ -1,3 +1,16 @@
+# Este arquivo contém regras para detecção de erros.
+# As regras são lidas pelo módulo de inquéritos do Interrogatório e pelo Julgamento.
+# Fique à vontade para editar as regras, remover ou acrescentar novas.
+# As regras são divididas em tipos, que são separados por uma linha em branco.
+# Cada tipo de erro deve ter um cabeçalho contendo uma descrição e o nome da coluna que deve ser corrigida pelo usuário.
+# Em seguida, cada linha abaixo deste cabeçalho corresponde a uma regra, que deve ser escrita na sintaxe de busca do Interrogatório.
+# Os blocos de erro devem seguir esse formato:
+# <nome da coluna>|erro: <descrição do erro>
+# regra 1
+# regra 2
+# regra 3
+# <linha em branco>
+
 dephead|erro: 1 - Token dependente de si próprio
 token.head_token.id == token.id
 

@@ -490,7 +490,7 @@ $(document).ready(function(){
                 c: $('#c').val(),
             },
             success: function(data){
-                $('#errorET').html('<h3 class="translateHtml">Detecção de erros segundo o script da ET</h3>O script de erros pode ser editado no arquivo Julgamento/validar_UD.txt<hr>' + data['html'] + "</div>");
+                $('#errorET').html('<h3 class="translateHtml">Detecção de erros segundo o script da ET</h3>O script de erros pode ser editado no arquivo validar_UD.txt, que está na pasta onde o Julgamento foi instalado<hr>' + data['html'] + "</div>");
                 $('#errorET').show();
                 atualizar();
             }
