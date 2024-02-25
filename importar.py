@@ -1,5 +1,6 @@
 from config import UPLOAD_FOLDER, COMCORHD_FOLDER, JULGAMENTO_FOLDER, REPOSITORIES, VALIDATE_UD, VALIDATE_LANG, VALIDAR_UD
 from flask import render_template, request
+from sklearn.metrics import cohen_kappa_score
 import pandas as pd
 import os, estrutura_ud, estrutura_dados, confusao, re, time, datetime, validar_UD
 import models, pickle
@@ -15,6 +16,93 @@ if os.path.isdir(os.path.abspath(os.path.join(JULGAMENTO_FOLDER, "..", "Interrog
     globals()['INTERROGATORIO'] = True
 else:
     globals()['INTERROGATORIO'] = False
+
+def get_annotations(corpus1, corpus2):
+    annotations1 = {}
+    annotations2 = {}
+    sentences = corpus1.sentences.keys()
+    for sent_id in sentences:
+        sentence1 = corpus1.sentences[sent_id]
+        sentence2 = corpus2.sentences[sent_id]
+        if len(sentence1.tokens) == len(sentence2.tokens):
+            for t in range(len(sentence1.tokens)):
+                token1 = sentence1.tokens[t]
+                if '-' in token1.id:
+                    continue
+                token2 = sentence2.tokens[t]
+                for col in token1.__dict__:
+                    if not col in token2.__dict__:
+                        continue
+                    if col in estrutura_ud.col_to_idx or (col.startswith("col") and col != "color"):
+                        if not col in annotations1:
+                            annotations1[col] = []
+                        if not col in annotations2:
+                            annotations2[col] = []
+                        annotations1[col].append((sent_id, t, token1.__dict__[col]))
+                        annotations2[col].append((sent_id, t, token2.__dict__[col]))
+    
+    return annotations1, annotations2
+            
+def get_divergences(corpus1, corpus2, c):
+    annotations1, annotations2 = get_annotations(corpus1, corpus2)
+
+    cols = annotations1.keys()
+    divergences = {col: [t for t, x in enumerate(annotations1[col]) if x != annotations2[col][t]] for col in cols}
+    divergence_groups = {}
+
+    for col in cols:
+        if not col in divergence_groups:
+            divergence_groups[col] = {}
+        for t in divergences[col]:
+            value1 = annotations1[col][t][2]
+            value2 = annotations2[col][t][2]
+            group = "%sxxx%s" % (value1, value2)
+            if not group in divergence_groups[col]:
+                divergence_groups[col][group] = []
+            divergence_groups[col][group].append(annotations1[col][t])
+
+    html = " | ".join(["<a style='color:blue; cursor:pointer;' class='toggle_columns' col='{0}'>{0} ({1})</a>".format(col, len(divergences[col])) for col in cols])
+    for col in cols:
+        html += "<div class='columnsDiv' style='display:none' col='%s'>" % col
+        html += "<h1>Divergências de %s (%s)</h1>" % (col, len(divergences[col]))
+        for group in sorted(divergence_groups[col]):
+            html += "<a target='_blank' href='/corpus?c={c}&ud1={ud1}&ud2={ud2}&col={col}'>{ud1} - {ud2} ({n})</a><br>".format(
+                c=c,
+                ud1=group.split("xxx")[0], 
+                ud2=group.split("xxx")[1], 
+                col=col,
+                n=len(divergence_groups[col][group])
+                )
+
+        html += "</div>"
+
+    return html
+
+def get_accuracy(corpus1, corpus2):
+    annotations1, annotations2 = get_annotations(corpus1, corpus2)
+    cols = annotations1.keys()
+    html = " | ".join(["<a style='color:blue; cursor:pointer;' class='toggle_columns' col='{0}'>{0}</a>".format(col) for col in cols])
+    for col in cols:
+        same_annotation = len(set(annotations1[col]).intersection(set(annotations2[col])))
+        n_tokens = len(annotations1[col])
+        html += "<div class='columnsDiv' style='display:none' col='%s'>" % col
+        html += "<h1>Acurácia de %s</h1>" % col
+        html += "Número de tokens: %s" % n_tokens
+        html += "<br>Anotações iguais: %s" % same_annotation
+        html += "<br>Acurácia: %.4f" % (same_annotation / n_tokens)
+        html += "</div>"
+    return html
+
+def get_kappa(corpus1, corpus2):
+    annotations1, annotations2 = get_annotations(corpus1, corpus2)
+    cols = annotations1.keys()
+    html = " | ".join(["<a style='color:blue; cursor:pointer;' class='toggle_columns' col='{0}'>{0}</a>".format(col) for col in cols])
+    for col in cols:
+        html += "<div class='columnsDiv' style='display:none' col='%s'>" % col
+        html += "<h1>Concordância interanotadores (Cohen's Kappa) de %s</h1>" % col
+        html += "Concordância: %.4f" % cohen_kappa_score([x[2] for x in annotations1[col]], [x[2] for x in annotations2[col]])
+        html += "</div>"
+    return html
 
 def checkRepo(repositorio="", branch=""):
     if not os.path.isdir(UPLOAD_FOLDER + "/" + 'repositories'):
@@ -593,7 +681,10 @@ def metrics(ud1, ud2):
             ), shell=True).wait()
 
     with open(f"{UPLOAD_FOLDER}/{conllu(ud1).naked}_metrics", 'r') as f:
-        html += f"<pre>{f.read()}</pre>"
+        result = f.read()
+    if not result.strip():
+        result = "Houve um erro na geração das métricas de avaliação, verifique o terminal."
+    html += f"<pre>{result}</pre>"
     
     return html
 

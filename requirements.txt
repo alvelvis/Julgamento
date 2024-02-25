@@ -10,3 +10,4 @@ pandas==0.25.3
 numpy==1.23.1
 regex
 tqdm==4.43.0
+scikit_learn

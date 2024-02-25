@@ -144,6 +144,12 @@ function atualizar(){
 
     updateTranslation();
 
+    $('.toggle_columns').click(function(){
+        col = $(this).attr('col')
+        $('.columnsDiv').hide()
+        $('.columnsDiv[col=' + col + ']').show()
+    })
+
     $('.matrixTd').children("a").click(function(){
         $(".matrixTd").css("background-color", "white");
         $(this).parents(".matrixTd").css("background-color", "yellow");

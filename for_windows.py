@@ -6,7 +6,7 @@ from http.server import HTTPServer, CGIHTTPRequestHandler
 def main():
 
     # to make a new update that requires new packages: append the name of the package in the list and try to import it
-    new_packages = ["GitPython"]
+    new_packages = ["GitPython", "tqdm", "sklearn"]
     try:
         import git
     except:

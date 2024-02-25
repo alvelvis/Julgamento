@@ -12,7 +12,7 @@ fi
 
 . .julgamento/bin/activate
 
-if ! python3 -c "import tqdm"; then
+if ! python3 -c "import sklearn"; then
   if ! pip3 install -r requirements.txt; then
     sudo apt install python3-pip
     pip3 install -r requirements.txt

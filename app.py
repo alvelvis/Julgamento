@@ -289,6 +289,34 @@ def getTables():
 
 	elif table == 'inconsistent_ngrams':
 		return ""
+
+	elif table == "accuracy_columns":
+		return jsonify({
+			'html': get_accuracy(
+				corpus1=allCorpora.corpora.get(conllu(request.values.get('ud1')).first()),
+				corpus2=allCorpora.corpora.get(conllu(request.values.get('ud2')).second())
+				),
+			'success': True,
+		})
+	
+	elif table == "iaa":
+		return jsonify({
+			'html': get_kappa(
+				corpus1=allCorpora.corpora.get(conllu(request.values.get('ud1')).first()),
+				corpus2=allCorpora.corpora.get(conllu(request.values.get('ud2')).second())
+				),
+			'success': True,
+		})
+	
+	elif table == "divergences":
+		return jsonify({
+			'html': get_divergences(
+				corpus1=allCorpora.corpora.get(conllu(request.values.get('ud1')).first()),
+				corpus2=allCorpora.corpora.get(conllu(request.values.get('ud2')).second()),
+				c=request.values.get('c')
+				),
+			'success': True,
+		})
 	
 
 @app.route('/upload', methods="GET|POST".split("|"))
