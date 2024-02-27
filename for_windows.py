@@ -13,7 +13,7 @@ def main():
         for package in new_packages:
             if package == "sklearn":
                 package = "scikit-learn"
-            os.system("\"{}\\python.exe\" -m pip install {}".format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), package))
+            os.system("\"{}\\python.exe\" -m pip install --no-warn-script-location --disable-pip-version-check {}".format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), package))
 
     os.environ['GIT_PYTHON_GIT_EXECUTABLE'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), "PortableGit", "bin", "git.exe")
     os.environ['PYTHONUTF8'] = "1"
