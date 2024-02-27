@@ -335,7 +335,7 @@ def upload(alert="", success=""):
 				firstFile.save(os.path.abspath(os.path.join(COMCORHD_FOLDER, firstFileName))) if INTERROGATORIO else firstFile.save(os.path.abspath(os.path.join(UPLOAD_FOLDER, firstFileName)))
 				shutil.copyfile(conllu(firstFileName).findFirst(), conllu(firstFileName).findOriginal())
 				textInterrogatorio = "(1) Realize buscas e edições no corpus pelo <a href='http://github.com/alvelvis/Interrogat-rio'>Interrogatório</a>, ou, (2) "
-				success = f'"{firstFileName}" enviado com sucesso! {textInterrogatorio if INTERROGATORIO else ""}Julgue-o na <a href="/corpus">página inicial</a>.'
+				success = f'"{firstFileName}" enviado com sucesso! {textInterrogatorio if INTERROGATORIO else ""}Avalie-o na <a href="/corpus">página inicial</a>.'
 			else:
 				alert = "Arquivo já existe na pasta."
 		else:
@@ -357,7 +357,7 @@ def upload(alert="", success=""):
 				alert = "Segunda versão não tem o mesmo número de sentenças do arquivo principal."
 				os.remove(conllu(firstFile).findSecond())
 			else:
-				success = f'"{secondFileName}" enviado com sucesso! Julgue o corpus na <a href="/corpus">página inicial</a>.'
+				success = f'"{secondFileName}" enviado com sucesso! Avalie o corpus na <a href="/corpus">página inicial</a>.'
 				addDatabase(firstFile)
 			#loadCorpus.submit(firstFile)
 			del corpusFirst
