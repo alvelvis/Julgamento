@@ -3,7 +3,7 @@ import interrogar_UD
 import sys
 import re
 import pprint
-from functions import fromInterrogarToHtml
+from utils import fromInterrogarToHtml
 
 def validate(conllu, sent_id = None, errorList = "validar_UD.txt", noMissingToken=False):
 
@@ -64,15 +64,14 @@ def validate(conllu, sent_id = None, errorList = "validar_UD.txt", noMissingToke
 
     for error in errorList:
         if error and error[0] != "#":
-            if "erro: " in error:
-                comment = error.split("erro: ")[1]
+            if "error: " in error:
+                comment = error.split("error: ")[1]
                 comment = comment.strip()
-                coluna = error.split("|", 1)[0] if "|" in error.split("erro: ")[0] else ""
+                coluna = error.split("|", 1)[0] if "|" in error.split("error: ")[0] else ""
                 continue
 
             parameters = error.strip()
-            sys.stderr.write("\n{}".format(parameters))
-            for sentString in interrogar_UD.main(corpus, 5, parameters, 0, sent_id, separate=True)['output']:
+            for sentString in interrogar_UD.main(corpus, 5, parameters, sent_id=sent_id)['output']:
                 if not comment in errorDictionary:
                     errorDictionary[comment] = []
                 sentence = estrutura_ud.Sentence(recursivo=True)
@@ -83,11 +82,14 @@ def validate(conllu, sent_id = None, errorList = "validar_UD.txt", noMissingToke
                         tokenT = t
                         break
 
-                errorDictionary[comment].append({
+                error_feats = {
                     "t": tokenT,
                     "sentence": sentence,
                     "attribute": coluna,
-                })
+                }
+
+                if not error_feats in errorDictionary[comment]:
+                    errorDictionary[comment].append(error_feats)
 
 
     return errorDictionary

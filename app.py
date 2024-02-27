@@ -6,8 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from jinja2 import Template, escape, Markup, Environment
 from interrogar_UD import getDistribution
 import datetime
-import validar_UD, functions
-from functions import cleanEstruturaUD
+import validar_UD, utils
+from utils import cleanEstruturaUD
 from subprocess import Popen
 import json
 
@@ -503,7 +503,7 @@ def sendAnnotation():
 						attention += [f'<div class="alert alert-warning translateHtml" role="alert">Atenção: {error}</div><ul>']
 						for value in errors[error]:
 							if value['sentence']:
-								attention += ["<li>" + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].id) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].word) + " / " + functions.cleanEstruturaUD(value['sentence'].tokens[value['t']].__dict__[value['attribute']]) + "</li>"]
+								attention += ["<li>" + utils.cleanEstruturaUD(value['sentence'].tokens[value['t']].id) + " / " + utils.cleanEstruturaUD(value['sentence'].tokens[value['t']].word) + " / " + utils.cleanEstruturaUD(value['sentence'].tokens[value['t']].__dict__[value['attribute']]) + "</li>"]
 						attention += ["</ul>"]
 
 		del corpus
