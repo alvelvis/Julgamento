@@ -8,9 +8,11 @@ def main():
     # to make a new update that requires new packages: append the name of the package in the list and try to import it
     new_packages = ["GitPython", "tqdm", "sklearn"]
     try:
-        import git
+        exec("import {}".format(new_packages[-1]))
     except:
         for package in new_packages:
+            if package == "sklearn":
+                package = "scikit-learn"
             os.system("\"{}\\python.exe\" -m pip install {}".format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), package))
 
     os.environ['GIT_PYTHON_GIT_EXECUTABLE'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), "PortableGit", "bin", "git.exe")
@@ -27,7 +29,7 @@ def main():
         repo.config_writer().set_value("core", "autocrlf", "true").release()
         repo.git.pull()
         if current != repo.head.commit:
-            print("Julgamento was updated. Please, open it again.")
+            print(">>> Julgamento was updated.\n>>> Please, close this window and open Julgamento again.")
             sys.exit()
     except Exception as e:
         print("Warning (Git): {}".format(e))
