@@ -7,7 +7,7 @@ werkzeug==2.0.03
 markupsafe==2.0.1
 itsdangerous==2.0.1
 pandas==0.25.3
-numpy==1.23.1
 regex
 tqdm==4.43.0
 scikit-learn
+numpy==1.23.1

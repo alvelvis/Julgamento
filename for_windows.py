@@ -12,7 +12,7 @@ def main():
     except:
         for package in new_packages:
             if package == "sklearn":
-                package = "scikit-learn"
+                package = "scikit-learn numpy==1.23.1"
             os.system("\"{}\\python.exe\" -m pip install --no-warn-script-location --disable-pip-version-check {}".format(os.path.join(os.path.dirname(os.path.abspath(__file__)), "Python39"), package))
 
     os.environ['GIT_PYTHON_GIT_EXECUTABLE'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), "PortableGit", "bin", "git.exe")
