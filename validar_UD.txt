@@ -66,11 +66,11 @@ misc|error: 9 - Invalid misc
 #misc !== ".*MWE=.*|.*MWEPOS=.*|.*Spaces?After=.*|.*d2d:.*|.*ChangedBy=.*|_|.*start_char=.*|.*end_char=.*|.*Se=.*"
 
 feats|error: 10 - Features are incompatible with POS
-upos = "ADJ" and feats !== "Gender=Masc|Gender=Fem|Gender=Unsp|Number=Sing|Number=Plur|NumType=Ord"
+upos = "ADJ" and feats !== "Gender=Masc|Gender=Fem|Gender=Unsp|Number=Sing|Number=Plur|NumType=Ord|VerbForm=Part"
 upos = "ADV" and feats !== "_|Polarity=Neg"
 upos = "AUX" and feats !== "Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Number=Plur|VerbForm=Inf|VerbForm=Ger|Tense=Fut|Mood=Cnd|Tense=Imp|Tense=Past|VerbForm=Part|Person=1|Mood=Sub|Mood=Imp|Person=2|Gender=Masc|Tense=Pqp"
 upos = "CCONJ|INTJ|ADP|SCONJ|PUNCT|SYM|_" and feats !== "_"
-upos = "DET" and feats !== "Definite=Def|Gender=Masc|Number=Sing|PronType=Art|Definite=Ind|Gender=Fem|Number=Plur|PronType=Ind|PronType=Dem|PronType=Prs|PronType=Tot|PronType=Neg|PronType=Emp|PronType=Int|PronType=Rel|Gender=Unsp|Number=Unsp"
+upos = "DET" and feats !== "Person=1|Person=2|Person=3|Poss=Yes|Definite=Def|Gender=Masc|Number=Sing|PronType=Art|Definite=Ind|Gender=Fem|Number=Plur|PronType=Ind|PronType=Dem|PronType=Prs|PronType=Tot|PronType=Neg|PronType=Emp|PronType=Int|PronType=Rel|Gender=Unsp|Number=Unsp"
 upos = "(NOUN|PROPN)" and feats !== "Gender=Masc|Number=Sing|Gender=Fem|Number=Plur|Gender=Unsp|Foreign=Yes|Number=Unsp"
 upos = "NUM" and feats !== "NumType=Card|Gender=Masc|Gender=Fem|Number=Sing|NumType=Mult|Number=Plur|NumType=Ord|NumType=Frac|Definite=Ind|PronType=Art|NumType=Sets|NumType=Range"
 upos = "PART" and feats !== "_|Gender=Masc|Number=Sing"
