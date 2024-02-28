@@ -21,7 +21,7 @@
             {% if conllu(c).second() in allCorpora.corpora %}<a href="#iaa" name="iaa" class="tables-toggle list-group-item translateHtml">Concordância interanotadores (Cohen's Kappa)</a>{% endif %}
             {% if conllu(c).second() in allCorpora.corpora %}<a href="#sentAccuracy" name="sentAccuracy" class="tables-toggle list-group-item translateHtml">Acurácia das sentenças</a>{% endif %}
             {% if conllu(c).second() in allCorpora.corpora %}<a href="#accuracy_columns" name="accuracy_columns" class="tables-toggle list-group-item translateHtml">Acurácia de cada coluna</a>{% endif %}
-            {% if conllu(c).second() in allCorpora.corpora %}<a href="#POSAccuracy" name="accuracy" class="tables-toggle list-group-item translateHtml">Acurácia por categoria morfossintática</a>{% endif %}
+            {% if conllu(c).second() in allCorpora.corpora %}<a href="#POSAccuracy" name="accuracy" class="tables-toggle list-group-item translateHtml">Avaliação das relações de dependência: LAS e UAS</a>{% endif %}
             <a href="#inconsistent_ngrams" name="inconsistent_ngrams" tipo="lexicais" class="inconsistent_ngramsToggle list-group-item translateHtml">N-grams inconsistentes (lexicais)</a>
             <a href="#inconsistent_ngrams" name="inconsistent_ngrams" tipo="gramaticais" class="inconsistent_ngramsToggle list-group-item translateHtml">N-grams inconsistentes (gramaticais)</a>
             {% if conllu(c).second() in allCorpora.corpora %}<a href="#divergences" name="divergences" class="tables-toggle list-group-item translateHtml">Divergências por coluna</a>{% endif %}

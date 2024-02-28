@@ -90,6 +90,20 @@ def get_accuracy(corpus1, corpus2):
         html += "Número de tokens: %s" % n_tokens
         html += "<br>Anotações iguais: %s" % same_annotation
         html += "<br>Acurácia: %.4f" % (same_annotation / n_tokens)
+        html += "<hr>"
+        html += "<h1>Por etiqueta</h1>"
+        html += "<table style='margin:auto'>"
+        html += "<tr><th>Etiqueta</th><th>Quantidade</th><th>Acurácia</th></tr>"
+        labels = {}
+        for t, token in enumerate(annotations1[col]):
+            label = token[2]
+            if not label in labels:
+                labels[label] = []
+            labels[label].append(t)
+        hits = {label: len([t for t in labels[label] if annotations2[col][t][2] == label]) for label in labels}
+        for label in sorted(labels):
+            html += "<tr><td>%s</td><td>%s</td><td>%.4f</td></tr>" % (label, len(labels[label]), hits[label]/len(labels[label]))
+        html += "</table>"
         html += "</div>"
     return html
 
