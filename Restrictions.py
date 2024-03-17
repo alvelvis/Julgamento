@@ -131,7 +131,7 @@ def process_result(args):
         raise Exception('unknown filter type (gramaticais, lexicais): {}'.format(type_filter))
 
     #sent_df.index = ['0'] + list(df.loc[i].index.astype(str)) + ['0']
-    sent_df = sent_df.ix[1:-1]
+    sent_df = sent_df.iloc[1:-1]
     sent_df['pair_pair_ngram'] = sent_df.apply(lambda x: restrictions.get_pair_ngram(sent_df,x), axis=1)
     sent_df['pair_ngram_a']=sent_df['pair_pair_ngram'].apply(lambda x:x[0])
     sent_df['pair_ngram_b']=sent_df['pair_pair_ngram'].apply(lambda x:x[1])
