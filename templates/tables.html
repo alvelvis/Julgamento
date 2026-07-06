@@ -5,12 +5,18 @@
 
 {% if conllu(c).first() in allCorpora.corpora and allCorpora.corpora[conllu(c).first()].sentences %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<input type="hidden" id="ud1" value="{{conllu(c).findFirst()}}">
-{% if conllu(c).second() in allCorpora.corpora %}<input type="hidden" id="ud2" value="{{conllu(c).findSecond()}}">{% endif %}
-<input type="hidden" id="c" value="{{c}}">
 <h1>{{c}}</h1>
 {% if conllu(c).second() in allCorpora.corpora %}<h4><i title="Edite a descrição do corpus" class="translateTitle fa fa-edit"></i> <div class="sobreCorpus" style="display:inline-block;" contenteditable>{{ sobre | safe }}</div></h4>{% endif %}
+
 {% if interrogatorio %}<h4>CoNLL-U principal armazenado na pasta do Interrogatório</h4>{% endif %}
+<input type="hidden" id="ud1" value="{{conllu(c).findFirst()}}">
+<span class="translateHtml">Arquivo principal</span>: {{conllu(c).findFirst()}}
+{% if conllu(c).second() in allCorpora.corpora %}
+    <input type="hidden" id="ud2" value="{{conllu(c).findSecond()}}">
+    <br><span class="translateHtml">Arquivo secundário</span>: {{conllu(c).findSecond()}}
+{% endif %}
+<input type="hidden" id="c" value="{{c}}">
+
 <hr>
 <div class="col-lg-4 col-lg-offset-4 panel panel-default">
     <div class="panel-body">

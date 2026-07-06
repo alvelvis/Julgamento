@@ -2,3 +2,5 @@ prod.db
 *.pyc
 static/uploads/*
 .julgamento
+PortableGit
+Python39
